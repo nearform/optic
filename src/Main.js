@@ -130,10 +130,9 @@ function Main({ classes }) {
 
 const styles = theme => ({
   root: {
-    padding: theme.spacing.unit * 2
-  },
-  tokensTitle: {
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing.unit * 2,
+    width: '1200px',
+    margin: '0 auto'
   }
 })
 
