@@ -77,7 +77,6 @@ function Main({ classes }) {
   if (!signedIn) {
     return (
       <div className={classes.root}>
-        <pre>{idToken}</pre>
         <Typography variant="h3" gutterBottom>
           NPM OTP
         </Typography>
