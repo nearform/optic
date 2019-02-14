@@ -14,7 +14,7 @@ import SecretsTable from './components/SecretsTable'
 const QrScannerWorkerPath = `${process.env.PUBLIC_URL}/qr-scanner-worker.min.js`
 QrScanner.WORKER_PATH = QrScannerWorkerPath
 
-const uiConfig = {
+const firebaseConfig = {
   signInFlow: 'popup',
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
   callbacks: {
@@ -77,6 +77,7 @@ function Main({ classes }) {
   if (!signedIn) {
     return (
       <div className={classes.root}>
+        <pre>{idToken}</pre>
         <Typography variant="h3" gutterBottom>
           NPM OTP
         </Typography>
@@ -84,7 +85,7 @@ function Main({ classes }) {
           Please sign-in:
         </Typography>
         <StyledFirebaseAuth
-          uiConfig={uiConfig}
+          uiConfig={firebaseConfig}
           firebaseAuth={firebase.auth()}
         />
       </div>
@@ -131,7 +132,7 @@ function Main({ classes }) {
 const styles = theme => ({
   root: {
     padding: theme.spacing.unit * 2,
-    width: '1200px',
+    'max-width': '1200px',
     margin: '0 auto'
   }
 })
