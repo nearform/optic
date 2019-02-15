@@ -6,17 +6,22 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 async function registerServiceWorker() {
-  try {
-    const registration = await navigator.serviceWorker.register(
-      `${process.env.PUBLIC_URL}/web-push-service-worker.js`
-    )
+  return new Promise((resolve, reject) => {
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register(
+          `${process.env.PUBLIC_URL}/web-push-service-worker.js`
+        )
 
-    console.log('Service worker successfully registered')
+        console.log('Service worker successfully registered')
 
-    return registration
-  } catch (err) {
-    console.error('Unable to register service worker', err)
-  }
+        return resolve(registration)
+      } catch (err) {
+        console.error('Unable to register service worker', err)
+        return reject(err)
+      }
+    })
+  })
 }
 
 async function askPermission() {
