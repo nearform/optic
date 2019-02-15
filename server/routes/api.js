@@ -6,18 +6,18 @@ const webPush = require('web-push')
 
 const admin = require('../lib/firebase')
 
-const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_MAILTO } = process.env
+const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT } = process.env
 
-if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+if (!VAPID_SUBJECT || !VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
   console.log(
-    'You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY ' +
-      'environment variables. You can use the following ones:'
+    'You must set the VAPID_SUBJECT, VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY ' +
+      'environment variables. You can use the following ones as keys:'
   )
   console.log(webPush.generateVAPIDKeys())
   return
 }
 
-webPush.setVapidDetails(VAPID_MAILTO, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
 const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout))
 
