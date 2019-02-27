@@ -2,10 +2,8 @@
 
 const debug = require('debug')('server:server')
 const http = require('http')
-const MongoClient = require('mongodb').MongoClient
 
 const app = require('../app')
-const setupDb = require('../lib/setupDb')
 
 /**
  * Get port from environment and store in Express.
@@ -19,15 +17,7 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
-
-MongoClient.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true
-}).then(client => {
-  setupDb(client)
-
-  app.set('db', client.db())
-  server.listen(port)
-})
+server.listen(port)
 
 /**
  * Listen on provided port, on all network interfaces.

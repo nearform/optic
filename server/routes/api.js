@@ -1,7 +1,6 @@
 const Router = require('express-promise-router')
 const otp = require('otplib')
 const uniqid = require('uniqid')
-const ObjectID = require('mongodb').ObjectID
 const webPush = require('web-push')
 
 const admin = require('../lib/firebase')
@@ -40,7 +39,7 @@ const isValidSaveRequest = (req, res) => {
   return true
 }
 
-var router = new Router()
+const router = new Router()
 
 const auth = async (req, res, next) => {
   const [, idToken] = (req.header('authorization') || '').split(/bearer /i)
@@ -55,33 +54,42 @@ const auth = async (req, res, next) => {
 }
 
 router.get('/generate/:token', async (req, res) => {
-  const db = req.app.get('db')
+  const db = admin.firestore()
 
-  const secret = await db
+  const secretRef = await db
     .collection('secrets')
-    .findOne({ token: req.params.token })
+    .where('token', '==', req.params.token)
+    .get()
 
-  if (!secret) {
+  if (secretRef.empty) {
     console.warn('Secret not found')
     return res.sendStatus(404)
   }
 
-  const subscription = await db
-    .collection('subscriptions')
-    .findOne({ userId: secret.userId })
+  let secret = {}
+  secretRef.forEach(s => (secret = s.data()))
 
-  if (!subscription) {
+  const subscriptionRef = await db
+    .collection('subscriptions')
+    .where('userId', '==', secret.userId)
+    .get()
+
+  if (subscriptionRef.empty) {
     console.warn('Subscription not found')
     return res.sendStatus(404)
   }
 
+  let subscription = {}
+  subscriptionRef.forEach(s => (subscription = s.data()))
+
   const uniqueId = uniqid()
 
-  const request = await db.collection('requests').insertOne({
+  const requestAdd = await db.collection('requests').add({
     secret,
     uniqueId,
     createdAt: new Date()
   })
+  const request = await requestAdd.get()
 
   try {
     console.log('Sending notification to subscription')
@@ -94,7 +102,10 @@ router.get('/generate/:token', async (req, res) => {
 
     if (err.statusCode === 410 || err.statusCode === 404) {
       console.log('Subscription is not valid, removing')
-      await db.collection('subscriptions').remove({ _id: subscription._id })
+      await db
+        .collection('subscriptions')
+        .doc(subscription.id)
+        .delete()
     } else {
       console.log('Subscription is not valid but dunno why')
     }
@@ -109,13 +120,18 @@ router.get('/generate/:token', async (req, res) => {
 
     console.log('Checking if request has been responded to')
 
-    const found = await db
+    const foundRef = await db
       .collection('requests')
-      .findOne({ _id: request.insertedId })
+      .doc(request.id)
+      .get()
+
+    const found = foundRef.data()
 
     if ('result' in found) {
       // delete request asynchronously, we don't want to delay the response
-      db.collection('requests').deleteOne({ _id: request.insertedId })
+      db.collection('requests')
+        .doc(request.id)
+        .delete()
 
       if (found.result) {
         console.log('Request approved, sending back token')
@@ -131,7 +147,10 @@ router.get('/generate/:token', async (req, res) => {
     wait += Date.now() - start
   }
 
-  await db.collection('requests').deleteOne({ _id: request.insertedId })
+  await db
+    .collection('requests')
+    .doc(request.id)
+    .delete()
 
   console.warn('Request was not approved or rejected in time')
 
@@ -139,19 +158,25 @@ router.get('/generate/:token', async (req, res) => {
 })
 
 router.post('/respond', async (req, res) => {
+  const db = admin.firestore()
   const { uniqueId, result } = req.body
 
-  const db = req.app.get('db')
+  const requestRef = await db
+    .collection('requests')
+    .where('uniqueId', '==', uniqueId)
+    .get()
 
-  const request = await db.collection('requests').findOne({ uniqueId })
-
-  if (!request) {
+  if (requestRef.empty) {
     return res.sendStatus(404)
   }
 
+  let request = {}
+  requestRef.forEach(r => (request = r))
+
   await db
     .collection('requests')
-    .updateOne({ _id: request._id }, { $set: { result } })
+    .doc(request.id)
+    .update({ result })
 })
 
 router.get('/vapidPublicKey', (_, res) => res.send(VAPID_PUBLIC_KEY))
@@ -159,77 +184,86 @@ router.get('/vapidPublicKey', (_, res) => res.send(VAPID_PUBLIC_KEY))
 router.use(auth)
 
 router.get('/secrets', async (req, res) => {
-  const result = await req.app
-    .get('db')
-    .collection('secrets')
-    .find({
-      userId: req.user
-    })
-    .toArray()
+  const db = admin.firestore()
 
-  res.send(result)
+  const result = await db
+    .collection('secrets')
+    .where('userId', '==', req.user)
+    .get()
+
+  const resultArray = []
+  result.forEach(r => resultArray.push({ _id: r.id, ...r.data() }))
+  res.send(resultArray)
 })
 
 router.post('/secrets', async (req, res) => {
-  const result = await req.app
-    .get('db')
-    .collection('secrets')
-    .insertOne({
-      ...req.body,
-      userId: req.user
-    })
+  const db = admin.firestore()
+
+  const result = await db.collection('secrets').add({
+    ...req.body,
+    userId: req.user
+  })
 
   res.send(result)
 })
 
 router.delete('/secrets/:secretId', async (req, res) => {
-  const result = await req.app
-    .get('db')
+  const db = admin.firestore()
+  const result = await db
     .collection('secrets')
-    .deleteOne({
-      _id: new ObjectID(req.params.secretId),
-      userId: req.user
-    })
+    .doc(req.params.secretId)
+    .delete()
 
   res.send(result)
 })
 
 router.put('/token/:secretId', async (req, res) => {
-  const secrets = req.app.get('db').collection('secrets')
+  const db = admin.firestore()
+  const secrets = db.collection('secrets')
 
-  const secret = await secrets.findOne({
-    _id: new ObjectID(req.params.secretId),
-    userId: req.user
-  })
+  const secret = await secrets.doc(req.params.secretId).get()
 
-  if (!secret) {
-    res.sendStatus(404)
+  if (!secret.exists) {
+    return res.sendStatus(404)
   }
 
-  res.send(
-    await secrets.updateOne({ _id: secret._id }, { $set: { token: uniqid() } })
-  )
+  res.send(await secrets.doc(req.params.secretId).update({ token: uniqid() }))
 })
 
 router.post('/register', async (req, res) => {
+  const db = admin.firestore()
+
   if (!isValidSaveRequest(req, res)) {
     console.error('Bad register request payload')
     return res.sendStatus(400)
   }
 
-  const subscription = await req.app
-    .get('db')
+  const subscriptionRef = await db
     .collection('subscriptions')
-    .updateOne(
-      { userId: req.user },
-      {
-        $set: {
-          userId: req.user,
-          subscription: req.body
-        }
-      },
-      { upsert: true }
-    )
+    .where('userId', '==', req.user)
+    .get()
+
+  let subscription = {}
+  const updateArray = []
+  if (subscriptionRef.empty) {
+    await db.collection('subscriptions').add({
+      userId: req.user,
+      subscription: req.body
+    })
+  } else {
+    subscriptionRef.forEach(s => {
+      updateArray.push(
+        db
+          .collection('subscriptions')
+          .doc(s.id)
+          .update({
+            userId: req.user,
+            subscription: req.body
+          })
+      )
+    })
+    await Promise.all(updateArray)
+  }
 
   res.status(201).send(subscription)
 })
