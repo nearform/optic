@@ -4,7 +4,9 @@ import { Typography, Button, withStyles } from '@material-ui/core'
 import QrScanner from 'qr-scanner'
 
 import firebase from './lib/firebase'
-import { subscribe } from './web-push-service-worker-registration'
+import subscribe from './lib/subscription'
+import requestPermission from './lib/notification'
+import * as secretsManager from './lib/secrets'
 
 import QRReaderDialog from './components/QRReaderDialog'
 import QRImageUploadDialog from './components/QRImageUploadDialog'
@@ -23,7 +25,7 @@ const firebaseConfig = {
 }
 
 function Main({ classes }) {
-  const [signedIn, setSignedIn] = useState(false)
+  const [user, setUser] = useState({})
   const [idToken, setIdToken] = useState()
   const [secrets, setSecrets] = useState([])
   const [uploadDialog, toggleUploadDialog] = useState(false)
@@ -31,50 +33,42 @@ function Main({ classes }) {
   const [formDialog, toggleFormDialog] = useState(false)
 
   useEffect(() => {
-    return firebase.auth().onAuthStateChanged(async user => {
-      setSignedIn(!!user)
+    firebase.auth().onAuthStateChanged(async user => {
+      setUser(user || {})
 
       if (user) {
-        setIdToken(await firebase.auth().currentUser.getIdToken())
+        setIdToken(await user.getIdToken())
+      } else {
+        setIdToken(null)
       }
     })
   }, [])
 
-  const fetchSecrets = async () => {
-    const response = await fetch('/api/secrets', {
-      headers: {
-        authorization: `Bearer ${idToken}`
-      }
-    })
-
-    setSecrets(await response.json())
-  }
-
   useEffect(() => {
     if (!idToken) return
 
-    fetchSecrets()
+    secretsManager.fetch({ uid: user.uid }).then(setSecrets)
+    requestPermission('/api', idToken)
     subscribe('/api', idToken)
   }, [idToken])
 
-  const addSecret = async (secret, account, issuer) => {
-    try {
-      await fetch('/api/secrets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `Bearer ${idToken}`
-        },
-        body: JSON.stringify({ secret, account, issuer })
-      })
-
-      await fetchSecrets()
-    } catch (e) {
-      console.error(e)
-    }
+  const addSecret = async secret => {
+    const uid = user.uid
+    await secretsManager.upsert({ uid, ...secret })
+    setSecrets(await secretsManager.fetch({ uid }))
   }
 
-  if (!signedIn) {
+  const removeSecret = async id => {
+    await secretsManager.remove(id)
+    setSecrets(await secretsManager.fetch({ uid: user.uid }))
+  }
+
+  const updateSecret = async (id, secret) => {
+    await secretsManager.upsert({ _id: id, ...secret })
+    setSecrets(await secretsManager.fetch({ uid: user.uid }))
+  }
+
+  if (!user.uid) {
     return (
       <div className={classes.root}>
         <Typography variant="h3" gutterBottom>
@@ -97,8 +91,7 @@ function Main({ classes }) {
         NPM OTP
       </Typography>
       <Typography paragraph variant="subtitle1">
-        Welcome {firebase.auth().currentUser.displayName}! You are now
-        signed-in!
+        Welcome {user.displayName}! You are now signed-in!
         <Button onClick={() => firebase.auth().signOut()}>Sign-out</Button>
       </Typography>
       <Button onClick={() => toggleCameraDialog(true)}>Scan QR</Button>
@@ -118,12 +111,35 @@ function Main({ classes }) {
         open={formDialog}
         onClose={() => toggleFormDialog(false)}
         addSecret={addSecret}
+        displayName={user.displayName}
       />
       <SecretsTable
         secrets={secrets}
-        fetchSecrets={fetchSecrets}
+        updateSecret={updateSecret}
+        removeSecret={removeSecret}
         idToken={idToken}
       />
+      <br />
+      <footer>
+        Icons made by{' '}
+        <a
+          href="https://www.flaticon.com/authors/smalllikeart"
+          title="smalllikeart"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          smalllikeart
+        </a>{' '}
+        licensed by{' '}
+        <a
+          href="http://creativecommons.org/licenses/by/3.0/"
+          title="Creative Commons BY 3.0"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          CC 3.0 BY
+        </a>
+      </footer>
     </div>
   )
 }
