@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
     "cookie-parser": "^1.4.3",
     "debug": "^2.6.9",
     "dotenv": "^6.2.0",
@@ -75,6 +76,9 @@
   },
   "proxy": "http://localhost:3001",
   "nodemonConfig": {
-    "watch": ["server", ".env"]
+    "watch": [
+      "server",
+      ".env"
+    ]
   }
 }

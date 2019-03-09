@@ -1,15 +1,8 @@
 import React from 'react'
-import {
-  Typography,
-  Button,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  withStyles
-} from '@material-ui/core'
+import { colors, withStyles } from '@material-ui/core'
+import Secret from './Secret'
+
+const colorNames = Object.keys(colors).sort()
 
 function SecretsTable({
   classes,
@@ -18,9 +11,9 @@ function SecretsTable({
   secrets,
   idToken
 }) {
-  const generateToken = async secretId => {
+  const generateToken = async secret => {
     try {
-      const response = await fetch(`/api/token/${secretId}`, {
+      const response = await fetch(`/api/token/${secret._id}`, {
         method: 'PUT',
         headers: {
           authorization: `Bearer ${idToken}`
@@ -28,22 +21,22 @@ function SecretsTable({
       })
 
       const { token } = await response.json()
-      await updateSecret(secretId, { token })
+      await updateSecret(secret._id, { token })
     } catch (e) {
       console.error(e)
     }
   }
 
-  const revokeToken = async secretId => {
+  const revokeToken = async secret => {
     try {
-      await fetch(`/api/token/${secretId}`, {
+      await fetch(`/api/token/${secret._id}`, {
         method: 'DELETE',
         headers: {
           authorization: `Bearer ${idToken}`
         }
       })
 
-      await updateSecret(secretId, { token: undefined })
+      await updateSecret(secret._id, { token: undefined })
     } catch (e) {
       console.error(e)
     }
@@ -61,50 +54,28 @@ function SecretsTable({
   }
 
   return (
-    <Paper>
-      <Typography className={classes.tokensTitle} variant="h4">
-        Your Secrets
-      </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Secret</TableCell>
-            <TableCell>Account</TableCell>
-            <TableCell>Issuer</TableCell>
-            <TableCell>Token</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {secrets.map((secret, index) => (
-            <TableRow key={index}>
-              <TableCell>{secret.secret}</TableCell>
-              <TableCell>{secret.account}</TableCell>
-              <TableCell>{secret.issuer}</TableCell>
-              <TableCell>{secret.token}</TableCell>
-              <TableCell>
-                <Button onClick={() => generateToken(secret._id)}>
-                  {secret.token ? 're' : ''}generate token
-                </Button>
-                {secret.token && (
-                  <Button onClick={() => revokeToken(secret._id)}>
-                    revoke
-                  </Button>
-                )}
-                <Button onClick={() => remove(secret)}>delete</Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
+    <div className={classes.root}>
+      {secrets.map((secret, i) => (
+        <Secret
+          key={i}
+          secret={secret}
+          color={colors[colorNames[i % colorNames.length]][500]}
+          remove={remove}
+          generateToken={generateToken}
+          revokeToken={revokeToken}
+        />
+      ))}
+    </div>
   )
 }
 
 const styles = theme => ({
-  tokensTitle: {
-    padding: theme.spacing.unit * 2
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    padding: theme.spacing.unit
   }
 })
 

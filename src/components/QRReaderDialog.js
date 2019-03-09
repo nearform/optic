@@ -1,29 +1,47 @@
 import React from 'react'
-import { DialogTitle, Dialog } from '@material-ui/core'
+import { Drawer, withStyles } from '@material-ui/core'
 import QrReader from 'react-qr-reader'
-import UrlOtpAuth from 'url-otpauth'
-
-function QRReaderDialog({ onClose, qrError, addSecret, ...other }) {
-  const qrScan = async result => {
+import { parse } from '../lib/qr-parser'
+function QRReaderDialog({ classes, open, onClose, addSecret }) {
+  const scan = async result => {
     if (result) {
-      await addSecret(UrlOtpAuth.parse(result))
+      await addSecret(parse(result))
       onClose()
     }
   }
-
   return (
-    <Dialog onClose={onClose} {...other}>
-      <DialogTitle>Scan QR code</DialogTitle>
-      <div>
-        <QrReader
-          delay={300}
-          onError={err => console.error(err)}
-          onScan={qrScan}
-          style={{ width: 400, height: 400 }}
-        />
-      </div>
-    </Dialog>
+    <Drawer
+      anchor="bottom"
+      open={open}
+      onClose={onClose}
+      classes={{ paper: classes.drawer }}
+    >
+      <QrReader
+        delay={300}
+        onError={err => console.error(err)}
+        onScan={scan}
+        className={classes.reader}
+      />
+    </Drawer>
   )
 }
 
-export default QRReaderDialog
+const styles = theme => ({
+  drawer: {
+    padding: theme.spacing.unit * 2,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  reader: {
+    height: 600,
+    width: 600,
+    [theme.breakpoints.down('sm')]: {
+      height: 300,
+      width: 300
+    }
+  }
+})
+
+export default withStyles(styles)(QRReaderDialog)
