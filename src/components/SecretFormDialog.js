@@ -1,5 +1,11 @@
 import React, { useState } from 'react'
-import { Button, Drawer, TextField, withStyles } from '@material-ui/core'
+import {
+  Button,
+  Drawer,
+  TextField,
+  Typography,
+  withStyles
+} from '@material-ui/core'
 import { Add as AddIcon } from '@material-ui/icons'
 
 // intermediate component to leverage laziness evaluation
@@ -21,6 +27,7 @@ function Form({ classes, addSecret, onClose, displayName }) {
   }
   return (
     <form className={classes.form} onSubmit={save}>
+      <Typography paragraph>Enter your new secret details:</Typography>
       <TextField
         autoFocus
         label="Issuer"
@@ -90,6 +97,9 @@ const styles = theme => ({
       minWidth: 250,
       flexGrow: 1,
       margin: theme.spacing.unit
+    },
+    '& > :first-child': {
+      width: '100%'
     }
   },
 
