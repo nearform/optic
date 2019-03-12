@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import {
   AppBar,
+  Avatar,
+  Chip,
   IconButton,
   Menu,
   MenuItem,
@@ -9,6 +11,8 @@ import {
   withStyles
 } from '@material-ui/core'
 import { AccountCircle } from '@material-ui/icons'
+import { common } from '@material-ui/core/colors'
+import RemainingTime from './RemainingTime'
 
 function Bar({ classes, user, signOut }) {
   const [anchorEl, setAnchor] = useState(null)
@@ -29,6 +33,16 @@ function Bar({ classes, user, signOut }) {
         <Typography variant="h6" color="inherit" className={classes.title}>
           Optic
         </Typography>
+        <Chip
+          avatar={
+            <Avatar className={classes.remainingTime}>
+              <RemainingTime />
+            </Avatar>
+          }
+          className={classes.refresh}
+          label="before refresh"
+          variant="outlined"
+        />
         <IconButton
           aria-owns={open ? 'menu-appbar' : undefined}
           aria-haspopup="true"
@@ -64,6 +78,16 @@ const styles = theme => ({
 
   title: {
     flexGrow: 1
+  },
+
+  refresh: {
+    color: common.white,
+    borderColor: common.white
+  },
+
+  remainingTime: {
+    backgroundColor: common.white,
+    paddingBottom: 2
   }
 })
 

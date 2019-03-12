@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
+import { authenticator } from 'otplib'
 import {
   Avatar,
   Card,
@@ -31,13 +32,33 @@ function Secret({
 }) {
   const { issuer, account, token } = secret
   const [expanded, setExpanded] = useState(false)
+  const [otp, setOtp] = useState()
+
+  useEffect(() => {
+    if (!secret) return
+
+    let timeout
+    const refreshOtp = () => {
+      setOtp(authenticator.generate(secret.secret))
+      timeout = setTimeout(
+        refreshOtp,
+        authenticator.timeRemaining() * 1000 + 100
+      )
+    }
+    refreshOtp()
+    return () => clearTimeout(timeout)
+  }, [secret])
 
   return (
     <Card className={classes.root} {...props}>
       <CardHeader
         avatar={
-          <Avatar aria-label="Secret" style={{ backgroundColor: color }}>
-            {issuer[0].toUpperCase()}
+          <Avatar
+            aria-label="Secret"
+            className={classes.avatar}
+            style={{ backgroundColor: color }}
+          >
+            {issuer && issuer[0].toUpperCase()}
           </Avatar>
         }
         action={
@@ -54,6 +75,8 @@ function Secret({
         subheader={`for ${account}`}
       />
       <CardContent>
+        <Typography color="textSecondary">OTP:</Typography>
+        {otp}
         <Typography color="textSecondary">Token:</Typography>
         {token ? token : 'no token yet'}
       </CardContent>
@@ -110,6 +133,10 @@ const styles = theme => ({
     transition: theme.transitions.create('transform', {
       duration: theme.transitions.duration.shortest
     })
+  },
+
+  avatar: {
+    paddingBottom: 2
   },
 
   expandOpen: {

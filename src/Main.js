@@ -34,9 +34,12 @@ function Main({ classes }) {
   }, [])
 
   useEffect(() => {
-    if (!idToken) return
-
+    if (!user.uid) return
     secretsManager.fetch({ uid: user.uid }).then(setSecrets)
+  }, [user])
+
+  useEffect(() => {
+    if (!idToken) return
     requestPermission('/api', idToken)
     subscribe('/api', idToken)
   }, [idToken])
