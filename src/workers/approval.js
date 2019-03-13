@@ -10,7 +10,7 @@ if (self.__precacheManifest) {
 const pushServerUrl = '/api'
 
 async function closeNotifications() {
-  const notifs = await self.registration.getNotifications({ tag: 'npm-otp' })
+  const notifs = await self.registration.getNotifications({ tag: 'optic' })
   notifs.forEach(notif => notif.close())
 }
 
@@ -29,7 +29,7 @@ self.addEventListener('push', function(event) {
       }
       const { secret, issuer, account } = details
       await self.registration.showNotification('One Time Password requested', {
-        tag: 'npm-otp',
+        tag: 'optic',
         body: `For secret issued by ${issuer} to ${account}`,
         data: { secret, uniqueId },
         requireInteraction: true,

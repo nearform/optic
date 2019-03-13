@@ -1,34 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { StyledFirebaseAuth } from 'react-firebaseui'
-import { Typography, Button, withStyles } from '@material-ui/core'
-import QrScanner from 'qr-scanner'
+import { withStyles } from '@material-ui/core'
 
 import firebase from './lib/firebase'
 import subscribe from './lib/subscription'
 import requestPermission from './lib/notification'
 import * as secretsManager from './lib/secrets'
+import { scan } from './lib/qr-parser'
 
+import AppBar from './components/AppBar'
+import AddSecretButton from './components/AddSecretButton'
+import Login from './components/Login'
 import QRReaderDialog from './components/QRReaderDialog'
-import QRImageUploadDialog from './components/QRImageUploadDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
-
-const QrScannerWorkerPath = `${process.env.PUBLIC_URL}/qr-scanner-worker.min.js`
-QrScanner.WORKER_PATH = QrScannerWorkerPath
-
-const firebaseConfig = {
-  signInFlow: 'popup',
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-  callbacks: {
-    signInSuccessWithAuthResult: () => false
-  }
-}
 
 function Main({ classes }) {
   const [user, setUser] = useState({})
   const [idToken, setIdToken] = useState()
   const [secrets, setSecrets] = useState([])
-  const [uploadDialog, toggleUploadDialog] = useState(false)
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
 
@@ -69,44 +58,17 @@ function Main({ classes }) {
   }
 
   if (!user.uid) {
-    return (
-      <div className={classes.root}>
-        <Typography variant="h3" gutterBottom>
-          NPM OTP
-        </Typography>
-        <Typography paragraph variant="subtitle1">
-          Please sign-in:
-        </Typography>
-        <StyledFirebaseAuth
-          uiConfig={firebaseConfig}
-          firebaseAuth={firebase.auth()}
-        />
-      </div>
-    )
+    return <Login />
   }
 
   return (
     <div className={classes.root}>
-      <Typography variant="h3" gutterBottom>
-        NPM OTP
-      </Typography>
-      <Typography paragraph variant="subtitle1">
-        Welcome {user.displayName}! You are now signed-in!
-        <Button onClick={() => firebase.auth().signOut()}>Sign-out</Button>
-      </Typography>
-      <Button onClick={() => toggleCameraDialog(true)}>Scan QR</Button>
+      <AppBar user={user} signOut={() => firebase.auth().signOut()} />
       <QRReaderDialog
         open={cameraDialog}
         onClose={() => toggleCameraDialog(false)}
         addSecret={addSecret}
       />
-      <Button onClick={() => toggleUploadDialog(true)}>Upload image</Button>
-      <QRImageUploadDialog
-        open={uploadDialog}
-        onClose={() => toggleUploadDialog(false)}
-        addSecret={addSecret}
-      />
-      <Button onClick={() => toggleFormDialog(true)}>Manually insert</Button>
       <SecretFormDialog
         open={formDialog}
         onClose={() => toggleFormDialog(false)}
@@ -119,36 +81,19 @@ function Main({ classes }) {
         removeSecret={removeSecret}
         idToken={idToken}
       />
-      <br />
-      <footer>
-        Icons made by{' '}
-        <a
-          href="https://www.flaticon.com/authors/smalllikeart"
-          title="smalllikeart"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          smalllikeart
-        </a>{' '}
-        licensed by{' '}
-        <a
-          href="http://creativecommons.org/licenses/by/3.0/"
-          title="Creative Commons BY 3.0"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          CC 3.0 BY
-        </a>
-      </footer>
+      <AddSecretButton
+        scanQR={() => toggleCameraDialog(true)}
+        uploadImage={file => scan(file).then(addSecret)}
+        manuallyAdd={() => toggleFormDialog(true)}
+      />
     </div>
   )
 }
 
-const styles = theme => ({
+const styles = () => ({
   root: {
-    padding: theme.spacing.unit * 2,
-    'max-width': '1200px',
-    margin: '0 auto'
+    flexGrow: 1,
+    paddingTop: '65px'
   }
 })
 

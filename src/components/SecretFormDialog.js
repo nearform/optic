@@ -1,71 +1,114 @@
 import React, { useState } from 'react'
 import {
-  DialogTitle,
-  Dialog,
-  TextField,
   Button,
+  Drawer,
+  TextField,
+  Typography,
   withStyles
 } from '@material-ui/core'
+import { Add as AddIcon } from '@material-ui/icons'
 
-function SecretFormDialog({
-  onClose,
-  displayName,
-  addSecret,
-  classes,
-  ...other
-}) {
+// intermediate component to leverage laziness evaluation
+// https://material-ui.com/utils/modal/#performance
+function Form({ classes, addSecret, onClose, displayName }) {
   const [secret, setSecret] = useState('')
   const [account, setAccount] = useState(displayName)
   const [issuer, setIssuer] = useState('')
 
-  const save = async () => {
+  const save = async event => {
+    // stop to avoid reloading the page on form submit
+    event.preventDefault()
     await addSecret({ secret, account, issuer })
+    // reset form
     setSecret('')
     setAccount(displayName)
     setIssuer('')
     onClose()
   }
-
   return (
-    <Dialog onClose={onClose} {...other}>
-      <DialogTitle>Manually enter secret</DialogTitle>
-      <form className={classes.newSecret}>
-        <TextField
-          label="Secret"
-          value={secret}
-          onChange={e => setSecret(e.target.value)}
-        />
-        <TextField
-          label="Account"
-          value={account}
-          onChange={e => setAccount(e.target.value)}
-        />
-        <TextField
-          label="Issuer"
-          value={issuer}
-          onChange={e => setIssuer(e.target.value)}
-        />
-        <Button
-          color="primary"
-          size="large"
-          disabled={!secret || !account || !issuer}
-          onClick={save}
-        >
-          Add secret
-        </Button>
-      </form>
-    </Dialog>
+    <form className={classes.form} onSubmit={save}>
+      <Typography paragraph>Enter your new secret details:</Typography>
+      <TextField
+        autoFocus
+        label="Issuer"
+        value={issuer}
+        placeholder="Who created your secret"
+        onChange={e => setIssuer(e.target.value)}
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+      />
+      <TextField
+        label="Secret"
+        value={secret}
+        placeholder="Long, cryptic string"
+        onChange={e => setSecret(e.target.value)}
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+      />
+      <TextField
+        label="Account"
+        value={account}
+        placeholder="Your account"
+        onChange={e => setAccount(e.target.value)}
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+      />
+      <Button
+        color="primary"
+        size="large"
+        disabled={!secret || !account || !issuer}
+        onClick={save}
+        className={classes.addButton}
+        type="submit"
+      >
+        <AddIcon className={classes.addIcon} />
+        Add secret
+      </Button>
+    </form>
+  )
+}
+
+function SecretFormDialog({ classes, open, onClose, ...props }) {
+  return (
+    <Drawer
+      anchor="bottom"
+      open={open}
+      onClose={onClose}
+      classes={{ paper: classes.drawer }}
+    >
+      <Form classes={classes} onClose={onClose} {...props} />
+    </Drawer>
   )
 }
 
 const styles = theme => ({
-  newSecret: {
-    marginTop: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
-    '& > * + *': {
-      marginLeft: theme.spacing.unit
+  drawer: {
+    padding: theme.spacing.unit * 2,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  form: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    '& > *': {
+      minWidth: 250,
+      flexGrow: 1,
+      margin: theme.spacing.unit
     },
-    padding: '20px'
+    '& > :first-child': {
+      width: '100%'
+    }
+  },
+
+  addButton: {
+    flexGrow: 0
+  },
+
+  addIcon: {
+    marginRight: theme.spacing.unit
   }
 })
 
