@@ -7,9 +7,7 @@ function QRReaderDialog({ onClose, addSecret, ...other }) {
   const readImage = async e => {
     try {
       const result = await QrScanner.scanImage(e.target.files[0])
-      const { key, account, issuer } = UrlOtpAuth.parse(result)
-
-      await addSecret(key, account, issuer)
+      await addSecret(UrlOtpAuth.parse(result))
       onClose()
     } catch (e) {
       console.error(e)

@@ -6,9 +6,7 @@ import UrlOtpAuth from 'url-otpauth'
 function QRReaderDialog({ onClose, qrError, addSecret, ...other }) {
   const qrScan = async result => {
     if (result) {
-      const { key, account, issuer } = UrlOtpAuth.parse(result)
-
-      await addSecret(key, account, issuer)
+      await addSecret(UrlOtpAuth.parse(result))
       onClose()
     }
   }

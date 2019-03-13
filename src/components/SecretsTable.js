@@ -11,32 +11,50 @@ import {
   withStyles
 } from '@material-ui/core'
 
-function SecretsTable({ classes, fetchSecrets, secrets, idToken }) {
+function SecretsTable({
+  classes,
+  removeSecret,
+  updateSecret,
+  secrets,
+  idToken
+}) {
   const generateToken = async secretId => {
     try {
-      await fetch(`/api/token/${secretId}`, {
+      const response = await fetch(`/api/token/${secretId}`, {
         method: 'PUT',
         headers: {
           authorization: `Bearer ${idToken}`
         }
       })
 
-      await fetchSecrets()
+      const { token } = await response.json()
+      await updateSecret(secretId, { token })
     } catch (e) {
       console.error(e)
     }
   }
 
-  const deleteSecret = async secretId => {
+  const revokeToken = async secretId => {
     try {
-      await fetch(`/api/secrets/${secretId}`, {
+      await fetch(`/api/token/${secretId}`, {
         method: 'DELETE',
         headers: {
           authorization: `Bearer ${idToken}`
         }
       })
 
-      await fetchSecrets()
+      await updateSecret(secretId, { token: undefined })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const remove = async secret => {
+    try {
+      if (secret.token) {
+        await revokeToken(secret._id)
+      }
+      await removeSecret(secret._id)
     } catch (e) {
       console.error(e)
     }
@@ -69,7 +87,12 @@ function SecretsTable({ classes, fetchSecrets, secrets, idToken }) {
                 <Button onClick={() => generateToken(secret._id)}>
                   {secret.token ? 're' : ''}generate token
                 </Button>
-                <Button onClick={() => deleteSecret(secret._id)}>Delete</Button>
+                {secret.token && (
+                  <Button onClick={() => revokeToken(secret._id)}>
+                    revoke
+                  </Button>
+                )}
+                <Button onClick={() => remove(secret)}>delete</Button>
               </TableCell>
             </TableRow>
           ))}

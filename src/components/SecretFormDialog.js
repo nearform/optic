@@ -7,13 +7,22 @@ import {
   withStyles
 } from '@material-ui/core'
 
-function SecretFormDialog({ onClose, addSecret, classes, ...other }) {
+function SecretFormDialog({
+  onClose,
+  displayName,
+  addSecret,
+  classes,
+  ...other
+}) {
   const [secret, setSecret] = useState('')
-  const [account, setAccount] = useState('')
+  const [account, setAccount] = useState(displayName)
   const [issuer, setIssuer] = useState('')
 
   const save = async () => {
-    await addSecret(secret, account, issuer)
+    await addSecret({ secret, account, issuer })
+    setSecret('')
+    setAccount(displayName)
+    setIssuer('')
     onClose()
   }
 
