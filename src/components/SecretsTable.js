@@ -59,7 +59,7 @@ function SecretsTable({
         <div className={classes.instructions}>
           <Typography paragraph>You don't have any secret yet!</Typography>
           <Typography>
-            Add one by scanning or uploading a QR code, or even entering the
+            Add one by scanning or uploading a QR code, or even enter the
             details manually.
           </Typography>
         </div>

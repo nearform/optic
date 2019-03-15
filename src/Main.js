@@ -90,6 +90,7 @@ function Main({ classes }) {
       />
       <AddSecretButton
         scanQR={() => toggleCameraDialog(true)}
+        // TODO recover from scan/upload errors
         uploadImage={file => scan(file).then(addSecret)}
         manuallyAdd={() => toggleFormDialog(true)}
       />

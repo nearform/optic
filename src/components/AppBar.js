@@ -33,7 +33,7 @@ function Bar({ classes, secrets, user, signOut }) {
         <Typography variant="h6" color="inherit" className={classes.title}>
           Optic
         </Typography>
-        {secrets && secrets.length && (
+        {secrets && secrets.length ? (
           <Chip
             avatar={
               <Avatar className={classes.remainingTime}>
@@ -44,7 +44,7 @@ function Bar({ classes, secrets, user, signOut }) {
             label="before refresh"
             variant="outlined"
           />
-        )}
+        ) : null}
         <IconButton
           aria-owns={open ? 'menu-appbar' : undefined}
           aria-haspopup="true"

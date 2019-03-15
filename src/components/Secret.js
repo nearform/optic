@@ -36,7 +36,8 @@ function Secret({
   const [otp, setOtp] = useState()
 
   useEffect(() => {
-    if (!secret) return
+    if (!secret || !secret.secret) return
+    // do not fail if secret is missing
 
     let timeout
     const refreshOtp = () => {
