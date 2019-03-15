@@ -66,7 +66,11 @@ function Main({ classes }) {
 
   return (
     <div className={classes.root}>
-      <AppBar user={user} signOut={() => firebase.auth().signOut()} />
+      <AppBar
+        user={user}
+        secrets={secrets}
+        signOut={() => firebase.auth().signOut()}
+      />
       <QRReaderDialog
         open={cameraDialog}
         onClose={() => toggleCameraDialog(false)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import classnames from 'classnames'
 import { authenticator } from 'otplib'
 import {
@@ -20,6 +20,7 @@ import {
   Refresh as RefreshIcon,
   Remove as RemoveIcon
 } from '@material-ui/icons'
+import CopyToClipBoard from './CopyToClipboard'
 
 function Secret({
   classes,
@@ -77,8 +78,16 @@ function Secret({
       <CardContent>
         <Typography color="textSecondary">OTP:</Typography>
         {otp}
+        <CopyToClipBoard value={otp} />
         <Typography color="textSecondary">Token:</Typography>
-        {token ? token : 'no token yet'}
+        {token ? (
+          <Fragment>
+            {token}
+            <CopyToClipBoard value={token} />
+          </Fragment>
+        ) : (
+          'no token yet'
+        )}
       </CardContent>
       <CardActions disableActionSpacing>
         <Tooltip title={`${token ? 'Refresh' : 'Generate'} token`}>
