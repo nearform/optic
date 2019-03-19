@@ -19,6 +19,7 @@ function Upload({ classes, onChange, children, ...props }) {
           ref={inputEl}
           accept="image/*"
           className={classes.input}
+          onChange={onChange}
           type="file"
         />
         {children}
