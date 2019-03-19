@@ -5,13 +5,24 @@ import { Button, Drawer, withStyles } from '@material-ui/core'
 // https://material-ui.com/utils/modal/#performance
 function ConfirmOptions({ classes, onClose, onConfirm, options }) {
   return (
-    <div>
+    <div className={classes.container}>
       <h3>{(options && options.title) || 'Confirm'}</h3>
-      <p>{(options && options.message) || 'Confirm'}</p>
-      <Button variant="contained" color="primary" onClick={onConfirm}>
+      <p>{(options && options.message) || 'Are you sure?'}</p>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onConfirm}
+        className={classes.button}
+      >
         Confirm
       </Button>
-      <Button variant="contained" color="secondary" onClick={onClose}>
+
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={onClose}
+        className={classes.button}
+      >
         Cancel
       </Button>
     </div>
@@ -39,8 +50,13 @@ const styles = theme => ({
     alignItems: 'center'
   },
 
-  addButton: {
+  button: {
+    margin: theme.spacing.unit,
     flexGrow: 0
+  },
+
+  container: {
+    textAlign: 'center'
   }
 })
 
