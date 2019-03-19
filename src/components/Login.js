@@ -51,6 +51,10 @@ const styles = theme => ({
     flexGrow: 1
   },
 
+  loginIcon: {
+    fontSize: 60
+  },
+
   primer: {
     textAlign: 'center',
     margin: '0 1em'
