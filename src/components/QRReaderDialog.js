@@ -8,7 +8,8 @@ import { parse } from '../lib/qr-parser'
 function Form({ classes, addSecret, onClose }) {
   const scan = async result => {
     if (result) {
-      await addSecret(parse(result))
+      // TODO recover from parse errors
+      await addSecret(await parse(result))
       onClose()
     }
   }

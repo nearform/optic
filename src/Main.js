@@ -41,9 +41,12 @@ function Main({ classes }) {
   }, [])
 
   useEffect(() => {
-    if (!idToken) return
-
+    if (!user.uid) return
     secretsManager.fetch({ uid: user.uid }).then(setSecrets)
+  }, [user])
+
+  useEffect(() => {
+    if (!idToken) return
     requestPermission('/api', idToken)
     subscribe('/api', idToken)
   }, [idToken])
@@ -115,7 +118,11 @@ function Main({ classes }) {
 
   return (
     <div className={classes.root}>
-      <AppBar user={user} signOut={() => firebase.auth().signOut()} />
+      <AppBar
+        user={user}
+        secrets={secrets}
+        signOut={() => firebase.auth().signOut()}
+      />
       <ConfirmDialog
         onClose={onCancel}
         onConfirm={onConfirm}
@@ -142,6 +149,7 @@ function Main({ classes }) {
       />
       <AddSecretButton
         scanQR={() => toggleCameraDialog(true)}
+        // TODO recover from scan/upload errors
         uploadImage={file => scan(file).then(addSecret)}
         manuallyAdd={() => toggleFormDialog(true)}
       />
