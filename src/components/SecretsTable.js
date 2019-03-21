@@ -5,7 +5,7 @@ import {
   confirm,
   DispatchContext as ConfirmDialogDispatchContext,
   StateContext as ConfirmDialogStateContext
-} from '../state/modules/ConfirmDialog'
+} from '../state/ConfirmDialog'
 
 const colorNames = Object.keys(colors).sort()
 

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Button, Drawer, withStyles } from '@material-ui/core'
 
-import { StateContext } from '../state/modules/ConfirmDialog'
+import { StateContext } from '../state/ConfirmDialog'
 
 // intermediate component to leverage laziness evaluation
 // https://material-ui.com/utils/modal/#performance

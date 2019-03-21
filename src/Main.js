@@ -15,7 +15,7 @@ import QRReaderDialog from './components/QRReaderDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
 
-import { ConfirmProvider } from './state/modules/ConfirmDialog'
+import { ConfirmProvider } from './state/ConfirmDialog'
 
 function Main({ classes }) {
   const [user, setUser] = useState({})
