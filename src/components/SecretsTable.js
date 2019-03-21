@@ -3,8 +3,8 @@ import { colors, Typography, withStyles } from '@material-ui/core'
 import Secret from './Secret'
 import {
   confirm,
-  dispatchContext as ConfirmDialogDispatchContext,
-  stateContext as ConfirmDialogStateContext
+  DispatchContext as ConfirmDialogDispatchContext,
+  StateContext as ConfirmDialogStateContext
 } from '../state/modules/ConfirmDialog'
 
 const colorNames = Object.keys(colors).sort()

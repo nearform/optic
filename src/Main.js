@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import { withStyles } from '@material-ui/core'
 
 import firebase from './lib/firebase'
@@ -15,11 +15,7 @@ import QRReaderDialog from './components/QRReaderDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
 
-import ConfirmDialogReducer, {
-  dispatchContext as ConfirmDialogDispatchContext,
-  initialState as confirmDialogInitialState,
-  stateContext as ConfirmDialogStateContext
-} from './state/modules/ConfirmDialog'
+import { ConfirmProvider } from './state/modules/ConfirmDialog'
 
 function Main({ classes }) {
   const [user, setUser] = useState({})
@@ -27,12 +23,6 @@ function Main({ classes }) {
   const [secrets, setSecrets] = useState([])
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
-
-  const [confirmState, confirmDispatch] = useReducer(
-    ConfirmDialogReducer,
-    confirmDialogInitialState
-  )
-  const { confirmDialog, onCancel, onConfirm, confirmOptions } = confirmState
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(async user => {
@@ -79,44 +69,37 @@ function Main({ classes }) {
 
   return (
     <div className={classes.root}>
-      <ConfirmDialogDispatchContext.Provider value={confirmDispatch}>
-        <ConfirmDialogStateContext.Provider value={confirmState}>
-          <AppBar
-            user={user}
-            secrets={secrets}
-            signOut={() => firebase.auth().signOut()}
-          />
-          <ConfirmDialog
-            onClose={onCancel}
-            onConfirm={onConfirm}
-            open={confirmDialog}
-            options={confirmOptions}
-          />
-          <QRReaderDialog
-            open={cameraDialog}
-            onClose={() => toggleCameraDialog(false)}
-            addSecret={addSecret}
-          />
-          <SecretFormDialog
-            open={formDialog}
-            onClose={() => toggleFormDialog(false)}
-            addSecret={addSecret}
-            displayName={user.displayName}
-          />
-          <SecretsTable
-            secrets={secrets}
-            updateSecret={updateSecret}
-            removeSecret={removeSecret}
-            idToken={idToken}
-          />
-          <AddSecretButton
-            scanQR={() => toggleCameraDialog(true)}
-            // TODO recover from scan/upload errors
-            uploadImage={file => scan(file).then(addSecret)}
-            manuallyAdd={() => toggleFormDialog(true)}
-          />
-        </ConfirmDialogStateContext.Provider>
-      </ConfirmDialogDispatchContext.Provider>
+      <ConfirmProvider>
+        <AppBar
+          user={user}
+          secrets={secrets}
+          signOut={() => firebase.auth().signOut()}
+        />
+        <ConfirmDialog />
+        <QRReaderDialog
+          open={cameraDialog}
+          onClose={() => toggleCameraDialog(false)}
+          addSecret={addSecret}
+        />
+        <SecretFormDialog
+          open={formDialog}
+          onClose={() => toggleFormDialog(false)}
+          addSecret={addSecret}
+          displayName={user.displayName}
+        />
+        <SecretsTable
+          secrets={secrets}
+          updateSecret={updateSecret}
+          removeSecret={removeSecret}
+          idToken={idToken}
+        />
+        <AddSecretButton
+          scanQR={() => toggleCameraDialog(true)}
+          // TODO recover from scan/upload errors
+          uploadImage={file => scan(file).then(addSecret)}
+          manuallyAdd={() => toggleFormDialog(true)}
+        />
+      </ConfirmProvider>
     </div>
   )
 }

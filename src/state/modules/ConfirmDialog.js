@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 
-export const initialState = { confirmDialog: false }
+const initialState = { confirmDialog: false }
 
-export const dispatchContext = React.createContext(null)
-export const stateContext = React.createContext(initialState)
+export const DispatchContext = React.createContext(null)
+export const StateContext = React.createContext(initialState)
 
-export const RESET = 'RESET'
-export const SET_OPTIONS = 'SET_OPTIONS'
-export const SET_ON_CONFIRM = 'SET_ON_CONFIRM'
-export const SET_ON_CANCEL = 'SET_ON_CANCEL'
-export const TOGGLE_DIALOG = 'TOGGLE_DIALOG'
+const RESET = 'RESET'
+const SET_OPTIONS = 'SET_OPTIONS'
+const SET_ON_CONFIRM = 'SET_ON_CONFIRM'
+const SET_ON_CANCEL = 'SET_ON_CANCEL'
+const TOGGLE_DIALOG = 'TOGGLE_DIALOG'
 
 export const confirm = function(options, dispatch, { confirmDialog }) {
   // reject if there is already a confirmation dialog open
@@ -51,7 +51,7 @@ export const confirm = function(options, dispatch, { confirmDialog }) {
   })
 }
 
-export default function reducer(state, action) {
+function reducer(state, action) {
   switch (action.type) {
     case RESET:
       return { confirmDialog: false }
@@ -66,4 +66,14 @@ export default function reducer(state, action) {
     default:
       throw new Error(`${action.type} is not a valid action`)
   }
+}
+
+export function ConfirmProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  return (
+    <DispatchContext.Provider value={dispatch}>
+      <StateContext.Provider value={state}>{children}</StateContext.Provider>
+    </DispatchContext.Provider>
+  )
 }
