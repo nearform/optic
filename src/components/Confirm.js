@@ -5,7 +5,7 @@ import { StateContext } from '../state/confirm'
 
 // intermediate component to leverage laziness evaluation
 // https://material-ui.com/utils/modal/#performance
-function ConfirmOptions({ classes, onClose, onConfirm, options }) {
+function ConfirmOptions({ classes, onCancel, onConfirm, options }) {
   return (
     <div className={classes.container}>
       <h3>{(options && options.title) || 'Confirm'}</h3>
@@ -22,7 +22,7 @@ function ConfirmOptions({ classes, onClose, onConfirm, options }) {
       <Button
         variant="contained"
         color="secondary"
-        onClick={onClose}
+        onClick={onCancel}
         className={classes.button}
       >
         Cancel
@@ -45,7 +45,7 @@ function Confirm({ classes }) {
     >
       <ConfirmOptions
         classes={classes}
-        onClose={onCancel}
+        onCancel={onCancel}
         onConfirm={onConfirm}
         options={confirmOptions}
       />
