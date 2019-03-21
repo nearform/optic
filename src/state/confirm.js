@@ -56,13 +56,13 @@ function reducer(state, action) {
     case RESET:
       return { confirmDialog: false }
     case SET_OPTIONS:
-      return Object.assign({}, state, { confirmOptions: action.payload })
+      return { ...state, confirmOptions: action.payload }
     case SET_ON_CONFIRM:
-      return Object.assign({}, state, { onConfirm: action.payload })
+      return { ...state, onConfirm: action.payload }
     case SET_ON_CANCEL:
-      return Object.assign({}, state, { onCancel: action.payload })
+      return { ...state, onCancel: action.payload }
     case TOGGLE_DIALOG:
-      return Object.assign({}, state, { confirmDialog: action.payload })
+      return { ...state, confirmDialog: action.payload }
     default:
       console.log(`${action.type} is not a valid action`)
       return { ...state }
