@@ -32,14 +32,12 @@ function ConfirmOptions({ classes, onCancel, onConfirm, options }) {
 }
 
 function Confirm({ classes }) {
-  const { confirmDialog, onCancel, onConfirm, confirmOptions } = useContext(
-    StateContext
-  )
+  const { open, onCancel, onConfirm, confirmOptions } = useContext(StateContext)
 
   return (
     <Drawer
       anchor="bottom"
-      open={confirmDialog}
+      open={open}
       onClose={onCancel}
       classes={{ paper: classes.drawer }}
     >

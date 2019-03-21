@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react'
 
-const initialState = { confirmDialog: false }
+const initialState = { open: false }
 
 export const DispatchContext = React.createContext(null)
 export const StateContext = React.createContext(initialState)
@@ -11,9 +11,9 @@ const SET_ON_CONFIRM = 'SET_ON_CONFIRM'
 const SET_ON_CANCEL = 'SET_ON_CANCEL'
 const TOGGLE_DIALOG = 'TOGGLE_DIALOG'
 
-export const confirm = function(options, dispatch, { confirmDialog }) {
+export const confirm = function(options, dispatch, { open }) {
   // reject if there is already a confirmation dialog open
-  if (confirmDialog) {
+  if (open) {
     return new Promise((r, reject) =>
       reject(
         new Error(
@@ -54,7 +54,7 @@ export const confirm = function(options, dispatch, { confirmDialog }) {
 function reducer(state, action) {
   switch (action.type) {
     case RESET:
-      return { confirmDialog: false }
+      return { open: false }
     case SET_OPTIONS:
       return { ...state, confirmOptions: action.payload }
     case SET_ON_CONFIRM:
@@ -62,7 +62,7 @@ function reducer(state, action) {
     case SET_ON_CANCEL:
       return { ...state, onCancel: action.payload }
     case TOGGLE_DIALOG:
-      return { ...state, confirmDialog: action.payload }
+      return { ...state, open: action.payload }
     default:
       console.log(`${action.type} is not a valid action`)
       return { ...state }
