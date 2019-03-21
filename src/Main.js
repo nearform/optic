@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { withStyles } from '@material-ui/core'
 
 import firebase from './lib/firebase'
@@ -13,6 +13,14 @@ import Login from './components/Login'
 import QRReaderDialog from './components/QRReaderDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
+import Toast from './components/Toast'
+
+// todo: move to contexts file
+export const ToastDispatch = React.createContext(null)
+
+// todo: move to constants file
+const OPEN_TOAST = 'OPEN_TOAST'
+const CLOSE_TOAST = 'CLOSE_TOAST'
 
 function Main({ classes }) {
   const [user, setUser] = useState({})
@@ -20,6 +28,31 @@ function Main({ classes }) {
   const [secrets, setSecrets] = useState([])
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
+
+  const [toastState, toastDispatch] = useReducer(toastReducer, {
+    open: false
+  })
+  const { open } = toastState
+
+  // todo: move to reducers file
+  function toastReducer(state, action) {
+    switch (action.type) {
+      case CLOSE_TOAST:
+        return { open: false }
+      case OPEN_TOAST:
+        return { open: true }
+      default:
+        throw new Error(`${action.type} is not a valid toast action`)
+    }
+  }
+
+  // todo: move to actions file
+  function open() {
+    toastDispatch({ TYPE: OPEN_TOAST })
+  }
+  function close() {
+    toastDispatch({ TYPE: CLOSE_TOAST })
+  }
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(async user => {
@@ -71,6 +104,7 @@ function Main({ classes }) {
         secrets={secrets}
         signOut={() => firebase.auth().signOut()}
       />
+      <Toast open={open} />
       <QRReaderDialog
         open={cameraDialog}
         onClose={() => toggleCameraDialog(false)}
