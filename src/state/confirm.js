@@ -64,7 +64,8 @@ function reducer(state, action) {
     case TOGGLE_DIALOG:
       return Object.assign({}, state, { confirmDialog: action.payload })
     default:
-      throw new Error(`${action.type} is not a valid action`)
+      console.log(`${action.type} is not a valid action`)
+      return { ...state }
   }
 }
 
