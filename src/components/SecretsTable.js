@@ -1,19 +1,24 @@
 import React, { useContext } from 'react'
 import { colors, Typography, withStyles } from '@material-ui/core'
 import Secret from './Secret'
-import { ConfirmDialogDispatch } from '../Main' // todo: move this import to the confirm dialog actions file to prevent having to pass it along to the confirm action
+import {
+  confirm,
+  dispatchContext as ConfirmDialogDispatchContext,
+  stateContext as ConfirmDialogStateContext
+} from '../state/modules/ConfirmDialog'
 
 const colorNames = Object.keys(colors).sort()
 
 function SecretsTable({
   classes,
-  confirm,
   removeSecret,
   updateSecret,
   secrets,
   idToken
 }) {
-  const confirmDialogDispatch = useContext(ConfirmDialogDispatch)
+  const confirmDialogDispatch = useContext(ConfirmDialogDispatchContext)
+  const confirmDialogState = useContext(ConfirmDialogStateContext)
+
   const generateToken = async secret => {
     try {
       await confirm(
@@ -22,7 +27,8 @@ function SecretsTable({
           message:
             'This will generate a new token and render any existing token invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch
+        confirmDialogDispatch,
+        confirmDialogState
       )
 
       const response = await fetch(`/api/token/${secret._id}`, {
@@ -47,7 +53,8 @@ function SecretsTable({
           message:
             'This will revoke the existing token and render it invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch
+        confirmDialogDispatch,
+        confirmDialogState
       )
 
       await fetch(`/api/token/${secret._id}`, {
@@ -71,7 +78,8 @@ function SecretsTable({
           message:
             'This will permanently remove the secret and render the existing token invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch
+        confirmDialogDispatch,
+        confirmDialogState
       )
       if (secret.token) {
         await revokeToken(secret._id)
