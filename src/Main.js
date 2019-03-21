@@ -9,13 +9,13 @@ import { scan } from './lib/qr-parser'
 
 import AppBar from './components/AppBar'
 import AddSecretButton from './components/AddSecretButton'
-import ConfirmDialog from './components/ConfirmDialog'
+import Confirm from './components/Confirm'
 import Login from './components/Login'
 import QRReaderDialog from './components/QRReaderDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
 
-import { ConfirmProvider } from './state/ConfirmDialog'
+import { ConfirmProvider } from './state/Confirm'
 
 function Main({ classes }) {
   const [user, setUser] = useState({})
@@ -75,7 +75,7 @@ function Main({ classes }) {
           secrets={secrets}
           signOut={() => firebase.auth().signOut()}
         />
-        <ConfirmDialog />
+        <Confirm />
         <QRReaderDialog
           open={cameraDialog}
           onClose={() => toggleCameraDialog(false)}

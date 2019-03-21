@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Button, Drawer, withStyles } from '@material-ui/core'
 
-import { StateContext } from '../state/ConfirmDialog'
+import { StateContext } from '../state/Confirm'
 
 // intermediate component to leverage laziness evaluation
 // https://material-ui.com/utils/modal/#performance
@@ -31,7 +31,7 @@ function ConfirmOptions({ classes, onClose, onConfirm, options }) {
   )
 }
 
-function ConfirmDialog({ classes }) {
+function Confirm({ classes }) {
   const { confirmDialog, onCancel, onConfirm, confirmOptions } = useContext(
     StateContext
   )
@@ -71,4 +71,4 @@ const styles = theme => ({
   }
 })
 
-export default withStyles(styles)(ConfirmDialog)
+export default withStyles(styles)(Confirm)

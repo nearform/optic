@@ -3,9 +3,9 @@ import { colors, Typography, withStyles } from '@material-ui/core'
 import Secret from './Secret'
 import {
   confirm,
-  DispatchContext as ConfirmDialogDispatchContext,
-  StateContext as ConfirmDialogStateContext
-} from '../state/ConfirmDialog'
+  DispatchContext as ConfirmDispatchContext,
+  StateContext as ConfirmStateContext
+} from '../state/Confirm'
 
 const colorNames = Object.keys(colors).sort()
 
@@ -16,8 +16,8 @@ function SecretsTable({
   secrets,
   idToken
 }) {
-  const confirmDialogDispatch = useContext(ConfirmDialogDispatchContext)
-  const confirmDialogState = useContext(ConfirmDialogStateContext)
+  const confirmDispatch = useContext(ConfirmDispatchContext)
+  const confirmState = useContext(ConfirmStateContext)
 
   const generateToken = async secret => {
     try {
@@ -27,8 +27,8 @@ function SecretsTable({
           message:
             'This will generate a new token and render any existing token invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch,
-        confirmDialogState
+        confirmDispatch,
+        confirmState
       )
 
       const response = await fetch(`/api/token/${secret._id}`, {
@@ -53,8 +53,8 @@ function SecretsTable({
           message:
             'This will revoke the existing token and render it invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch,
-        confirmDialogState
+        confirmDispatch,
+        confirmState
       )
 
       await fetch(`/api/token/${secret._id}`, {
@@ -78,8 +78,8 @@ function SecretsTable({
           message:
             'This will permanently remove the secret and render the existing token invalid. Are you sure you want to continue?'
         },
-        confirmDialogDispatch,
-        confirmDialogState
+        confirmDispatch,
+        confirmState
       )
       if (secret.token) {
         await revokeToken(secret._id)
