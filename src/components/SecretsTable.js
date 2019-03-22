@@ -5,7 +5,7 @@ import {
   confirm,
   ConfirmDispatchContext,
   ConfirmStateContext
-} from '../state/confirm'
+} from '../context/confirm'
 
 const colorNames = Object.keys(colors).sort()
 
