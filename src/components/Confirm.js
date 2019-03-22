@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Button, Drawer, withStyles } from '@material-ui/core'
+
+import { ConfirmStateContext } from '../context/confirm'
 
 // intermediate component to leverage laziness evaluation
 // https://material-ui.com/utils/modal/#performance
-function ConfirmOptions({ classes, onClose, onConfirm, options }) {
+function ConfirmOptions({ classes, message, onCancel, onConfirm, title }) {
   return (
     <div className={classes.container}>
-      <h3>{(options && options.title) || 'Confirm'}</h3>
-      <p>{(options && options.message) || 'Are you sure?'}</p>
+      <h3>{title || 'Confirm'}</h3>
+      <p>{message || 'Are you sure?'}</p>
       <Button
         variant="contained"
         color="primary"
@@ -20,7 +22,7 @@ function ConfirmOptions({ classes, onClose, onConfirm, options }) {
       <Button
         variant="contained"
         color="secondary"
-        onClick={onClose}
+        onClick={onCancel}
         className={classes.button}
       >
         Cancel
@@ -29,15 +31,25 @@ function ConfirmOptions({ classes, onClose, onConfirm, options }) {
   )
 }
 
-function ConfirmDialog({ classes, open, onClose, ...props }) {
+function Confirm({ classes }) {
+  const { message, open, onCancel, onConfirm, title } = useContext(
+    ConfirmStateContext
+  )
+
   return (
     <Drawer
       anchor="bottom"
       open={open}
-      onClose={onClose}
+      onClose={onCancel}
       classes={{ paper: classes.drawer }}
     >
-      <ConfirmOptions classes={classes} onClose={onClose} {...props} />
+      <ConfirmOptions
+        classes={classes}
+        message={message}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+        title={title}
+      />
     </Drawer>
   )
 }
@@ -60,4 +72,4 @@ const styles = theme => ({
   }
 })
 
-export default withStyles(styles)(ConfirmDialog)
+export default withStyles(styles)(Confirm)

@@ -1,24 +1,35 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { colors, Typography, withStyles } from '@material-ui/core'
 import Secret from './Secret'
+import {
+  confirm,
+  ConfirmDispatchContext,
+  ConfirmStateContext
+} from '../context/confirm'
 
 const colorNames = Object.keys(colors).sort()
 
 function SecretsTable({
   classes,
-  confirm,
   removeSecret,
   updateSecret,
   secrets,
   idToken
 }) {
+  const confirmDispatch = useContext(ConfirmDispatchContext)
+  const confirmState = useContext(ConfirmStateContext)
+
   const generateToken = async secret => {
     try {
-      await confirm({
-        title: 'Generate Token',
-        message:
-          'This will generate a new token and render any existing token invalid. Are you sure you want to continue?'
-      })
+      await confirm(
+        {
+          title: 'Generate Token',
+          message:
+            'This will generate a new token and render any existing token invalid. Are you sure you want to continue?'
+        },
+        confirmDispatch,
+        confirmState
+      )
 
       const response = await fetch(`/api/token/${secret._id}`, {
         method: 'PUT',
@@ -36,11 +47,15 @@ function SecretsTable({
 
   const revokeToken = async secret => {
     try {
-      await confirm({
-        title: 'Revoke Token',
-        message:
-          'This will revoke the existing token and render it invalid. Are you sure you want to continue?'
-      })
+      await confirm(
+        {
+          title: 'Revoke Token',
+          message:
+            'This will revoke the existing token and render it invalid. Are you sure you want to continue?'
+        },
+        confirmDispatch,
+        confirmState
+      )
 
       await fetch(`/api/token/${secret._id}`, {
         method: 'DELETE',
@@ -57,11 +72,15 @@ function SecretsTable({
 
   const remove = async secret => {
     try {
-      await confirm({
-        title: 'Remove secret',
-        message:
-          'This will permanently remove the secret and render the existing token invalid. Are you sure you want to continue?'
-      })
+      await confirm(
+        {
+          title: 'Remove secret',
+          message:
+            'This will permanently remove the secret and render the existing token invalid. Are you sure you want to continue?'
+        },
+        confirmDispatch,
+        confirmState
+      )
       if (secret.token) {
         await revokeToken(secret._id)
       }
