@@ -2,8 +2,8 @@ import React, { useReducer } from 'react'
 
 const initialState = { open: false }
 
-export const DispatchContext = React.createContext(null)
-export const StateContext = React.createContext(initialState)
+export const ConfirmDispatchContext = React.createContext(null)
+export const ConfirmStateContext = React.createContext(initialState)
 
 const RESET = 'RESET'
 const SET_MESSAGE = 'SET_MESSAGE'
@@ -77,8 +77,10 @@ export function ConfirmProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   return (
-    <DispatchContext.Provider value={dispatch}>
-      <StateContext.Provider value={state}>{children}</StateContext.Provider>
-    </DispatchContext.Provider>
+    <ConfirmDispatchContext.Provider value={dispatch}>
+      <ConfirmStateContext.Provider value={state}>
+        {children}
+      </ConfirmStateContext.Provider>
+    </ConfirmDispatchContext.Provider>
   )
 }

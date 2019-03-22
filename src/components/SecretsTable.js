@@ -3,8 +3,8 @@ import { colors, Typography, withStyles } from '@material-ui/core'
 import Secret from './Secret'
 import {
   confirm,
-  DispatchContext as ConfirmDispatchContext,
-  StateContext as ConfirmStateContext
+  ConfirmDispatchContext,
+  ConfirmStateContext
 } from '../state/confirm'
 
 const colorNames = Object.keys(colors).sort()
