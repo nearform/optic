@@ -6,12 +6,13 @@ export const DispatchContext = React.createContext(null)
 export const StateContext = React.createContext(initialState)
 
 const RESET = 'RESET'
-const SET_OPTIONS = 'SET_OPTIONS'
+const SET_MESSAGE = 'SET_MESSAGE'
 const SET_ON_CONFIRM = 'SET_ON_CONFIRM'
 const SET_ON_CANCEL = 'SET_ON_CANCEL'
+const SET_TITLE = 'SET_TITLE'
 const TOGGLE_DIALOG = 'TOGGLE_DIALOG'
 
-export const confirm = function(options, dispatch, { open }) {
+export const confirm = function({ message, title }, dispatch, { open }) {
   // reject if there is already a confirmation dialog open
   if (open) {
     return new Promise((r, reject) =>
@@ -26,7 +27,8 @@ export const confirm = function(options, dispatch, { open }) {
   // return a promise that resolves or rejects after user interaction
   return new Promise((resolve, reject) => {
     // set custom options
-    dispatch({ type: SET_OPTIONS, payload: options })
+    dispatch({ type: SET_MESSAGE, payload: message })
+    dispatch({ type: SET_TITLE, payload: title })
 
     // on confirm, resolve the promise and reset confirmation state
     dispatch({
@@ -55,8 +57,10 @@ function reducer(state, action) {
   switch (action.type) {
     case RESET:
       return { open: false }
-    case SET_OPTIONS:
-      return { ...state, confirmOptions: action.payload }
+    case SET_MESSAGE:
+      return { ...state, message: action.payload }
+    case SET_TITLE:
+      return { ...state, title: action.payload }
     case SET_ON_CONFIRM:
       return { ...state, onConfirm: action.payload }
     case SET_ON_CANCEL:
