@@ -30,7 +30,7 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
 1. Add your secret, by scanning NPM's QR code, or providing the secret key manually
 1. Generage a token and save it in CI as environement variable named `OTP_TOKEN`
 1. Update NPM registry with your NPM token `echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc`
-1. Use CURL to get OTP token and publish package `npm publish --otp $(curl -s http://localhost:3000/api/generate/$OTP_TOKEN)`
+1. Use CURL to get OTP token and publish package `npm publish --otp $(curl -s http://localhost:3000/api/generate/$NPM_TOKEN)`
 
 ## Deficiency
 1. The initial assumption was that we don't need database, but we need a place to store subscriptions
