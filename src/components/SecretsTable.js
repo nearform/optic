@@ -41,7 +41,9 @@ function SecretsTable({
       const { token } = await response.json()
       await updateSecret(secret._id, { token })
     } catch (e) {
-      console.error(e)
+      if (!e.warning) {
+        console.error(e)
+      }
     }
   }
 
@@ -66,7 +68,9 @@ function SecretsTable({
 
       await updateSecret(secret._id, { token: undefined })
     } catch (e) {
-      console.error(e)
+      if (!e.warning) {
+        console.error(e)
+      }
     }
   }
 
@@ -86,7 +90,9 @@ function SecretsTable({
       }
       await removeSecret(secret._id)
     } catch (e) {
-      console.error(e)
+      if (!e.warning) {
+        console.error(e)
+      }
     }
   }
 

@@ -43,7 +43,9 @@ export const confirm = function({ message, title }, dispatch, { open }) {
     dispatch({
       type: SET_ON_CANCEL,
       payload: () => {
-        reject(new Error('The confirmation dialog was cancelled'))
+        const error = new Error('The confirmation dialog was cancelled')
+        error.warning = true
+        reject(error)
         dispatch({ type: RESET })
       }
     })
