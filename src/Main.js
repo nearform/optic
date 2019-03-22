@@ -9,11 +9,14 @@ import { scan } from './lib/qr-parser'
 
 import AppBar from './components/AppBar'
 import AddSecretButton from './components/AddSecretButton'
+import Confirm from './components/Confirm'
 import Login from './components/Login'
 import QRReaderDialog from './components/QRReaderDialog'
 import SecretFormDialog from './components/SecretFormDialog'
 import SecretsTable from './components/SecretsTable'
 import Toast from './components/Toast'
+
+import { ConfirmProvider } from './context/confirm'
 
 // todo: move to contexts file
 export const ToastDispatch = React.createContext(null)
@@ -99,35 +102,38 @@ function Main({ classes }) {
 
   return (
     <div className={classes.root}>
-      <AppBar
-        user={user}
-        secrets={secrets}
-        signOut={() => firebase.auth().signOut()}
-      />
-      <Toast open={open} />
-      <QRReaderDialog
-        open={cameraDialog}
-        onClose={() => toggleCameraDialog(false)}
-        addSecret={addSecret}
-      />
-      <SecretFormDialog
-        open={formDialog}
-        onClose={() => toggleFormDialog(false)}
-        addSecret={addSecret}
-        displayName={user.displayName}
-      />
-      <SecretsTable
-        secrets={secrets}
-        updateSecret={updateSecret}
-        removeSecret={removeSecret}
-        idToken={idToken}
-      />
-      <AddSecretButton
-        scanQR={() => toggleCameraDialog(true)}
-        // TODO recover from scan/upload errors
-        uploadImage={file => scan(file).then(addSecret)}
-        manuallyAdd={() => toggleFormDialog(true)}
-      />
+      <ConfirmProvider>
+        <AppBar
+          user={user}
+          secrets={secrets}
+          signOut={() => firebase.auth().signOut()}
+        />
+        <Confirm />
+        <QRReaderDialog
+          open={cameraDialog}
+          onClose={() => toggleCameraDialog(false)}
+          addSecret={addSecret}
+        />
+        <SecretFormDialog
+          open={formDialog}
+          onClose={() => toggleFormDialog(false)}
+          addSecret={addSecret}
+          displayName={user.displayName}
+        />
+        <SecretsTable
+          secrets={secrets}
+          updateSecret={updateSecret}
+          removeSecret={removeSecret}
+          idToken={idToken}
+        />
+        <Toast open={open} />
+        <AddSecretButton
+          scanQR={() => toggleCameraDialog(true)}
+          // TODO recover from scan/upload errors
+          uploadImage={file => scan(file).then(addSecret)}
+          manuallyAdd={() => toggleFormDialog(true)}
+        />
+      </ConfirmProvider>
     </div>
   )
 }
