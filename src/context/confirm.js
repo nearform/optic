@@ -13,17 +13,6 @@ const SET_TITLE = 'SET_TITLE'
 const TOGGLE_DIALOG = 'TOGGLE_DIALOG'
 
 export const confirm = function({ message, title }, dispatch, { open }) {
-  // reject if there is already a confirmation dialog open
-  if (open) {
-    return new Promise((r, reject) =>
-      reject(
-        new Error(
-          'There is already an open confirmation dialog. You must close it before opening a new one'
-        )
-      )
-    )
-  }
-
   // return a promise that resolves or rejects after user interaction
   return new Promise((resolve, reject) => {
     // set custom options
