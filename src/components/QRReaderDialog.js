@@ -1,15 +1,21 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Drawer, Typography, withStyles } from '@material-ui/core'
 import QrReader from 'react-qr-reader'
 import { parse } from '../lib/qr-parser'
+import { showToast, ToastDispatchContext } from '../context/toast'
 
 // intermediate component to leverage laziness evaluation
 // https://material-ui.com/utils/modal/#performance
 function Form({ classes, addSecret, onClose }) {
+  const toastDispatch = useContext(ToastDispatchContext)
+
   const scan = async result => {
     if (result) {
-      // TODO recover from parse errors
-      await addSecret(await parse(result))
+      try {
+        await addSecret(await parse(result))
+      } catch (err) {
+        toastDispatch(showToast(err.message, toastDispatch))
+      }
       onClose()
     }
   }

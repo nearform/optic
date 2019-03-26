@@ -6,6 +6,7 @@ import {
   ConfirmDispatchContext,
   ConfirmStateContext
 } from '../context/confirm'
+import { showToast, ToastDispatchContext } from '../context/toast'
 
 const colorNames = Object.keys(colors).sort()
 
@@ -18,6 +19,8 @@ function SecretsTable({
 }) {
   const confirmDispatch = useContext(ConfirmDispatchContext)
   const confirmState = useContext(ConfirmStateContext)
+
+  const toastDispatch = useContext(ToastDispatchContext)
 
   const generateToken = async secret => {
     try {
@@ -42,7 +45,7 @@ function SecretsTable({
       await updateSecret(secret._id, { token })
     } catch (e) {
       if (!e.warning) {
-        console.error(e)
+        toastDispatch(showToast(e.message, toastDispatch))
       }
     }
   }
@@ -69,7 +72,7 @@ function SecretsTable({
       await updateSecret(secret._id, { token: undefined })
     } catch (e) {
       if (!e.warning) {
-        console.error(e)
+        toastDispatch(showToast(e.message, toastDispatch))
       }
     }
   }
@@ -91,7 +94,7 @@ function SecretsTable({
       await removeSecret(secret._id)
     } catch (e) {
       if (!e.warning) {
-        console.error(e)
+        toastDispatch(showToast(e.message, toastDispatch))
       }
     }
   }

@@ -14,14 +14,8 @@ export async function scan(file) {
 }
 
 export async function parse(content) {
-  try {
-    console.log('Got from image/QR code:', content)
-    const { issuer, key: secret, account } = otpauth.parse(content)
-    console.log(issuer, account, secret)
-    return { issuer, account, secret }
-  } catch (err) {
-    console.log(`Unparseable QR code: ${err.message}`, err)
-    // TODO throw error
-    return null
-  }
+  console.log('Got from image/QR code:', content)
+  const { issuer, key: secret, account } = otpauth.parse(content)
+  console.log(issuer, account, secret)
+  return { issuer, account, secret }
 }
