@@ -14,7 +14,7 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
    1. Create a new [token][npm-token] and save it in you CI as `NPM_TOKEN` env variable
 
 ## Setup
-1. `git clone https://github.com/nearform/optic.git && cd npm-otp`
+1. `git clone https://github.com/nearform/optic.git && cd optic`
 1. `npm i`
 1. `npm run dev:env`
 1. in the generated `.env` file, insert values:
