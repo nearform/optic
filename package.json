@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
-    "start": "node server/bin/www",
+    "start": "node -r dotenv/config server/bin/www",
     "test": "react-app-rewired test"
   },
   "dependencies": {
