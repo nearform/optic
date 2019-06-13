@@ -19,11 +19,18 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
 1. `npm run dev:env`
 1. in the generated `.env` file, insert values:
    - `FIREBASE_CLIENT_EMAIL` is your Firebase client email generated along with the private key
-   - `FIREBASE_PRIVATE_KEY` is your Firebase private key (wrapped with double quotes): `"-----BEGIN PRIVATE KEY-----\nMIIEvQIBAD...HoRYGGAU=\n-----END PRIVATE KEY-----\n"`
+   - `FIREBASE_PRIVATE_KEY_BASE64` is your Firebase private key, base64 encoded to avoid new lines
    - `FIREBASE_PROJECT_ID` is your Firebase project id
    - `VAPID_SUBJECT` is a `mailto:` address
    - Get all th `REACT_APP_*` values from the Firebase web application configuration snippet
+   - Do not use quotes, if you intend to use the same file for dockerized deployment
 1. `npm run dev`
+
+## Docker
+
+1. Build: `docker build -t nearform/optic:latest .`
+1. Generate the `.env` file using the steps from setup
+1. Run: `docker run --env-file .env --expose 3001 nearform/optic:latest`
 
 ## Usage
 1. Log in the application
