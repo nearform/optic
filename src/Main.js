@@ -64,7 +64,7 @@ function Main({ classes }) {
   }
 
   if (!user.uid) {
-    return <Login />
+    return <Login firebase={firebase} />
   }
 
   return (
