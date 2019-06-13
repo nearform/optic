@@ -1,7 +1,7 @@
 const WebpackBeforeBuildPlugin = require('before-build-webpack')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 const path = require('path')
-const merge = require('lodash.merge')
+const _ = require('lodash')
 const fs = require('fs')
 
 // from https://www.viget.com/articles/run-multiple-webpack-configs-sequentially/
@@ -33,7 +33,7 @@ module.exports = {
     // 1- for the service worker file.
     //    it needs to be processed by webpack (to include 3rd party modules), and the output must be a
     //    plain, single file, not injected in the HTML page
-    const swConfig = merge({}, config, {
+    const swConfig = _.merge({}, config, {
       name: 'service worker',
       entry: workerSource,
       output: {
