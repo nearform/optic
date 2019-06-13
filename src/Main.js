@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles } from '@material-ui/core'
 
-import firebase from './lib/firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+
 import subscribe from './lib/subscription'
 import requestPermission from './lib/notification'
 import * as secretsManager from './lib/secrets'
@@ -23,9 +25,21 @@ function Main({ classes }) {
   const [secrets, setSecrets] = useState([])
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
+  const [firebaseApp, setFirebaseApp] = useState()
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(async user => {
+    const load = async () => {
+      const response = await fetch('/api/config') // @todo: cache for offline
+      const config = await response.json()
+      const app = firebase.initializeApp(config)
+      setFirebaseApp(app)
+    }
+    load()
+  }, [])
+
+  useEffect(() => {
+    if (!firebaseApp) return
+    firebaseApp.auth().onAuthStateChanged(async user => {
       setUser(user || {})
 
       if (user) {
@@ -34,7 +48,7 @@ function Main({ classes }) {
         setIdToken(null)
       }
     })
-  }, [])
+  }, [firebaseApp])
 
   useEffect(() => {
     if (!user.uid) return
@@ -63,6 +77,10 @@ function Main({ classes }) {
     setSecrets(await secretsManager.fetch({ uid: user.uid }))
   }
 
+  if (!firebaseApp) {
+    return null
+  }
+
   if (!user.uid) {
     return <Login firebase={firebase} />
   }
@@ -73,7 +91,7 @@ function Main({ classes }) {
         <AppBar
           user={user}
           secrets={secrets}
-          signOut={() => firebase.auth().signOut()}
+          signOut={() => firebaseApp.auth().signOut()}
         />
         <Confirm />
         <QRReaderDialog
