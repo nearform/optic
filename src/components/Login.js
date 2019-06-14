@@ -2,17 +2,16 @@ import React from 'react'
 import { StyledFirebaseAuth } from 'react-firebaseui'
 import { Divider, Grid, Typography, withStyles } from '@material-ui/core'
 import { RemoveRedEyeTwoTone as EyeIcon } from '@material-ui/icons'
-import firebase from '../lib/firebase'
 
-const firebaseConfig = {
-  signInFlow: 'popup',
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-  callbacks: {
-    signInSuccessWithAuthResult: () => false
+function Login({ classes, firebase }) {
+  const firebaseConfig = {
+    signInFlow: 'popup',
+    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+    callbacks: {
+      signInSuccessWithAuthResult: () => false
+    }
   }
-}
 
-function Login({ classes }) {
   return (
     <div className={classes.root}>
       <Grid
