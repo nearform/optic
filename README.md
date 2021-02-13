@@ -39,18 +39,18 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
 1. Update NPM registry with your NPM token `echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc`
 1. Use CURL to get OTP token and publish package `npm publish --otp $(curl -s http://localhost:3000/api/generate/$OTP_TOKEN)`
 
-## Deficiency
+## Issues
 1. The initial assumption was that we don't need database, but we need a place to store subscriptions
 1. Safari browser doesn't support push notifications
 1. Only Android browsers support push notifications
 1. Desktop browsers need a running process to receive notification
 1. Building a mobile app might solve all problems
 
-- [firebase]: https://console.firebase.google.com
-- [firebase-admin-settings]: https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app
-- [firebase-signin]: https://console.firebase.google.com/u/0/project/_/authentication/providers
-- [firebase-app-settings]: https://console.firebase.google.com/u/0/project/_/settings/general/
-- [database]: https://console.firebase.google.com/u/0/project/_/database
-- [VAPID]: https://tools.ietf.org/html/draft-ietf-webpush-vapid-01
-- [npm-profile]: https://www.npmjs.com/settings/~/profile
-- [npm-token]: https://www.npmjs.com/settings/~/tokens
+[firebase]: https://console.firebase.google.com
+[firebase-admin-settings]: https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app
+[firebase-signin]: https://console.firebase.google.com/u/0/project/_/authentication/providers
+[firebase-app-settings]: https://console.firebase.google.com/u/0/project/_/settings/general/
+[database]: https://console.firebase.google.com/u/0/project/_/database
+[VAPID]: https://tools.ietf.org/html/draft-ietf-webpush-vapid-01
+[npm-profile]: https://www.npmjs.com/settings/~/profile
+[npm-token]: https://www.npmjs.com/settings/~/tokens

@@ -19,9 +19,9 @@ export async function fetch(where = {}) {
   let secrets = []
   try {
     const props = Object.keys(where)
-    secrets = ((await localforage.getItem(secretStorageKey)) || []).filter(
-      secret => props.every(prop => secret[prop] === where[prop])
-    )
+    secrets = (
+      (await localforage.getItem(secretStorageKey)) || []
+    ).filter(secret => props.every(prop => secret[prop] === where[prop]))
   } catch (err) {
     console.error('Failed to read secrets from IndexedDB', err)
   }
