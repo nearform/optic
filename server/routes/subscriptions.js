@@ -1,8 +1,8 @@
 const admin = require('../lib/firebase')
 
 const isValidSaveRequest = (req, res) => {
-  // Check the request body has at least an endpoint.
-  if (!req.body || !req.body.endpoint) {
+  // Check the request body has at least an endpoint if type is not expo.
+  if (!req.body || (req.body.type !== 'expo' && !req.body.endpoint)) {
     // Not a valid subscription.
     res.status(400)
     res.setHeader('Content-Type', 'application/json')

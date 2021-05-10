@@ -1,13 +1,18 @@
 const uniqid = require('uniqid')
 const webPush = require('web-push')
 const admin = require('../lib/firebase')
+const pushNotification = require('../lib/push')
 
 const approvalLimit = 60e3
 
 exports.register = router => {
   const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT } = process.env
 
-  webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+  pushNotification.init({
+    vapidPublicKey: VAPID_PUBLIC_KEY,
+    vapidPrivateKey: VAPID_PRIVATE_KEY,
+    vapidSubject: VAPID_SUBJECT
+  })
 
   router.get('/generate/:token', async (req, res) => {
     const db = admin.firestore()
@@ -64,34 +69,8 @@ exports.register = router => {
     }, completeRequest)
 
     // fire the notification to all available subscription
-    Promise.all(
-      subscriptions.docs.map(doc => {
-        return (async () => {
-          const subscription = doc.data()
+    pushNotification.send(subscriptions.docs, secretId)
 
-          try {
-            console.log(
-              `Sending notification to subscription ${subscription.endpoint}`
-            )
-            await webPush.sendNotification(
-              subscription,
-              JSON.stringify({ uniqueId, token, secretId })
-            )
-          } catch (err) {
-            console.error('Could not send push notification to client')
-            request.delete()
-
-            if (err.statusCode === 410 || err.statusCode === 404) {
-              console.log('Subscription is not valid, removing')
-              subscriptions.ref.delete()
-            } else {
-              console.log('Subscription is not valid but dunno why')
-            }
-            return
-          }
-        })()
-      })
-    )
     const timeout = setTimeout(completeRequest, approvalLimit)
   })
 
