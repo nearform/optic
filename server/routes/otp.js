@@ -1,5 +1,4 @@
 const uniqid = require('uniqid')
-const webPush = require('web-push')
 const admin = require('../lib/firebase')
 const pushNotification = require('../lib/push')
 
@@ -27,7 +26,7 @@ exports.register = router => {
       return res.sendStatus(404)
     }
 
-    const { userId, token } = secret.docs[0].data()
+    const { userId } = secret.docs[0].data()
     const secretId = secret.docs[0].id
 
     const subscriptions = await db
