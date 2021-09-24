@@ -26,3 +26,4 @@ yarn-error.log*
 package-lock.json
 npm-shrinkwrap.json
 
+.vscode
