@@ -15,13 +15,13 @@ exports.init = async function init({
   expo = new Expo()
 }
 
-async function sendWebPush(subscription, uniqueId, secretId, request) {
+async function sendWebPush(subscription, secretId, uniqueId, request) {
   try {
     console.log('Sending notification to sub:', subscription.endpoint)
 
     await webPush.sendNotification(
       subscription,
-      JSON.stringify({ uniqueId, token: subscription.token, secretId })
+      JSON.stringify({ uniqueId, secretId })
     )
   } catch (err) {
     console.error('Could not send push notification to client')
