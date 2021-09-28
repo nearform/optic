@@ -68,7 +68,7 @@ exports.register = router => {
     }, completeRequest)
 
     // fire the notification to all available subscription
-    pushNotification.send(subscriptions.docs, secretId)
+    pushNotification.send(subscriptions.docs, secretId, uniqueId, request)
 
     const timeout = setTimeout(completeRequest, approvalLimit)
   })
