@@ -1,0 +1,20 @@
+# Compiled files
+*.tfstate
+*.tfstate.backup
+
+# Module directory
+.terraform.lock.hcl
+.terraform/
+bak.terraform/
+
+# built lambda
+.zip
+
+# input file
+input.tfvars
+input-*.tfvars
+
+*.notes
+
+#asdf tool-versions
+.tool-versions
