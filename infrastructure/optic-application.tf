@@ -11,25 +11,10 @@ resource "google_cloud_run_service_iam_member" "app_noauth" {
   member = "allUsers"
 }
 
-# Enables the GCP services to be used by the terraform
-# resource "google_project_service" "run_api" {
-#   service = "run.googleapis.com"
-# }
-# resource "google_project_service" "cloud_api" {
-#   service = "cloudresourcemanager.googleapis.com"
-# }
-# resource "google_project_service" "iam_api" {
-#   service = "iam.googleapis.com"
-# }
-# https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com?authuser=1&project=npm-otp-f6bfc
-# resource "google_project_service" "artifact_registry" {
-#   service = "artifactregistry.googleapis.com"
-# }
-
 # Create the Cloud Run service
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service
 resource "google_cloud_run_service" "optic" {
-  name     = "optic-application"
+  name     = "optic"
   location = var.region
 
   template {
@@ -120,12 +105,6 @@ resource "google_cloud_run_service" "optic" {
       template[0].metadata[0].annotations
     ]
   }
-
-  # depends_on = [
-  #   google_project_service.run_api,
-  #   google_project_service.cloud_api,
-  #   google_project_service.iam_api
-  # ]
 }
 
 # Display the service URL
@@ -136,7 +115,7 @@ output "GCP_PROJECT_ID" {
   value = var.gcp_project_id
 }
 output "GCP_CLOUDRUN_SERVICE_NAME" {
-  value = "optic-application"
+  value = google_cloud_run_service.optic.name
 }
 output "GCP_CLOUDRUN_SERVICE_REGION" {
   value = var.region
