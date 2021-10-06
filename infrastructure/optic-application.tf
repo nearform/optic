@@ -40,10 +40,11 @@ resource "google_cloud_run_service" "optic" {
           name  = "NODE_ENV"
           value = "production"
         }
-        env {
-          name  = "PORT"
-          value = "8080"
-        }
+        # The following reserved env names were provided: PORT. These values are automatically set by the system.
+        # env {
+        #   name  = "PORT"
+        #   value = "8080"
+        # }
         env {
           name  = "FIREBASE_PROJECT_ID"
           value = "dummy"
