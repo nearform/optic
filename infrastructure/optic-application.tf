@@ -21,6 +21,10 @@ resource "google_cloud_run_service_iam_member" "app_noauth" {
 # resource "google_project_service" "iam_api" {
 #   service = "iam.googleapis.com"
 # }
+# https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com?authuser=1&project=npm-otp-f6bfc
+# resource "google_project_service" "artifact_registry" {
+#   service = "artifactregistry.googleapis.com"
+# }
 
 # Create the Cloud Run service
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service
@@ -127,4 +131,13 @@ resource "google_cloud_run_service" "optic" {
 # Display the service URL
 output "APPLICATION_URL" {
   value = google_cloud_run_service.optic.status[0].url
+}
+output "GCP_PROJECT_ID" {
+  value = var.gcp_project_id
+}
+output "GCP_CLOUDRUN_SERVICE_NAME" {
+  value = "optic-application"
+}
+output "GCP_CLOUDRUN_SERVICE_REGION" {
+  value = var.region
 }
