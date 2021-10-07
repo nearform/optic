@@ -1,3 +1,4 @@
+# https://cloud.google.com/run/docs/deploying-source-code
 resource "google_service_account" "github_actions" {
   account_id   = "github-actions"
   display_name = "github-actions"
@@ -20,6 +21,13 @@ resource "google_cloud_run_service_iam_member" "github_actions_service_run_admin
   location = google_cloud_run_service.optic.location
   service = google_cloud_run_service.optic.name
   role = "roles/run.admin"// Cloud Run Admin
+  member = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+resource "google_cloud_run_service_iam_member" "github_actions_service_cloud_build" {
+  location = google_cloud_run_service.optic.location
+  service = google_cloud_run_service.optic.name
+  role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
   member = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
