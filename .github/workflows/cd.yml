@@ -31,5 +31,5 @@ jobs:
                     REACT_APP_PROJECT_ID=${{ secrets.REACT_APP_PROJECT_ID }},
                     REACT_APP_STORAGE_BUCKET=${{ secrets.REACT_APP_STORAGE_BUCKET }},
                     REACT_APP_MESSAGING_SENDER_ID=${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
-          flags: --allow-unauthenticated --timeout=30m
+          flags: --allow-unauthenticated --timeout=1800
           source: .

@@ -27,8 +27,8 @@ Before proceeding with the installation, you need to have the following requirem
    - Turn on the [`Identity and Access Management (IAM) API`](https://console.cloud.google.com/apis/library/iam.googleapis.com) to create additional Service Accounts.
    - Turn on the [`Artifact Registry API`](https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com) to store the application build.
 1. Update the `config.auto.tfvars` within your project id.
-1. Configure the default [Cloud Build Service Account](https://cloud.google.com/build/docs/securing-builds/configure-access-for-cloud-build-service-account#before_you_begin):
-   - Enable the `Cloud Run Admin` and `Service Account User` roles from the console.
+1. Configure the default Cloud Build Service Account `<PROJECT ID NUMBER>@cloudbuild.gserviceaccount.com`:
+   - Enable the `Cloud Run Admin` and `Service Account User` roles from the [console]((https://cloud.google.com/build/docs/securing-builds/configure-access-for-cloud-build-service-account#before_you_begin)).
    - Add the `Cloud Build Service Agent` role from the [IAM Console](https://console.cloud.google.com/iam-admin/iam)
    - Add the `Storage Admin` role from the [IAM Console](https://console.cloud.google.com/iam-admin/iam)
 
