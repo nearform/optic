@@ -1,14 +1,15 @@
-# https://cloud.google.com/run/docs/deploying-source-code
 resource "google_service_account" "github_actions" {
   account_id   = "github-actions"
   display_name = "github-actions"
 }
 
+# The repository id can't be modified
+# https://cloud.google.com/artifact-registry/docs/integrate-cloud-run#deploy-source
 resource "google_artifact_registry_repository" "main" {
   provider = google-beta
 
   location = var.region
-  repository_id = var.artifact_registry_repository_name
+  repository_id = "cloud-run-source-deploy"
   description = "Application Docker repository"
   format = "DOCKER"
 }
@@ -24,17 +25,17 @@ resource "google_cloud_run_service_iam_member" "github_actions_service_run_admin
   member = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_cloud_run_service_iam_member" "github_actions_service_cloud_build" {
-  location = google_cloud_run_service.optic.location
-  service = google_cloud_run_service.optic.name
-  role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
-  member = "serviceAccount:${google_service_account.github_actions.email}"
-}
+# resource "google_sourcerepo_repository_iam_member" "github_actions_service_cloud_build" {
+#   location = google_cloud_run_service.optic.location
+#   repository = google_sourcerepo_repository.my-repo.name
+#   role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
+#   member = "serviceAccount:${google_service_account.github_actions.email}"
+# }
 
-resource "google_artifact_registry_repository_iam_member" "github_actions_ar" {
+resource "google_artifact_registry_repository_iam_member" "github_actions_artifact_registry" {
   provider = google-beta
 
-  location = var.region
+  location = google_artifact_registry_repository.main.location
   repository = google_artifact_registry_repository.main.name
   # role   = "roles/artifactregistry.writer" // Artifact Registry
   role   = "roles/artifactregistry.admin" // Needed for the first deploy

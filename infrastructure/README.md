@@ -23,6 +23,7 @@ Before proceeding with the installation, you need to have the following requirem
 1. Enable the GCP APIs for the project to be able to use the infrastructure provisioning:
    - Turn on the [`Cloud Run API`](https://console.cloud.google.com/apis/library/run.googleapis.com) to create the Cloud Run application.
    - Turn on the [`Cloud Resource Manager API`](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com) to update and deploy the application.
+   - Turn on the [`Cloud Build API`](https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com) to update and deploy the application.
    - Turn on the [`Identity and Access Management (IAM) API`](https://console.cloud.google.com/apis/library/iam.googleapis.com) to create additional Service Accounts.
    - Turn on the [`Artifact Registry API`](https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com) to store the application build.
 1. Update the `config.auto.tfvars` within your project id.
@@ -54,4 +55,15 @@ You may check it navigating to the `APPLICATION_URL` shown in the terraform outp
 
 ## Deploying the application
 
-TBD
+To automate the deploy of your Optic application, it is necessary to setup your GitHub repository first.
+
+1. Add to the GitHub repository's secrets all the `.env` variables you should have configured locally.
+1. Add to the GitHub repository's secrets all the key-value pairs from the generated `github-secrets.json`:
+   - `APPLICATION_URL`
+   - `GCP_CLOUDRUN_SERVICE_NAME`
+   - `GCP_CLOUDRUN_SERVICE_REGION`
+   - `GCP_PROJECT_ID`
+   - `GCP_SA_EMAIL`
+   - `GCP_SA_KEY` _reminder: you need to run the base64 decode on this value first_
+1. Add the `APPLICATION_URL` domain to the Firebase's Authorized domain list from the _Authentication_ menú.
+1. Manage the `.github/workflows/cd.yml` GitHub Action to run when you need. 

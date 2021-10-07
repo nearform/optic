@@ -2,7 +2,7 @@
 variable "gcp_project_id" {
 }
 
-variable "artifact_registry_repository_name" {
+variable "service_name" {
   default = "optic"
 }
 
