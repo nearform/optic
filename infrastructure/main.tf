@@ -5,12 +5,6 @@ terraform {
       version = "3.86.0"
     }
   }
-  # Run locally
-  # backend "gcs" {
-  #   credentials = "key.json"
-  #   bucket      = "titus-terraform-state"
-  #   prefix      = "core"
-  # }
 }
 
 # The service account used to run Terraform requires the:
