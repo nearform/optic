@@ -1,0 +1,35 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: google-github-actions/deploy-cloudrun@v0.6.0
+        with:
+          service: ${{ secrets.GCP_CLOUDRUN_SERVICE_NAME }}
+          region: ${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }}
+          credentials: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          env_vars: >
+                    FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
+                    FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }},
+                    FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }},
+                    VAPID_SUBJECT=${{ secrets.VAPID_SUBJECT }},
+                    VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }},
+                    VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }},
+                    REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }},
+                    REACT_APP_AUTH_DOMAIN=${{ secrets.REACT_APP_AUTH_DOMAIN }},
+                    REACT_APP_DATABASE_URL=${{ secrets.REACT_APP_DATABASE_URL }},
+                    REACT_APP_PROJECT_ID=${{ secrets.REACT_APP_PROJECT_ID }},
+                    REACT_APP_STORAGE_BUCKET=${{ secrets.REACT_APP_STORAGE_BUCKET }},
+                    REACT_APP_MESSAGING_SENDER_ID=${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
+          flags: --allow-unauthenticated
+          source: .
