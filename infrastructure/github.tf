@@ -9,7 +9,7 @@ resource "google_artifact_registry_repository" "main" {
   provider = google-beta
 
   location = var.region
-  repository_id = "cloud-run-source-deploy"
+  repository_id = var.service_name
   description = "Application Docker repository"
   format = "DOCKER"
 }
@@ -25,21 +25,18 @@ resource "google_cloud_run_service_iam_member" "github_actions_service_run_admin
   member = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-# resource "google_sourcerepo_repository_iam_member" "github_actions_service_cloud_build" {
-#   location = google_cloud_run_service.optic.location
-#   repository = google_sourcerepo_repository.my-repo.name
-#   role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
-#   member = "serviceAccount:${google_service_account.github_actions.email}"
-# }
+resource "google_project_iam_binding" "github_actions_service_cloud_build" {
+  role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
+  members = [
+    "serviceAccount:${google_service_account.github_actions.email}"
+  ]
+}
 
-resource "google_artifact_registry_repository_iam_member" "github_actions_artifact_registry" {
-  provider = google-beta
-
-  location = google_artifact_registry_repository.main.location
-  repository = google_artifact_registry_repository.main.name
-  # role   = "roles/artifactregistry.writer" // Artifact Registry
-  role   = "roles/artifactregistry.admin" // Needed for the first deploy
-  member = "serviceAccount:${google_service_account.github_actions.email}"
+resource "google_project_iam_binding" "github_actions_artifact_registry" {
+  role   = "roles/artifactregistry.writer" // Artifact Registry
+  members = [
+    "serviceAccount:${google_service_account.github_actions.email}"
+  ]
 }
 
 resource "google_project_iam_member" "github_actions_service_storage_admin" {

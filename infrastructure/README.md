@@ -27,6 +27,10 @@ Before proceeding with the installation, you need to have the following requirem
    - Turn on the [`Identity and Access Management (IAM) API`](https://console.cloud.google.com/apis/library/iam.googleapis.com) to create additional Service Accounts.
    - Turn on the [`Artifact Registry API`](https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com) to store the application build.
 1. Update the `config.auto.tfvars` within your project id.
+1. Configure the default [Cloud Build Service Account](https://cloud.google.com/build/docs/securing-builds/configure-access-for-cloud-build-service-account#before_you_begin):
+   - Enable the `Cloud Run Admin` and `Service Account User` roles from the console.
+   - Add the `Cloud Build Service Agent` role from the [IAM Console](https://console.cloud.google.com/iam-admin/iam)
+   - Add the `Storage Admin` role from the [IAM Console](https://console.cloud.google.com/iam-admin/iam)
 
 ## Installation
 
@@ -67,3 +71,24 @@ To automate the deploy of your Optic application, it is necessary to setup your 
    - `GCP_SA_KEY` _reminder: you need to run the base64 decode on this value first_
 1. Add the `APPLICATION_URL` domain to the Firebase's Authorized domain list from the _Authentication_ menú.
 1. Manage the `.github/workflows/cd.yml` GitHub Action to run when you need. 
+
+## Debugging
+
+If you face autorization issues, you may find helpful these commands to check what is not working correctly.
+
+```sh
+# Deploy the application manually using your local user account
+gcloud beta run deploy optic \
+   --quiet \
+   --platform managed \
+   --region europe-west1 \
+   --source . \
+   --update-env-vars FIREBASE_CLIENT_EMAIL="...",FIREBASE_PRIVATE_KEY_BASE64="..",FIREBASE_PROJECT_ID=".."[...] \
+   --allow-unauthenticated
+
+# Check the roles assigned to a Service Account
+gcloud projects get-iam-policy <PROJECT ID>  \
+   --flatten="bindings[].members" \
+   --format='table(bindings.role)' \
+   --filter="bindings.members:<SERVICE ACCOUNT EMAIL>"
+```
