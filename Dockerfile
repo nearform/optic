@@ -1,26 +1,23 @@
-FROM node:10-alpine
+# Front-end build
+FROM node:14-alpine as build-stage
 
-WORKDIR /app
+WORKDIR /build-app
+COPY ./ /build-app/
+RUN npm install
 
+ENV NODE_ENV production
+RUN npm run build
 
-# the app
-COPY build build
-COPY server server
-COPY package.json .
-COPY npm-shrinkwrap.json .
+# Application
+FROM node:14-alpine
+WORKDIR /usr/src/app
+COPY --chown=node:node . /usr/src/app
+RUN npm ci --production
 
+COPY --from=build-stage /build-app/build/ /usr/src/app/build/
 
-# some docs
-COPY CODE_OF_CONDUCT.md .
-COPY LICENSE .
-COPY README.md .
-
-
-# the deps
-RUN npm ci --production && npm ls
-
-
+USER node
+ENV NODE_ENV production
+ENV PORT 3001
 EXPOSE 3001
-
-
-CMD ["npm", "start"]
+CMD "npm" "start"
