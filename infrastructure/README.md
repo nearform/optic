@@ -44,6 +44,9 @@ terraform apply
 
 # get the secrets to set on the GitHub repository's secrets
 terraform output -json > ../github-secrets.json
+
+# decode the GCP_SA_KEY argument before coping it as GitHub secret
+jq -r '.GCP_SA_KEY.value' github-secrets.json | base64 --decode > GCP_SA_KEY.json
 ```
 
 At this stage, the application infrastructure is created and ready.

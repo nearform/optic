@@ -21,3 +21,4 @@ input-*.tfvars
 
 service-account-credentials.json
 github-secrets.json
+GCP_SA_KEY.json
