@@ -3,11 +3,13 @@ resource "google_service_account" "github_actions" {
   display_name = "github-actions"
 }
 
+# The repository id can't be modified
+# https://cloud.google.com/artifact-registry/docs/integrate-cloud-run#deploy-source
 resource "google_artifact_registry_repository" "main" {
   provider = google-beta
 
   location = var.region
-  repository_id = var.artifact_registry_repository_name
+  repository_id = var.service_name
   description = "Application Docker repository"
   format = "DOCKER"
 }
@@ -23,14 +25,18 @@ resource "google_cloud_run_service_iam_member" "github_actions_service_run_admin
   member = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-resource "google_artifact_registry_repository_iam_member" "github_actions_ar" {
-  provider = google-beta
+resource "google_project_iam_binding" "github_actions_service_cloud_build" {
+  role = "roles/cloudbuild.builds.builder"// Cloud Build Service Account
+  members = [
+    "serviceAccount:${google_service_account.github_actions.email}"
+  ]
+}
 
-  location = var.region
-  repository = google_artifact_registry_repository.main.name
-  # role   = "roles/artifactregistry.writer" // Artifact Registry
-  role   = "roles/artifactregistry.admin" // Needed for the first deploy
-  member = "serviceAccount:${google_service_account.github_actions.email}"
+resource "google_project_iam_binding" "github_actions_artifact_registry" {
+  role   = "roles/artifactregistry.writer" // Artifact Registry
+  members = [
+    "serviceAccount:${google_service_account.github_actions.email}"
+  ]
 }
 
 resource "google_project_iam_member" "github_actions_service_storage_admin" {

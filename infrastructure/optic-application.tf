@@ -14,7 +14,7 @@ resource "google_cloud_run_service_iam_member" "app_noauth" {
 # Create the Cloud Run service
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service
 resource "google_cloud_run_service" "optic" {
-  name     = "optic"
+  name     = var.service_name
   location = var.region
 
   template {
@@ -23,6 +23,7 @@ resource "google_cloud_run_service" "optic" {
       containers {
         image = "gcr.io/cloudrun/hello"
         ports {
+          name = "http1"
           container_port = "8080"
         }
         env {
@@ -102,6 +103,7 @@ resource "google_cloud_run_service" "optic" {
   lifecycle {
     ignore_changes = [
       template[0].spec[0].containers[0].image, // the deploy is done by GitHub Actions
+      template[0].spec[0].containers[0].env,
       template[0].metadata[0].annotations
     ]
   }
