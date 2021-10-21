@@ -1,13 +1,16 @@
 'use strict'
 
 const fp = require('fastify-plugin')
+const fastifyAuth = require('fastify-auth')
 
 const errors = require('../../errors')
 
 async function authPlugin(server) {
+  server.register(fastifyAuth)
+
   const { firebase } = server
 
-  const authenticate = async request => {
+  const authenticate = async (request) => {
     const authHeader = (request.headers || {}).authorization || ''
 
     if (!authHeader.startsWith('Bearer ')) {
