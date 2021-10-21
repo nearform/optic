@@ -6,13 +6,48 @@ on:
   pull_request:
     branches: [master]
 
+name: CI
+
+on:
+  push:
+    branches:
+      main
+  pull_request:
+    branches:
+      main
+
 jobs:
-  build:
+  run-tests:
+    name: Lint & Test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 16.x
+    env:
+      CI: 'true'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Use node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2.1.5
         with:
-          node-version: 14.x
-      - run: npm i
+          node-version: ${{ matrix.node-version }}
+      - name: Restore cached dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
       - run: npm run lint
+      - run: npm test
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
