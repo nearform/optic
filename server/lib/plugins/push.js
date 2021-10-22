@@ -65,7 +65,7 @@ async function pushPlugin(server, options) {
             return sendExpoPush(log, expo, { subscription, secretId, uniqueId })
           }
 
-          return sendWebPush(request, log, { subscription, secretId, uniqueId })
+          return sendWebPush(log, request, { subscription, secretId, uniqueId })
         })
       )
     }

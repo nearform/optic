@@ -1,7 +1,6 @@
 'use strict'
 
-const crypto = require('crypto')
-
+const uniqid = require('uniqid')
 const fp = require('fastify-plugin')
 
 const approvalLimit = 60e3
@@ -12,8 +11,10 @@ async function otpRoutes(server) {
     url: '/api/generate',
     handler: async (request, reply) => {
       const { firebaseAdmin, push } = server
-      const { log } = request
-      const { token } = request.query
+      const {
+        query: { token },
+        log
+      } = request
 
       const db = firebaseAdmin.firestore()
 
@@ -40,9 +41,14 @@ async function otpRoutes(server) {
         return reply.code(404).send(`No subscription found for user ${userId}`)
       }
 
-      const uniqueId = crypto.randomBytes(16).toString('hex')
+      const uniqueId = uniqid()
 
-      const completeRequest = (otp) => {
+      const completeRequest = (error, otp) => {
+        if (error) {
+          log.error(error.message)
+          return reply.code(500).send(error.message)
+        }
+
         unsubscribe()
         clearTimeout(timeout)
 
@@ -55,10 +61,10 @@ async function otpRoutes(server) {
         reply.send(otp)
       }
 
-      const req = db.collection('requests').doc(uniqueId)
-      await req.set({ createdAt: new Date() })
+      const requestObj = db.collection('requests').doc(uniqueId)
+      await requestObj.set({ createdAt: new Date() })
 
-      const unsubscribe = request.onSnapshot(
+      const unsubscribe = requestObj.onSnapshot(
         (update) => {
           const approved = update.get('approved')
           if (approved === undefined) {
@@ -78,7 +84,7 @@ async function otpRoutes(server) {
         subscriptions: subscriptions.docs,
         secretId,
         uniqueId,
-        request
+        requestObj
       })
 
       const timeout = setTimeout(completeRequest, approvalLimit)
@@ -93,12 +99,12 @@ async function otpRoutes(server) {
       const db = firebaseAdmin.firestore()
       const { uniqueId, otp, approved } = request.body
 
-      const req = db.collection('requests').doc(uniqueId)
-      if (!(await request.get()).exists) {
+      const requestObj = db.collection('requests').doc(uniqueId)
+      if (!(await requestObj.get()).exists) {
         return reply.code(404).send()
       }
 
-      await req.update({ otp: otp || null, approved })
+      await requestObj.update({ otp: otp || null, approved })
       reply.code(201).send()
     }
   })

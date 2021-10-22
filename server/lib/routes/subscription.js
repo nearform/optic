@@ -2,7 +2,7 @@
 
 const fp = require('fastify-plugin')
 
-async function subscriptionRoutes(server, options) {
+async function subscriptionRoutes(server) {
   server.route({
     method: 'POST',
     url: '/api/register',
@@ -28,7 +28,6 @@ async function subscriptionRoutes(server, options) {
         .where('userId', '==', request.user)
         .get()
 
-      const subscription = {}
       const updateArray = []
       if (subscriptionRef.empty) {
         await db.collection('subscriptions').add({
@@ -50,7 +49,7 @@ async function subscriptionRoutes(server, options) {
         await Promise.all(updateArray)
       }
 
-      reply.status(201).send(subscription)
+      reply.status(201).send()
     }
   })
 }
