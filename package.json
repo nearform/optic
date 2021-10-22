@@ -18,7 +18,7 @@
     "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
     "start": "node server/index.js",
     "test": "react-app-rewired test",
-    "prepare": "husky install"
+    "prepare": "npx husky install"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
