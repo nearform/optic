@@ -78,6 +78,11 @@
     "not ie <= 11",
     "not op_mini all"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "{server,src}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "eslint --cache --fix",
