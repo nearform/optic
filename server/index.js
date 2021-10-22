@@ -1,50 +1,35 @@
 'use strict'
 
+require('dotenv').config()
+
 const Fastify = require('fastify')
 const closeWithGrace = require('close-with-grace')
 
-const getConfig = require('./lib/config/index')
 const startServer = require('./lib/server')
+const config = require('./config')
 
-let log
+const server = Fastify(config.fastifyInit)
 
-async function main() {
-  const config = await getConfig()
+server.register(startServer, config)
 
-  const server = Fastify(config.fastifyInit)
-  log = server.log
+const closeListeners = closeWithGrace({ delay: 500 }, async function({
+  signal,
+  err
+}) {
+  if (err) {
+    server.log.error(err, 'An unhandled error was caught, closing server')
+  }
+  await server.close()
+  server.log.info({ signal }, 'application closed')
 
-  server.register(startServer, config)
-  server.options('*', (request, reply) => {
-    reply.send()
-  })
-
-  await server.listen(config.fastify.port, config.fastify.host)
-
-  closeWithGrace({ delay: 500 }, async function({ signal, err }) {
-    if (err) {
-      log.error(err, 'An unhandled error was caught, closing server')
-    }
-    await server.close()
-    log.info({ signal }, 'application closed')
-
-    if (err) {
-      process.exit(1)
-    }
-  })
-}
-
-main()
-  .catch(err => {
-    // must be an init error, so bail
-    if (log) {
-      log.error(err, 'Error during initialization')
-    } else {
-      console.error('Error during initialization:', err)
-    }
+  if (err) {
     process.exit(1)
-  })
-  .catch(err =>
-    // failed beyond belief
-    console.error(err)
-  )
+  }
+})
+
+server.addHook('onClose', async (instance, done) => {
+  closeListeners.uninstall()
+  done()
+})
+
+server.listen(config.fastify.port, config.fastify.host)

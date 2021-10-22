@@ -62,7 +62,7 @@ async function pushPlugin(server, options) {
   const push = {
     send: async ({ subscriptions, secretId, uniqueId, request }) => {
       return Promise.all(
-        subscriptions.map(async doc => {
+        subscriptions.map(async (doc) => {
           const subscription = doc.data()
 
           if (subscription.type === 'expo') {
@@ -75,11 +75,7 @@ async function pushPlugin(server, options) {
     }
   }
 
-  server.decorate('push', {
-    getter() {
-      return push
-    }
-  })
+  server.decorate('push', push)
 }
 
 module.exports = fp(pushPlugin, {

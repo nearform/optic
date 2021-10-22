@@ -3,30 +3,28 @@
 const fp = require('fastify-plugin')
 const fastifyAuth = require('fastify-auth')
 
-const errors = require('../../errors')
-
 async function authPlugin(server) {
   server.register(fastifyAuth)
 
-  const { firebase } = server
+  const { firebaseAdmin } = server
 
-  const authenticate = async (request) => {
+  const authenticate = async (request, reply) => {
     const authHeader = (request.headers || {}).authorization || ''
 
     if (!authHeader.startsWith('Bearer ')) {
-      throw errors.unauthorized('Id token not found')
+      return reply.code(401).send('Id token not found')
     }
 
     const idToken = authHeader.substr(7)
 
-    if (!idToken) throw errors.unauthorized('Id token not found')
+    if (!idToken) return reply.code(401).send('Id token not found')
 
     try {
-      const token = await firebase.auth().verifyIdToken(idToken)
+      const token = await firebaseAdmin.auth().verifyIdToken(idToken)
       request.user = token.uid
     } catch (err) {
       request.log.error(err.message)
-      throw errors.unauthorized('Error verifying Id token')
+      return reply.code(401).send('Error verifying Id token')
     }
   }
 

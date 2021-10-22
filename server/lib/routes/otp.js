@@ -4,8 +4,6 @@ const crypto = require('crypto')
 
 const fp = require('fastify-plugin')
 
-const errors = require('../../errors')
-
 const approvalLimit = 60e3
 
 async function otpRoutes(server) {
@@ -45,7 +43,7 @@ async function otpRoutes(server) {
 
       const uniqueId = crypto.randomBytes(16).toString('hex')
 
-      const completeRequest = otp => {
+      const completeRequest = (otp) => {
         unsubscribe()
         clearTimeout(timeout)
 
@@ -62,7 +60,7 @@ async function otpRoutes(server) {
       await req.set({ createdAt: new Date() })
 
       const unsubscribe = request.onSnapshot(
-        update => {
+        (update) => {
           const approved = update.get('approved')
           if (approved === undefined) {
             // update due to object creation
@@ -70,9 +68,9 @@ async function otpRoutes(server) {
           }
           completeRequest(null, update.get('otp'))
         },
-        error => {
+        (error) => {
           log.error(error.message)
-          throw errors.unknownError(error.message)
+          return reply.code(500).send(error.message)
         }
       )
 

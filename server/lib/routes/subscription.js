@@ -36,7 +36,7 @@ async function subscriptionRoutes(server, options) {
           ...request.body
         })
       } else {
-        subscriptionRef.forEach(s => {
+        subscriptionRef.forEach((s) => {
           updateArray.push(
             db
               .collection('subscriptions')
