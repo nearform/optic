@@ -7,8 +7,8 @@ on:
     branches: [master]
 
 jobs:
-  run-tests:
-    name: Lint & Test
+  build:
+    name: Lint
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
