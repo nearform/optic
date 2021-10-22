@@ -8,11 +8,11 @@ const approvalLimit = 60e3
 async function otpRoutes(server) {
   server.route({
     method: 'GET',
-    url: '/api/generate',
+    url: '/api/generate/:token',
     handler: async (request, reply) => {
       const { firebaseAdmin, push } = server
       const {
-        query: { token },
+        params: { token },
         log
       } = request
 
@@ -43,51 +43,53 @@ async function otpRoutes(server) {
 
       const uniqueId = uniqid()
 
-      const completeRequest = (error, otp) => {
-        if (error) {
-          log.error(error.message)
-          return reply.code(500).send(error.message)
-        }
-
-        unsubscribe()
-        clearTimeout(timeout)
-
-        if (!otp) {
-          log.error('Request was not approved')
-          return reply.code(403).send()
-        }
-
-        log.info('Request approved, sending back OTP')
-        reply.send(otp)
-      }
-
-      const requestObj = db.collection('requests').doc(uniqueId)
-      await requestObj.set({ createdAt: new Date() })
-
-      const unsubscribe = requestObj.onSnapshot(
-        (update) => {
-          const approved = update.get('approved')
-          if (approved === undefined) {
-            // update due to object creation
-            return
+      return new Promise(() => {
+        const completeRequest = (error, otp) => {
+          if (error) {
+            log.error(error.message)
+            return reply.code(500).send(error.message)
           }
-          completeRequest(null, update.get('otp'))
-        },
-        (error) => {
-          log.error(error.message)
-          return reply.code(500).send(error.message)
+
+          unsubscribe()
+          clearTimeout(timeout)
+
+          if (!otp) {
+            log.error('Request was not approved')
+            return reply.code(403).send()
+          }
+
+          log.info('Request approved, sending back OTP')
+          return reply.send(otp)
         }
-      )
 
-      // fire the notification to all available subscription
-      push.send({
-        subscriptions: subscriptions.docs,
-        secretId,
-        uniqueId,
-        requestObj
+        const requestObj = db.collection('requests').doc(uniqueId)
+        requestObj.set({ createdAt: new Date() })
+
+        const unsubscribe = requestObj.onSnapshot(
+          update => {
+            const approved = update.get('approved')
+            if (approved === undefined) {
+              // update due to object creation
+              return
+            }
+            completeRequest(null, update.get('otp'))
+          },
+          error => {
+            log.error(error.message)
+            return reply.code(500).send(error.message)
+          }
+        )
+
+        // fire the notification to all available subscription
+        push.send({
+          subscriptions: subscriptions.docs,
+          secretId,
+          uniqueId,
+          requestObj
+        })
+
+        const timeout = setTimeout(completeRequest, approvalLimit)
       })
-
-      const timeout = setTimeout(completeRequest, approvalLimit)
     }
   })
 

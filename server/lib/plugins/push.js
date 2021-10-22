@@ -12,7 +12,7 @@ async function sendWebPush(
   try {
     log.info(`Sending notification to sub: ${subscription.endpoint}`)
 
-    await webPush.sendNotification(
+    webPush.sendNotification(
       subscription,
       JSON.stringify({ uniqueId, secretId })
     )
@@ -37,12 +37,15 @@ async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
   }
 
   try {
-    return await expo.sendPushNotificationsAsync({
-      to: token,
-      sound: 'default',
-      body: 'One Time Password requested',
-      data: { uniqueId, token, secretId }
-    })
+    expo.sendPushNotificationsAsync([
+      {
+        to: token,
+        sound: 'default',
+        body: 'One Time Password requested',
+        data: { uniqueId, token, secretId }
+      }
+    ])
+    console.log('Notification sent')
   } catch (error) {
     log.error(error, `Failed to send Push notification for token ${token}`)
   }
@@ -67,7 +70,7 @@ async function pushPlugin(server, options) {
   const push = {
     send: async ({ subscriptions, secretId, uniqueId, requestObj }) => {
       return Promise.all(
-        subscriptions.map(async (doc) => {
+        subscriptions.map(async doc => {
           const subscription = doc.data()
 
           if (subscription.type === 'expo') {
