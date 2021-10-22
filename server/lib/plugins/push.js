@@ -70,7 +70,7 @@ async function pushPlugin(server, options) {
   const push = {
     send: async ({ subscriptions, secretId, uniqueId, requestObj }) => {
       return Promise.all(
-        subscriptions.map(async doc => {
+        subscriptions.map(async (doc) => {
           const subscription = doc.data()
 
           if (subscription.type === 'expo') {
