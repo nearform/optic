@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: [master]
 
-name: CI
-
 jobs:
   run-tests:
     name: Lint & Test
