@@ -4,7 +4,11 @@ const fp = require('fastify-plugin')
 const { Expo } = require('expo-server-sdk')
 const webPush = require('web-push')
 
-async function sendWebPush(request, log, { subscription, secretId, uniqueId }) {
+async function sendWebPush(
+  log,
+  requestObj,
+  { subscription, secretId, uniqueId }
+) {
   try {
     log.info(`Sending notification to sub: ${subscription.endpoint}`)
 
@@ -14,7 +18,7 @@ async function sendWebPush(request, log, { subscription, secretId, uniqueId }) {
     )
   } catch (err) {
     log.error('Could not send push notification to client')
-    request.delete()
+    requestObj.delete()
 
     if (err.statusCode === 410 || err.statusCode === 404) {
       log.info('Subscription is not valid, removing')
@@ -25,18 +29,23 @@ async function sendWebPush(request, log, { subscription, secretId, uniqueId }) {
   }
 }
 
-async function sendExpoPush(log, expo, { token, secretId, uniqueId }) {
+async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
+  const { token } = subscription
   if (!Expo.isExpoPushToken(token)) {
     log.error(`Push token ${token} is not a valid Expo push token`)
     return
   }
 
-  return await expo.sendPushNotificationsAsync({
-    to: token,
-    sound: 'default',
-    body: 'One Time Password requested',
-    data: { uniqueId, token, secretId }
-  })
+  try {
+    return await expo.sendPushNotificationsAsync({
+      to: token,
+      sound: 'default',
+      body: 'One Time Password requested',
+      data: { uniqueId, token, secretId }
+    })
+  } catch (error) {
+    log.error(error, `Failed to send Push notification for token ${token}`)
+  }
 }
 
 async function pushPlugin(server, options) {
@@ -56,7 +65,7 @@ async function pushPlugin(server, options) {
   const expo = new Expo()
 
   const push = {
-    send: async ({ subscriptions, secretId, uniqueId, request }) => {
+    send: async ({ subscriptions, secretId, uniqueId, requestObj }) => {
       return Promise.all(
         subscriptions.map(async (doc) => {
           const subscription = doc.data()
@@ -65,7 +74,11 @@ async function pushPlugin(server, options) {
             return sendExpoPush(log, expo, { subscription, secretId, uniqueId })
           }
 
-          return sendWebPush(log, request, { subscription, secretId, uniqueId })
+          return sendWebPush(log, requestObj, {
+            subscription,
+            secretId,
+            uniqueId
+          })
         })
       )
     }

@@ -99,13 +99,19 @@ async function otpRoutes(server) {
       const db = firebaseAdmin.firestore()
       const { uniqueId, otp, approved } = request.body
 
-      const requestObj = db.collection('requests').doc(uniqueId)
-      if (!(await requestObj.get()).exists) {
-        return reply.code(404).send()
-      }
+      try {
+        const requestObj = db.collection('requests').doc(uniqueId)
+        const req = await requestObj.get()
+        if (!req || !req.exists) {
+          return reply.code(404).send()
+        }
 
-      await requestObj.update({ otp: otp || null, approved })
-      reply.code(201).send()
+        await requestObj.update({ otp: otp || null, approved })
+        reply.code(201).send()
+      } catch (error) {
+        request.log.error(error.message)
+        return reply.code(500).send()
+      }
     }
   })
 }

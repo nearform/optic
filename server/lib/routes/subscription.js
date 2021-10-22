@@ -23,33 +23,37 @@ async function subscriptionRoutes(server) {
         })
       }
 
-      const subscriptionRef = await db
-        .collection('subscriptions')
-        .where('userId', '==', request.user)
-        .get()
+      try {
+        const subscriptionRef = await db
+          .collection('subscriptions')
+          .where('userId', '==', request.user)
+          .get()
 
-      const updateArray = []
-      if (subscriptionRef.empty) {
-        await db.collection('subscriptions').add({
-          userId: request.user,
-          ...request.body
-        })
-      } else {
-        subscriptionRef.forEach((s) => {
-          updateArray.push(
-            db
-              .collection('subscriptions')
-              .doc(s.id)
-              .update({
-                userId: request.user,
-                ...request.body
-              })
-          )
-        })
-        await Promise.all(updateArray)
+        const updateArray = []
+        if (subscriptionRef.empty) {
+          await db.collection('subscriptions').add({
+            userId: request.user,
+            ...request.body
+          })
+        } else {
+          subscriptionRef.forEach((s) => {
+            updateArray.push(
+              db
+                .collection('subscriptions')
+                .doc(s.id)
+                .update({
+                  userId: request.user,
+                  ...request.body
+                })
+            )
+          })
+          await Promise.all(updateArray)
+          reply.code(201).send()
+        }
+      } catch (error) {
+        request.log.error(`Failed to register. Error-${error.message}`)
+        return reply.code(500).send('Failed to register')
       }
-
-      reply.status(201).send()
     }
   })
 }
