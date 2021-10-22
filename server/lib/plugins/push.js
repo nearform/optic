@@ -31,16 +31,12 @@ async function sendExpoPush(log, expo, { token, secretId, uniqueId }) {
     return
   }
 
-  const message = [
-    {
-      to: token,
-      sound: 'default',
-      body: 'One Time Password requested',
-      data: { uniqueId, token, secretId }
-    }
-  ]
-
-  return await expo.sendPushNotificationsAsync(message)
+  return await expo.sendPushNotificationsAsync({
+    to: token,
+    sound: 'default',
+    body: 'One Time Password requested',
+    data: { uniqueId, token, secretId }
+  })
 }
 
 async function pushPlugin(server, options) {

@@ -10,7 +10,6 @@ async function otpRoutes(server) {
   server.route({
     method: 'GET',
     url: '/api/generate',
-    preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin, push } = server
       const { log } = request
@@ -75,7 +74,12 @@ async function otpRoutes(server) {
       )
 
       // fire the notification to all available subscription
-      push.send(subscriptions.docs, secretId, uniqueId, request)
+      push.send({
+        subscriptions: subscriptions.docs,
+        secretId,
+        uniqueId,
+        request
+      })
 
       const timeout = setTimeout(completeRequest, approvalLimit)
     }
@@ -83,7 +87,7 @@ async function otpRoutes(server) {
 
   server.route({
     method: 'POST',
-    url: '/respond',
+    url: '/api/respond',
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
       const db = firebaseAdmin.firestore()

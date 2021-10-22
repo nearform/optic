@@ -9,7 +9,6 @@ async function vapidRoutes(server, options) {
   server.route({
     method: 'GET',
     url: '/api/vapidPublicKey',
-    preHandler: server.auth([server.authenticate]),
     handler: async (_, reply) => {
       reply.send(options.vapid.vapidPublicKey)
     }
