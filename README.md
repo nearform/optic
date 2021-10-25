@@ -1,4 +1,9 @@
 # Optic
+
+[![ci](https://github.com/nearform/optic/actions/workflows/ci.yml/badge.svg)](https://github.com/nearform/optic/actions/workflows/ci.yml)
+[![cd](https://github.com/nearform/optic/actions/workflows/cd.yml/badge.svg)](https://github.com/nearform/optic/actions/workflows/cd.yml)
+
+
 Optic is an app that helps you securely generate OTP tokens for 2FA protected npm accounts. It allows auto-publish npm packages using CI.
 
 ## Prerequisites
