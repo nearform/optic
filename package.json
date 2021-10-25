@@ -12,7 +12,6 @@
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
     "dev:server": "nodemon --exec \"node server/index.js\"",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "npm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
