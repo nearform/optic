@@ -9,7 +9,7 @@ async function subscriptionRoutes(server) {
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { type, endpoint } = request.body
+      const { type = null, endpoint = null } = request.body
 
       const db = firebaseAdmin.firestore()
 
@@ -48,8 +48,8 @@ async function subscriptionRoutes(server) {
             )
           })
           await Promise.all(updateArray)
-          reply.code(201).send()
         }
+        reply.code(201).send()
       } catch (error) {
         request.log.error(`Failed to register. Error-${error.message}`)
         return reply.code(500).send('Failed to register')

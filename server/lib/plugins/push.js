@@ -12,7 +12,7 @@ async function sendWebPush(
   try {
     log.info(`Sending notification to sub: ${subscription.endpoint}`)
 
-    webPush.sendNotification(
+    await webPush.sendNotification(
       subscription,
       JSON.stringify({ uniqueId, secretId })
     )
@@ -37,7 +37,7 @@ async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
   }
 
   try {
-    expo.sendPushNotificationsAsync([
+    await expo.sendPushNotificationsAsync([
       {
         to: token,
         sound: 'default',
@@ -45,7 +45,6 @@ async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
         data: { uniqueId, token, secretId }
       }
     ])
-    console.log('Notification sent')
   } catch (error) {
     log.error(error, `Failed to send Push notification for token ${token}`)
   }
