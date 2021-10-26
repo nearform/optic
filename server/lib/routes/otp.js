@@ -1,7 +1,6 @@
 'use strict'
 
 const uniqid = require('uniqid')
-const fp = require('fastify-plugin')
 
 const approvalLimit = 60e3
 
@@ -93,31 +92,25 @@ async function otpRoutes(server) {
     }
   })
 
-  server.route({
-    method: 'POST',
-    url: '/api/respond',
-    handler: async (request, reply) => {
-      const { firebaseAdmin } = server
-      const db = firebaseAdmin.firestore()
-      const { uniqueId, otp, approved } = request.body
+  server.post('/api/respond', async (request, reply) => {
+    const { firebaseAdmin } = server
+    const db = firebaseAdmin.firestore()
+    const { uniqueId, otp, approved } = request.body
 
-      try {
-        const requestObj = db.collection('requests').doc(uniqueId)
-        const req = await requestObj.get()
-        if (!req || !req.exists) {
-          return reply.code(404).send()
-        }
-
-        await requestObj.update({ otp: otp || null, approved })
-        reply.code(201).send()
-      } catch (error) {
-        request.log.error(error.message)
-        return reply.code(500).send()
+    try {
+      const requestObj = db.collection('requests').doc(uniqueId)
+      const req = await requestObj.get()
+      if (!req || !req.exists) {
+        return reply.code(404).send()
       }
+
+      await requestObj.update({ otp: otp || null, approved })
+      reply.code(201).send()
+    } catch (error) {
+      request.log.error(error.message)
+      return reply.code(500).send()
     }
   })
 }
 
-module.exports = fp(otpRoutes, {
-  name: 'otp-routes'
-})
+module.exports = otpRoutes

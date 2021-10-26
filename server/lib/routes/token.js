@@ -1,6 +1,5 @@
 'use strict'
 
-const fp = require('fastify-plugin')
 const uniqid = require('uniqid')
 
 async function tokenRoutes(server) {
@@ -47,6 +46,4 @@ async function tokenRoutes(server) {
   })
 }
 
-module.exports = fp(tokenRoutes, {
-  name: 'token-routes'
-})
+module.exports = tokenRoutes

@@ -1,7 +1,5 @@
 'use strict'
 
-const fp = require('fastify-plugin')
-
 async function subscriptionRoutes(server) {
   server.route({
     method: 'POST',
@@ -58,6 +56,4 @@ async function subscriptionRoutes(server) {
   })
 }
 
-module.exports = fp(subscriptionRoutes, {
-  name: 'subscription-routes'
-})
+module.exports = subscriptionRoutes
