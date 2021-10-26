@@ -11,12 +11,14 @@ async function subscriptionRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
-      if (type !== 'expo' && !endpoint) {
+      if (!type) request.body.type = 'web'
+
+      if ((type !== 'expo' && !endpoint) || (type === 'expo' && !token)) {
         // Not a valid subscription.
         reply.code(400).send({
           error: {
             id: 'no-endpoint',
-            message: 'Subscription must have an endpoint.'
+            message: 'Subscription must have an endpoint or token.'
           }
         })
       }
@@ -25,9 +27,7 @@ async function subscriptionRoutes(server) {
         const destinationType = type === 'expo' ? 'token' : 'endpoint'
         const destination = type === 'expo' ? token : endpoint
 
-        let subscriptionRef
-
-        subscriptionRef = await db
+        const subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
           .where(destinationType, '==', destination)
@@ -35,7 +35,7 @@ async function subscriptionRoutes(server) {
 
         const updateArray = []
         if (subscriptionRef.empty) {
-          subscriptionRef = await db.collection('subscriptions').add({
+          await db.collection('subscriptions').add({
             userId: request.user,
             ...request.body
           })
