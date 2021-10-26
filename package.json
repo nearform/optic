@@ -61,7 +61,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-standard": "^5.0.0",
-    "husky": "^7.0.4",
+    "husky": "^7.0.0",
     "lint-staged": "^11.2.4",
     "lodash": "^4.17.11",
     "nodemon": "^2.0.14",
@@ -80,11 +80,6 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "{server,src}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "eslint --cache",
