@@ -37,17 +37,17 @@
     "fluent-json-schema": "^3.0.1",
     "localforage": "^1.7.3",
     "morgan": "^1.9.0",
-    "otplib": "^12.0.1",
+    "otplib": "^10.2.3",
     "pkg-dir": "^5.0.0",
     "qr-scanner": "^1.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
-    "react-firebaseui": "^5.0.2",
+    "react-firebaseui": "^3.1.2",
     "react-qr-reader": "^2.1.2",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0",
     "web-push": "^3.3.3",
-    "workbox-precaching": "^6.3.0"
+    "workbox-precaching": "^4.3.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
@@ -73,7 +73,7 @@
     "react-scripts": "^2.1.5",
     "sinon": "^11.1.2",
     "tap": "^15.0.10",
-    "workbox-webpack-plugin": "^6.3.0"
+    "workbox-webpack-plugin": "^4.3.1"
   },
   "browserslist": [
     ">0.2%",
