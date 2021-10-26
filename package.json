@@ -46,7 +46,7 @@
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0",
     "web-push": "^3.3.3",
-    "workbox-precaching": "^4.0.0"
+    "workbox-precaching": "^6.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
