@@ -41,7 +41,7 @@
     "qr-scanner": "^1.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
-    "react-firebaseui": "^3.1.2",
+    "react-firebaseui": "^5.0.2",
     "react-qr-reader": "^2.1.2",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0",
