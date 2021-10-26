@@ -1,18 +1,29 @@
 name: ci
 
 on:
-  push:
-    branches: [master]
   pull_request:
-    branches: [master]
+    branches:
+      - master
+  push:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v2.3.5
+      - uses: actions/setup-node@v2.4.1
         with:
-          node-version: 14.x
-      - run: npm i
+          node-version: 16
+      - run: npm ci
       - run: npm run lint
+      - run: npm test
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

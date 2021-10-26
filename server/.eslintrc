@@ -1,0 +1,14 @@
+{
+  "extends": ["prettier-standard"],
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "import/order": ["error", { "newlines-between": "always" }],
+    "eol-last": ["error"],
+    "no-multiple-empty-lines": ["error"],
+    "semi": ["error", "never"]
+  },
+  "root": true
+}
