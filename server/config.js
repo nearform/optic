@@ -14,8 +14,8 @@ const env = envSchema({
   dotenv: true,
   schema: S.object()
     .prop('NODE_ENV', S.string())
-    .prop('API_HOST', S.string().default('0.0.0.0'))
-    .prop('API_PORT', S.string().default('3001'))
+    .prop('HOST', S.string().default('0.0.0.0'))
+    .prop('PORT', S.string().default('3001'))
     .prop('FIREBASE_PROJECT_ID', S.string())
     .prop('FIREBASE_PRIVATE_KEY', S.string())
     .prop('FIREBASE_PRIVATE_KEY_BASE64', S.string())
@@ -36,8 +36,8 @@ const env = envSchema({
         .default('info')
     )
     .required([
-      'API_HOST',
-      'API_PORT',
+      'HOST',
+      'PORT',
       'FIREBASE_PROJECT_ID',
       'FIREBASE_CLIENT_EMAIL',
       'FIREBASE_PRIVATE_KEY_BASE64',
@@ -60,8 +60,8 @@ const config = {
   pluginsPath,
   routesPath,
   fastify: {
-    host: env.API_HOST,
-    port: +env.API_PORT
+    host: env.HOST,
+    port: +env.PORT
   },
   fastifyInit: {
     trustProxy: 2,
