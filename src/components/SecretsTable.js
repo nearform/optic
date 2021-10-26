@@ -21,6 +21,9 @@ function SecretsTable({
 
   const generateToken = async secret => {
     try {
+      const registration = await navigator.serviceWorker.ready
+      let subscription = await registration.pushManager.getSubscription()
+
       await confirm(
         {
           title: 'Generate Token',
@@ -34,8 +37,12 @@ function SecretsTable({
       const response = await fetch(`/api/token/${secret._id}`, {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           authorization: `Bearer ${idToken}`
-        }
+        },
+        body: JSON.stringify({
+          endpoint: subscription.endpoint
+        })
       })
 
       const { token } = await response.json()

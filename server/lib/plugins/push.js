@@ -17,7 +17,7 @@ async function sendWebPush(
       JSON.stringify({ uniqueId, secretId })
     )
   } catch (err) {
-    log.error('Could not send push notification to client')
+    log.error(err, 'Could not send push notification to client')
     requestObj.delete()
 
     if (err.statusCode === 410 || err.statusCode === 404) {
@@ -53,14 +53,10 @@ async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
 async function pushPlugin(server, options) {
   const { log } = server
 
-  const {
-    publicKey: vapidPublicKey,
-    privateKey: vapidPrivateKey
-  } = webPush.generateVAPIDKeys()
   webPush.setVapidDetails(
     options.vapid.vapidSubject,
-    vapidPublicKey,
-    vapidPrivateKey
+    options.vapid.vapidPublicKey,
+    options.vapid.vapidPrivateKey
   )
 
   // init expo for mobile notifications

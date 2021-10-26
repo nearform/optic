@@ -21,7 +21,10 @@ test('/otp route', async (t) => {
         collection: () => ({
           doc: docStub,
           where: () => ({
-            get: getStub
+            get: getStub,
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
@@ -57,7 +60,7 @@ test('/otp route', async (t) => {
       docs: [
         {
           id: 99,
-          data: () => ({ userId: '11111' })
+          data: () => ({ deviceId: 'ExponentPush', userId: '11111' })
         }
       ]
     })
@@ -105,7 +108,7 @@ test('/otp route', async (t) => {
       docs: [
         {
           id: 99,
-          data: () => ({ userId: '11111' })
+          data: () => ({ deviceId: 'ExponentPush', userId: '11111' })
         }
       ]
     })

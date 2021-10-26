@@ -10,6 +10,7 @@ async function tokenRoutes(server) {
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
       const { secretId } = request.params
+      const { endpoint = null, expoToken = null } = request.body
 
       const db = firebaseAdmin.firestore()
 
@@ -20,6 +21,7 @@ async function tokenRoutes(server) {
         .doc(secretId)
         .set({
           token,
+          deviceId: endpoint || expoToken,
           userId: request.user
         })
       reply.send({ token })

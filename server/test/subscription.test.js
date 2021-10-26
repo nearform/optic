@@ -26,7 +26,9 @@ test('subscription route', async (t) => {
           }),
           add: addStub,
           where: () => ({
-            get: getStub
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
@@ -64,7 +66,7 @@ test('subscription route', async (t) => {
       url: '/api/register',
       method: 'POST',
       body: {
-        type: 'expo',
+        type: 'web',
         endpoint: 'mock-endpoint'
       }
     })
@@ -85,7 +87,7 @@ test('subscription route', async (t) => {
       url: '/api/register',
       method: 'POST',
       body: {
-        type: 'expo',
+        type: 'web',
         endpoint: 'mock-endpoint'
       }
     })

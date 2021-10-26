@@ -54,7 +54,8 @@ test('token route', async (t) => {
     setStub.resolves()
     const response = await server.inject({
       url: '/api/token/55555',
-      method: 'PUT'
+      method: 'PUT',
+      body: { endpoint: 'mock-endpoint' }
     })
 
     const data = response.json()

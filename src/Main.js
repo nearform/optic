@@ -77,6 +77,12 @@ function Main({ classes }) {
     setSecrets(await secretsManager.fetch({ uid: user.uid }))
   }
 
+  const signOut = async () => {
+    firebaseApp.auth().signOut()
+    localStorage.clear()
+    indexedDB.deleteDatabase('firebaseLocalStorageDb')
+  }
+
   if (!firebaseApp) {
     return null
   }
@@ -88,11 +94,7 @@ function Main({ classes }) {
   return (
     <div className={classes.root}>
       <ConfirmProvider>
-        <AppBar
-          user={user}
-          secrets={secrets}
-          signOut={() => firebaseApp.auth().signOut()}
-        />
+        <AppBar user={user} secrets={secrets} signOut={signOut} />
         <Confirm />
         <QRReaderDialog
           open={cameraDialog}

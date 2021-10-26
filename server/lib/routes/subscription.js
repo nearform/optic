@@ -7,7 +7,7 @@ async function subscriptionRoutes(server) {
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { type = null, endpoint = null } = request.body
+      const { type = null, endpoint = null, token = null } = request.body
 
       const db = firebaseAdmin.firestore()
 
@@ -22,14 +22,20 @@ async function subscriptionRoutes(server) {
       }
 
       try {
-        const subscriptionRef = await db
+        const destinationType = type === 'expo' ? 'token' : 'endpoint'
+        const destination = type === 'expo' ? token : endpoint
+
+        let subscriptionRef
+
+        subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
+          .where(destinationType, '==', destination)
           .get()
 
         const updateArray = []
         if (subscriptionRef.empty) {
-          await db.collection('subscriptions').add({
+          subscriptionRef = await db.collection('subscriptions').add({
             userId: request.user,
             ...request.body
           })
