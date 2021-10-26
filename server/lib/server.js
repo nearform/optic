@@ -8,7 +8,7 @@ const fastifyStatic = require('fastify-static')
 
 async function plugin(server, config) {
   server.register(fastifyStatic, {
-    root: path.join(__dirname, '../../public')
+    root: path.join(__dirname, '../../build')
   })
 
   server
