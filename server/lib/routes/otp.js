@@ -27,17 +27,17 @@ async function otpRoutes(server) {
         return reply.code(404).send('Token not found')
       }
 
-      const { userId, deviceId } = secret.docs[0].data()
+      const { userId, subscriptionId } = secret.docs[0].data()
       const secretId = secret.docs[0].id
-
-      const destinationType = deviceId.startsWith('ExponentPush')
-        ? 'token'
-        : 'endpoint'
 
       const subscriptions = await db
         .collection('subscriptions')
         .where('userId', '==', userId)
-        .where(destinationType, '==', deviceId)
+        .where(
+          firebaseAdmin.firestore.FieldPath.documentId(),
+          '==',
+          subscriptionId
+        )
         .get()
 
       if (subscriptions.empty) {

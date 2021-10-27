@@ -53,5 +53,9 @@ export default async function subscribe(pushServerUrl, idToken) {
     return console.error('Cannot send subscription to server')
   }
 
-  console.log('Sent subscription to server', subscription)
+  const data = await response.json()
+
+  console.log('Sent subscription to server and received', data)
+
+  return data.subscriptionId
 }

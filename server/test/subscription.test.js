@@ -78,7 +78,7 @@ test('subscription route', async (t) => {
   })
 
   t.test('should add subscription if not existing subscription', async (t) => {
-    addStub.resolves()
+    addStub.resolves({ id: 99 })
     getStub.returns({
       empty: true
     })

@@ -33,14 +33,17 @@ async function subscriptionRoutes(server) {
           .where(destinationType, '==', destination)
           .get()
 
+        let newSubscription = {}
+        let updatedSubscription = {}
         const updateArray = []
         if (subscriptionRef.empty) {
-          await db.collection('subscriptions').add({
+          newSubscription = await db.collection('subscriptions').add({
             userId: request.user,
             ...request.body
           })
         } else {
           subscriptionRef.forEach((s) => {
+            updatedSubscription = s
             updateArray.push(
               db
                 .collection('subscriptions')
@@ -53,7 +56,9 @@ async function subscriptionRoutes(server) {
           })
           await Promise.all(updateArray)
         }
-        reply.code(201).send()
+        reply.code(201).send({
+          subscriptionId: newSubscription.id || updatedSubscription.id
+        })
       } catch (error) {
         request.log.error(`Failed to register. Error-${error.message}`)
         return reply.code(500).send('Failed to register')

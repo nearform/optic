@@ -5,12 +5,18 @@ const uniqid = require('uniqid')
 async function tokenRoutes(server) {
   server.route({
     method: 'PUT',
-    url: '/api/token/:secretId',
+    url: '/api/token',
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
-      const { firebaseAdmin } = server
-      const { secretId } = request.params
-      const { endpoint = null, expoToken = null } = request.body
+      const { firebaseAdmin, log } = server
+      const { subscriptionId = null, secretId = null } = request.body
+
+      if (!subscriptionId || !secretId) {
+        log.error(
+          `Invalid subscriptionId/secretId received for user-${request.user}`
+        )
+        return reply.code(400).send('Invalid request')
+      }
 
       const db = firebaseAdmin.firestore()
 
@@ -21,7 +27,7 @@ async function tokenRoutes(server) {
         .doc(secretId)
         .set({
           token,
-          deviceId: endpoint || expoToken,
+          subscriptionId,
           userId: request.user
         })
       reply.send({ token })

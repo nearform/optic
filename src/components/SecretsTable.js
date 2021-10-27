@@ -14,16 +14,14 @@ function SecretsTable({
   removeSecret,
   updateSecret,
   secrets,
-  idToken
+  idToken,
+  subscriptionId
 }) {
   const confirmDispatch = useContext(ConfirmDispatchContext)
   const confirmState = useContext(ConfirmStateContext)
 
   const generateToken = async secret => {
     try {
-      const registration = await navigator.serviceWorker.ready
-      let subscription = await registration.pushManager.getSubscription()
-
       await confirm(
         {
           title: 'Generate Token',
@@ -34,14 +32,15 @@ function SecretsTable({
         confirmState
       )
 
-      const response = await fetch(`/api/token/${secret._id}`, {
+      const response = await fetch(`/api/token`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           authorization: `Bearer ${idToken}`
         },
         body: JSON.stringify({
-          endpoint: subscription.endpoint
+          subscriptionId,
+          secretId: secret._id
         })
       })
 

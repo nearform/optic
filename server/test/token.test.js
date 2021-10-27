@@ -53,9 +53,9 @@ test('token route', async (t) => {
   t.test('should set token for user', async (t) => {
     setStub.resolves()
     const response = await server.inject({
-      url: '/api/token/55555',
+      url: '/api/token',
       method: 'PUT',
-      body: { endpoint: 'mock-endpoint' }
+      body: { secretId: 'mock-id', subscriptionId: 'mock-id' }
     })
 
     const data = response.json()

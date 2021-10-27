@@ -26,6 +26,7 @@ function Main({ classes }) {
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
   const [firebaseApp, setFirebaseApp] = useState()
+  const [subscriptionId, setSubscriptionId] = useState()
 
   useEffect(() => {
     const load = async () => {
@@ -58,7 +59,7 @@ function Main({ classes }) {
   useEffect(() => {
     if (!idToken) return
     requestPermission('/api', idToken)
-    subscribe('/api', idToken)
+    subscribe('/api', idToken).then(id => setSubscriptionId(id))
   }, [idToken])
 
   const addSecret = async secret => {
@@ -77,12 +78,6 @@ function Main({ classes }) {
     setSecrets(await secretsManager.fetch({ uid: user.uid }))
   }
 
-  const signOut = async () => {
-    firebaseApp.auth().signOut()
-    localStorage.clear()
-    indexedDB.deleteDatabase('firebaseLocalStorageDb')
-  }
-
   if (!firebaseApp) {
     return null
   }
@@ -94,7 +89,11 @@ function Main({ classes }) {
   return (
     <div className={classes.root}>
       <ConfirmProvider>
-        <AppBar user={user} secrets={secrets} signOut={signOut} />
+        <AppBar
+          user={user}
+          secrets={secrets}
+          signOut={() => firebaseApp.auth().signOut()}
+        />
         <Confirm />
         <QRReaderDialog
           open={cameraDialog}
@@ -112,6 +111,7 @@ function Main({ classes }) {
           updateSecret={updateSecret}
           removeSecret={removeSecret}
           idToken={idToken}
+          subscriptionId={subscriptionId}
         />
         <AddSecretButton
           scanQR={() => toggleCameraDialog(true)}
