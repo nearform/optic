@@ -24,13 +24,13 @@ async function subscriptionRoutes(server) {
       }
 
       try {
-        const destinationType = type === 'expo' ? 'token' : 'endpoint'
-        const destination = type === 'expo' ? token : endpoint
+        const deviceIdType = type === 'expo' ? 'token' : 'endpoint'
+        const deviceId = type === 'expo' ? token : endpoint
 
         const subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
-          .where(destinationType, '==', destination)
+          .where(deviceIdType, '==', deviceId)
           .get()
 
         let newSubscription = {}
