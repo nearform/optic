@@ -1,63 +1,56 @@
 'use strict'
 
+const validationSchema = {
+  body: {
+    type: 'object',
+    properties: {
+      type: { type: 'string' },
+      endpoint: { type: 'string' },
+      token: { type: 'string' }
+    },
+    oneOf: [{ required: ['token'] }, { required: ['endpoint'] }],
+    required: ['type']
+  }
+}
+
 async function subscriptionRoutes(server) {
   server.route({
     method: 'POST',
     url: '/api/register',
     preHandler: server.auth([server.authenticate]),
+    schema: validationSchema,
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
       const { type = null, endpoint = null, token = null } = request.body
 
       const db = firebaseAdmin.firestore()
 
-      if (!type) request.body.type = 'web'
-
-      if ((type !== 'expo' && !endpoint) || (type === 'expo' && !token)) {
-        // Not a valid subscription.
-        reply.code(400).send({
-          error: {
-            id: 'no-endpoint',
-            message: 'Subscription must have an endpoint or token.'
-          }
-        })
-      }
-
       try {
-        const deviceIdType = type === 'expo' ? 'token' : 'endpoint'
-        const deviceId = type === 'expo' ? token : endpoint
+        const subscriptionIdentifierType =
+          type === 'expo' ? 'token' : 'endpoint'
+        const subscriptionIdentifier = type === 'expo' ? token : endpoint
 
         const subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
-          .where(deviceIdType, '==', deviceId)
+          .where(subscriptionIdentifierType, '==', subscriptionIdentifier)
           .get()
 
-        let newSubscription = {}
-        let updatedSubscription = {}
-        const updateArray = []
-        if (subscriptionRef.empty) {
-          newSubscription = await db.collection('subscriptions').add({
-            userId: request.user,
-            ...request.body
-          })
-        } else {
-          subscriptionRef.forEach((s) => {
-            updatedSubscription = s
-            updateArray.push(
-              db
-                .collection('subscriptions')
-                .doc(s.id)
-                .update({
-                  userId: request.user,
-                  ...request.body
-                })
-            )
-          })
-          await Promise.all(updateArray)
-        }
+        const subscription = subscriptionRef.empty
+          ? await db.collection('subscriptions').add({
+              userId: request.user,
+              ...request.body
+            })
+          : await db
+              .collection('subscriptions')
+              .doc(subscriptionRef.docs[0].id)
+              .update({
+                userId: request.user,
+                ...request.body
+              })
+
         reply.code(201).send({
-          subscriptionId: newSubscription.id || updatedSubscription.id
+          subscriptionId: subscription.id || subscriptionRef.docs[0].id
         })
       } catch (error) {
         request.log.error(`Failed to register. Error-${error.message}`)

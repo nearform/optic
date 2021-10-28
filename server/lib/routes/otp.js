@@ -32,7 +32,6 @@ async function otpRoutes(server) {
 
       const subscriptions = await db
         .collection('subscriptions')
-        .where('userId', '==', userId)
         .where(
           firebaseAdmin.firestore.FieldPath.documentId(),
           '==',

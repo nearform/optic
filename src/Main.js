@@ -59,7 +59,12 @@ function Main({ classes }) {
   useEffect(() => {
     if (!idToken) return
     requestPermission('/api', idToken)
-    subscribe('/api', idToken).then(id => setSubscriptionId(id))
+
+    const subscribeFn = async idToken => {
+      const id = await subscribe('/api', idToken)
+      setSubscriptionId(id)
+    }
+    subscribeFn(idToken)
   }, [idToken])
 
   const addSecret = async secret => {

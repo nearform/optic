@@ -60,7 +60,8 @@ test('subscription route', async (t) => {
   t.teardown(server.close.bind(server))
 
   t.test('should update subscription if existing subscription', async (t) => {
-    getStub.returns([{ id: 99 }, { id: 199 }])
+    getStub.returns({ docs: [{ id: 99 }] })
+    updateStub.returns({})
 
     const response = await server.inject({
       url: '/api/register',
@@ -73,7 +74,7 @@ test('subscription route', async (t) => {
 
     t.equal(response.statusCode, 201)
     t.equal(getStub.calledOnce, true)
-    t.equal(updateStub.calledTwice, true)
+    t.equal(updateStub.calledOnce, true)
     t.equal(addStub.called, false)
   })
 
@@ -107,9 +108,6 @@ test('subscription route', async (t) => {
       }
     })
 
-    const data = response.json()
-
     t.equal(response.statusCode, 400)
-    t.equal(data.error.id, 'no-endpoint')
   })
 })

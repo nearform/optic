@@ -10,6 +10,8 @@ test('token route', async (t) => {
   const sendStub = sinon.stub()
   const setStub = sinon.stub()
   const deleteStub = sinon.stub()
+  const getStub = sinon.stub()
+  const documentIdStub = sinon.stub()
 
   const mockedAuthPlugin = async function(server) {
     decorate(server, 'auth', authStub)
@@ -20,12 +22,19 @@ test('token route', async (t) => {
       firestore: () => ({
         collection: () => ({
           doc: () => ({
+            get: getStub,
             set: setStub,
             delete: deleteStub
+          }),
+          where: () => ({
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
     }
+    admin.firestore.FieldPath = { documentId: documentIdStub }
     decorate(server, 'firebaseAdmin', admin)
   }
 
@@ -46,6 +55,7 @@ test('token route', async (t) => {
   t.beforeEach(async () => {
     setStub.reset()
     deleteStub.reset()
+    documentIdStub.reset()
   })
 
   t.teardown(server.close.bind(server))
@@ -67,6 +77,17 @@ test('token route', async (t) => {
 
   t.test('should delete token', async (t) => {
     deleteStub.resolves()
+    getStub.onCall(0).resolves({
+      empty: false,
+      docs: [
+        {
+          data: () => ({ subscriptionId: '11111' })
+        }
+      ]
+    })
+    getStub.onCall(1).resolves({ empty: false })
+    documentIdStub.resolves('111')
+
     const response = await server.inject({
       url: '/api/token/55555',
       method: 'DELETE'

@@ -46,7 +46,7 @@ export default async function subscribe(pushServerUrl, idToken) {
       'Content-Type': 'application/json',
       authorization: `Bearer ${idToken}`
     },
-    body: JSON.stringify(subscription)
+    body: JSON.stringify({ ...subscription.toJSON(), type: 'web' })
   })
 
   if (!response.ok) {
