@@ -1,16 +1,32 @@
 'use strict'
 
-const validationSchema = {
-  body: {
-    type: 'object',
-    properties: {
-      type: { type: 'string' },
-      endpoint: { type: 'string' },
-      token: { type: 'string' }
-    },
-    oneOf: [{ required: ['token'] }, { required: ['endpoint'] }],
-    required: ['type']
-  }
+const S = require('fluent-json-schema')
+
+const subscriptionMap = new Map()
+subscriptionMap.set('web', 'endpoint')
+subscriptionMap.set('expo', 'token')
+
+const bodySchema = S.anyOf([
+  S.object()
+    .prop(
+      'type',
+      S.string()
+        .pattern('\\b(web)\\b')
+        .required()
+    )
+    .prop('endpoint', S.string().required()),
+  S.object()
+    .prop(
+      'type',
+      S.string()
+        .pattern('\\b(expo)\\b')
+        .required()
+    )
+    .prop('token', S.string().required())
+])
+
+const schema = {
+  body: bodySchema
 }
 
 async function subscriptionRoutes(server) {
@@ -18,16 +34,16 @@ async function subscriptionRoutes(server) {
     method: 'POST',
     url: '/api/register',
     preHandler: server.auth([server.authenticate]),
-    schema: validationSchema,
+    schema,
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { type = null, endpoint = null, token = null } = request.body
+      const { type, endpoint, token } = request.body
 
       const db = firebaseAdmin.firestore()
 
       try {
-        const subscriptionIdentifierType =
-          type === 'expo' ? 'token' : 'endpoint'
+        const subscriptionIdentifierType = subscriptionMap.get(type)
+
         const subscriptionIdentifier = type === 'expo' ? token : endpoint
 
         const subscriptionRef = await db
@@ -45,7 +61,6 @@ async function subscriptionRoutes(server) {
               .collection('subscriptions')
               .doc(subscriptionRef.docs[0].id)
               .update({
-                userId: request.user,
                 ...request.body
               })
 

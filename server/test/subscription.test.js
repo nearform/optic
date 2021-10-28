@@ -110,4 +110,55 @@ test('subscription route', async (t) => {
 
     t.equal(response.statusCode, 400)
   })
+
+  t.test(
+    'should return 400 if type=web and no endpoint specified',
+    async (t) => {
+      const response = await server.inject({
+        url: '/api/register',
+        method: 'POST',
+        body: {
+          type: 'web'
+        }
+      })
+
+      t.equal(response.statusCode, 400)
+    }
+  )
+
+  t.test('should return 400 if type=expo and no token specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        type: 'expo'
+      }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test('should return 400 if type is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        endpoint: 'mock'
+      }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test('should return 400 if type is neither "web" nor "expo"', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        type: 'mock'
+      }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
 })

@@ -1,27 +1,25 @@
 'use strict'
 
+const S = require('fluent-json-schema')
 const uniqid = require('uniqid')
 
-const validationSchema = {
-  body: {
-    type: 'object',
-    properties: {
-      subscriptionId: { type: 'string' },
-      secretId: { type: 'string' }
-    },
-    required: ['subscriptionId', 'secretId']
-  }
+const bodySchema = S.object()
+  .prop('subscriptionId', S.string().required())
+  .prop('secretId', S.string().required())
+
+const schema = {
+  body: bodySchema
 }
 
 async function tokenRoutes(server) {
   server.route({
     method: 'PUT',
     url: '/api/token',
-    schema: validationSchema,
+    schema,
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { subscriptionId = null, secretId = null } = request.body
+      const { subscriptionId, secretId } = request.body
 
       const db = firebaseAdmin.firestore()
 
@@ -53,11 +51,11 @@ async function tokenRoutes(server) {
         .doc(secretId)
         .get()
 
-      if (secretRef.empty) {
+      if (!secretRef.exists) {
         return reply.code(404).send('Secret not found')
       }
 
-      const { subscriptionId } = secretRef.docs[0].data()
+      const subscriptionId = secretRef.get('subscriptionId')
 
       const subscriptionRef = await db
         .collection('subscriptions')

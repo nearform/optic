@@ -75,15 +75,31 @@ test('token route', async (t) => {
     t.equal(data.hasOwnProperty('token'), true)
   })
 
+  t.test('should return 400 if secretId is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/token',
+      method: 'PUT',
+      body: { subscriptionId: 'mock-id' }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test('should return 400 if subscriptionId is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/token',
+      method: 'PUT',
+      body: { secretId: 'mock-id' }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
   t.test('should delete token', async (t) => {
     deleteStub.resolves()
     getStub.onCall(0).resolves({
-      empty: false,
-      docs: [
-        {
-          data: () => ({ subscriptionId: '11111' })
-        }
-      ]
+      exists: true,
+      get: () => '111'
     })
     getStub.onCall(1).resolves({ empty: false })
     documentIdStub.resolves('111')
