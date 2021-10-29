@@ -37,14 +37,14 @@ async function subscriptionRoutes(server) {
     schema,
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { type, endpoint, token } = request.body
+      const { type } = request.body
 
       const db = firebaseAdmin.firestore()
 
       try {
         const subscriptionIdentifierType = subscriptionMap.get(type)
 
-        const subscriptionIdentifier = type === 'expo' ? token : endpoint
+        const subscriptionIdentifier = request.body[subscriptionIdentifierType]
 
         const subscriptionRef = await db
           .collection('subscriptions')
