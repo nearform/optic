@@ -46,14 +46,16 @@ export default async function subscribe(pushServerUrl, idToken) {
       'Content-Type': 'application/json',
       authorization: `Bearer ${idToken}`
     },
-    body: JSON.stringify(subscription)
+    body: JSON.stringify({ ...subscription.toJSON(), type: 'web' })
   })
 
   if (!response.ok) {
     return console.error('Cannot send subscription to server')
   }
 
-  const responseData = await response.json()
+  const data = await response.json()
 
-  console.log('Sent subscription to server and received response', responseData)
+  console.log('Sent subscription to server and received', data)
+
+  return data.subscriptionId
 }

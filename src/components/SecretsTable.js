@@ -14,7 +14,8 @@ function SecretsTable({
   removeSecret,
   updateSecret,
   secrets,
-  idToken
+  idToken,
+  subscriptionId
 }) {
   const confirmDispatch = useContext(ConfirmDispatchContext)
   const confirmState = useContext(ConfirmStateContext)
@@ -31,11 +32,16 @@ function SecretsTable({
         confirmState
       )
 
-      const response = await fetch(`/api/token/${secret._id}`, {
+      const response = await fetch(`/api/token`, {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           authorization: `Bearer ${idToken}`
-        }
+        },
+        body: JSON.stringify({
+          subscriptionId,
+          secretId: secret._id
+        })
       })
 
       const { token } = await response.json()

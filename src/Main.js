@@ -26,6 +26,7 @@ function Main({ classes }) {
   const [cameraDialog, toggleCameraDialog] = useState(false)
   const [formDialog, toggleFormDialog] = useState(false)
   const [firebaseApp, setFirebaseApp] = useState()
+  const [subscriptionId, setSubscriptionId] = useState()
 
   useEffect(() => {
     const load = async () => {
@@ -58,7 +59,12 @@ function Main({ classes }) {
   useEffect(() => {
     if (!idToken) return
     requestPermission('/api', idToken)
-    subscribe('/api', idToken)
+
+    const subscribeFn = async idToken => {
+      const id = await subscribe('/api', idToken)
+      setSubscriptionId(id)
+    }
+    subscribeFn(idToken)
   }, [idToken])
 
   const addSecret = async secret => {
@@ -110,6 +116,7 @@ function Main({ classes }) {
           updateSecret={updateSecret}
           removeSecret={removeSecret}
           idToken={idToken}
+          subscriptionId={subscriptionId}
         />
         <AddSecretButton
           scanQR={() => toggleCameraDialog(true)}

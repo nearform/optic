@@ -26,7 +26,9 @@ test('subscription route', async (t) => {
           }),
           add: addStub,
           where: () => ({
-            get: getStub
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
@@ -58,25 +60,26 @@ test('subscription route', async (t) => {
   t.teardown(server.close.bind(server))
 
   t.test('should update subscription if existing subscription', async (t) => {
-    getStub.returns([{ id: 99 }, { id: 199 }])
+    getStub.returns({ docs: [{ id: 99 }] })
+    updateStub.returns({})
 
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
       body: {
-        type: 'expo',
+        type: 'web',
         endpoint: 'mock-endpoint'
       }
     })
 
     t.equal(response.statusCode, 201)
     t.equal(getStub.calledOnce, true)
-    t.equal(updateStub.calledTwice, true)
+    t.equal(updateStub.calledOnce, true)
     t.equal(addStub.called, false)
   })
 
   t.test('should add subscription if not existing subscription', async (t) => {
-    addStub.resolves()
+    addStub.resolves({ id: 99 })
     getStub.returns({
       empty: true
     })
@@ -85,7 +88,7 @@ test('subscription route', async (t) => {
       url: '/api/register',
       method: 'POST',
       body: {
-        type: 'expo',
+        type: 'web',
         endpoint: 'mock-endpoint'
       }
     })
@@ -105,9 +108,57 @@ test('subscription route', async (t) => {
       }
     })
 
-    const data = response.json()
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test(
+    'should return 400 if type=web and no endpoint specified',
+    async (t) => {
+      const response = await server.inject({
+        url: '/api/register',
+        method: 'POST',
+        body: {
+          type: 'web'
+        }
+      })
+
+      t.equal(response.statusCode, 400)
+    }
+  )
+
+  t.test('should return 400 if type=expo and no token specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        type: 'expo'
+      }
+    })
 
     t.equal(response.statusCode, 400)
-    t.equal(data.error.id, 'no-endpoint')
+  })
+
+  t.test('should return 400 if type is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        endpoint: 'mock'
+      }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test('should return 400 if type is neither "web" nor "expo"', async (t) => {
+    const response = await server.inject({
+      url: '/api/register',
+      method: 'POST',
+      body: {
+        type: 'mock'
+      }
+    })
+
+    t.equal(response.statusCode, 400)
   })
 })

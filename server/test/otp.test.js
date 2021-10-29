@@ -10,6 +10,7 @@ test('/otp route', async (t) => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
+  const documentIdStub = sinon.stub()
 
   const mockedAuthPlugin = async function(server) {
     decorate(server, 'auth', authStub)
@@ -21,11 +22,15 @@ test('/otp route', async (t) => {
         collection: () => ({
           doc: docStub,
           where: () => ({
-            get: getStub
+            get: getStub,
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
     }
+    admin.firestore.FieldPath = { documentId: documentIdStub }
     decorate(server, 'firebaseAdmin', admin)
   }
 
@@ -47,6 +52,7 @@ test('/otp route', async (t) => {
     getStub.reset()
     docStub.reset()
     sendStub.reset()
+    documentIdStub.reset()
   })
 
   t.teardown(server.close.bind(server))
@@ -57,7 +63,7 @@ test('/otp route', async (t) => {
       docs: [
         {
           id: 99,
-          data: () => ({ userId: '11111' })
+          data: () => ({ subscriptionId: 'ExponentPush', userId: '11111' })
         }
       ]
     })
@@ -65,6 +71,7 @@ test('/otp route', async (t) => {
       set: () => {},
       onSnapshot: () => sinon.stub()
     })
+    documentIdStub.returns()
 
     const response = await server.inject({
       url: '/api/generate/55555',
@@ -105,7 +112,7 @@ test('/otp route', async (t) => {
       docs: [
         {
           id: 99,
-          data: () => ({ userId: '11111' })
+          data: () => ({ subscriptionId: 'ExponentPush', userId: '11111' })
         }
       ]
     })
@@ -118,6 +125,7 @@ test('/otp route', async (t) => {
         }
       ]
     })
+    documentIdStub.returns()
 
     const response = await server.inject({
       url: '/api/generate/55555',

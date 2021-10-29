@@ -10,6 +10,8 @@ test('token route', async (t) => {
   const sendStub = sinon.stub()
   const setStub = sinon.stub()
   const deleteStub = sinon.stub()
+  const getStub = sinon.stub()
+  const documentIdStub = sinon.stub()
 
   const mockedAuthPlugin = async function(server) {
     decorate(server, 'auth', authStub)
@@ -20,12 +22,19 @@ test('token route', async (t) => {
       firestore: () => ({
         collection: () => ({
           doc: () => ({
+            get: getStub,
             set: setStub,
             delete: deleteStub
+          }),
+          where: () => ({
+            where: () => ({
+              get: getStub
+            })
           })
         })
       })
     }
+    admin.firestore.FieldPath = { documentId: documentIdStub }
     decorate(server, 'firebaseAdmin', admin)
   }
 
@@ -46,6 +55,7 @@ test('token route', async (t) => {
   t.beforeEach(async () => {
     setStub.reset()
     deleteStub.reset()
+    documentIdStub.reset()
   })
 
   t.teardown(server.close.bind(server))
@@ -53,8 +63,9 @@ test('token route', async (t) => {
   t.test('should set token for user', async (t) => {
     setStub.resolves()
     const response = await server.inject({
-      url: '/api/token/55555',
-      method: 'PUT'
+      url: '/api/token',
+      method: 'PUT',
+      body: { secretId: 'mock-id', subscriptionId: 'mock-id' }
     })
 
     const data = response.json()
@@ -64,8 +75,35 @@ test('token route', async (t) => {
     t.equal(data.hasOwnProperty('token'), true)
   })
 
+  t.test('should return 400 if secretId is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/token',
+      method: 'PUT',
+      body: { subscriptionId: 'mock-id' }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
+  t.test('should return 400 if subscriptionId is not specified', async (t) => {
+    const response = await server.inject({
+      url: '/api/token',
+      method: 'PUT',
+      body: { secretId: 'mock-id' }
+    })
+
+    t.equal(response.statusCode, 400)
+  })
+
   t.test('should delete token', async (t) => {
     deleteStub.resolves()
+    getStub.onCall(0).resolves({
+      exists: true,
+      get: () => '111'
+    })
+    getStub.onCall(1).resolves({ empty: false })
+    documentIdStub.resolves('111')
+
     const response = await server.inject({
       url: '/api/token/55555',
       method: 'DELETE'
