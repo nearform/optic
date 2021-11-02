@@ -100,11 +100,13 @@ test('/otp route', async (t) => {
       method: 'GET'
     })
 
+    const data = await response.json()
+
     t.equal(response.statusCode, 404)
     t.equal(docStub.called, false)
     t.equal(getStub.calledOnce, true)
     t.equal(sendStub.called, false)
-    t.equal(response.body, 'Token not found')
+    t.equal(data.message, 'Token not found')
   })
   t.test('should return 404 if subscription not found', async (t) => {
     getStub.onCall(0).returns({
@@ -132,11 +134,13 @@ test('/otp route', async (t) => {
       method: 'GET'
     })
 
+    const data = await response.json()
+
     t.equal(response.statusCode, 404)
     t.equal(docStub.called, false)
     t.equal(getStub.calledTwice, true)
     t.equal(sendStub.called, false)
-    t.equal(response.body, 'No subscription found for user 11111')
+    t.equal(data.message, 'No subscription found for user 11111')
   })
 
   t.test('should respond and update otp', async (t) => {
