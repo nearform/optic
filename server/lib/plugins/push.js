@@ -4,11 +4,7 @@ const fp = require('fastify-plugin')
 const { Expo } = require('expo-server-sdk')
 const webPush = require('web-push')
 
-async function sendWebPush(
-  log,
-  requestObj,
-  { subscription, secretId, uniqueId }
-) {
+async function sendWebPush(log, { subscription, secretId, uniqueId }) {
   try {
     log.info(`Sending notification to sub: ${subscription.endpoint}`)
 
@@ -18,7 +14,6 @@ async function sendWebPush(
     )
   } catch (err) {
     log.error(err, 'Could not send push notification to client')
-    requestObj.delete()
 
     if (err.statusCode === 410 || err.statusCode === 404) {
       log.info('Subscription is not valid, removing')
@@ -63,22 +58,11 @@ async function pushPlugin(server, options) {
   const expo = new Expo()
 
   const push = {
-    send: async ({ subscriptions, secretId, uniqueId, requestObj }) => {
-      return Promise.all(
-        subscriptions.map(async (doc) => {
-          const subscription = doc.data()
-
-          if (subscription.type === 'expo') {
-            return sendExpoPush(log, expo, { subscription, secretId, uniqueId })
-          }
-
-          return sendWebPush(log, requestObj, {
-            subscription,
-            secretId,
-            uniqueId
-          })
-        })
-      )
+    send: async ({ subscription, secretId, uniqueId }) => {
+      const params = { subscription, secretId, uniqueId }
+      subscription.type === 'expo'
+        ? sendExpoPush(log, expo, params)
+        : sendWebPush(log, params)
     }
   }
 

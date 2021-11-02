@@ -30,7 +30,7 @@ async function otpRoutes(server) {
       const { userId, subscriptionId } = secret.docs[0].data()
       const secretId = secret.docs[0].id
 
-      const subscriptions = await db
+      const subscription = await db
         .collection('subscriptions')
         .where(
           firebaseAdmin.firestore.FieldPath.documentId(),
@@ -39,7 +39,7 @@ async function otpRoutes(server) {
         )
         .get()
 
-      if (subscriptions.empty) {
+      if (subscription.empty) {
         log.error(`No subscription found for user ${userId}`)
         return reply.notFound(`No subscription found for user ${userId}`)
       }
@@ -47,7 +47,8 @@ async function otpRoutes(server) {
       const uniqueId = uniqid()
 
       return new Promise(() => {
-        const completeRequest = (error, otp) => {
+        const completeRequest = (error, otp, requestObj) => {
+          requestObj.delete()
           if (error) {
             log.error(error.message)
             return reply.internalServerError('An unexpected error occured')
@@ -75,7 +76,7 @@ async function otpRoutes(server) {
               // update due to object creation
               return
             }
-            completeRequest(null, update.get('otp'))
+            completeRequest(null, update.get('otp'), requestObj)
           },
           (error) => {
             log.error(error.message)
@@ -83,15 +84,19 @@ async function otpRoutes(server) {
           }
         )
 
-        // fire the notification to all available subscription
         push.send({
-          subscriptions: subscriptions.docs,
+          subscription: subscription.docs[0].data(),
           secretId,
-          uniqueId,
-          requestObj
+          uniqueId
         })
 
-        const timeout = setTimeout(completeRequest, approvalLimit)
+        const timeout = setTimeout(
+          completeRequest,
+          approvalLimit,
+          null,
+          null,
+          requestObj
+        )
       })
     }
   })

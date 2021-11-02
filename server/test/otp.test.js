@@ -69,7 +69,8 @@ test('/otp route', async (t) => {
     })
     docStub.returns({
       set: () => {},
-      onSnapshot: () => sinon.stub()
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
     })
     documentIdStub.returns()
 

@@ -6,25 +6,13 @@ const fastifyAuth = require('fastify-auth')
 async function authPlugin(server) {
   server.register(fastifyAuth)
 
-  const { firebaseAdmin } = server
-
   const authenticate = async (request, reply) => {
-    const authHeader = (request.headers || {}).authorization || ''
-
-    if (!authHeader.startsWith('Bearer ')) {
-      return reply.code(401).send('Id token not found')
-    }
-
-    const idToken = authHeader.substr(7)
-
-    if (!idToken) return reply.code(401).send('Id token not found')
-
     try {
-      const token = await firebaseAdmin.auth().verifyIdToken(idToken)
-      request.user = token.uid
+      const token = await request.jwtVerify()
+      request.user = token.user_id
     } catch (err) {
       request.log.error(err.message)
-      return reply.code(401).send('Error verifying Id token')
+      return reply.unauthorized('Error verifying Id token')
     }
   }
 
@@ -32,6 +20,5 @@ async function authPlugin(server) {
 }
 
 module.exports = fp(authPlugin, {
-  name: 'auth-plugin',
-  dependencies: ['firebase-plugin']
+  name: 'auth-plugin'
 })
