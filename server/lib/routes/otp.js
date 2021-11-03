@@ -32,14 +32,10 @@ async function otpRoutes(server) {
 
       const subscription = await db
         .collection('subscriptions')
-        .where(
-          firebaseAdmin.firestore.FieldPath.documentId(),
-          '==',
-          subscriptionId
-        )
+        .doc(subscriptionId)
         .get()
 
-      if (subscription.empty) {
+      if (!subscription.exists) {
         log.error(`No subscription found for user ${userId}`)
         return reply.notFound(`No subscription found for user ${userId}`)
       }
@@ -47,11 +43,14 @@ async function otpRoutes(server) {
       const uniqueId = uniqid()
 
       return new Promise(() => {
-        const completeRequest = (error, otp, requestObj) => {
+        const requestObj = db.collection('requests').doc(uniqueId)
+        requestObj.set({ createdAt: new Date() })
+
+        const completeRequest = (error, otp) => {
           requestObj.delete()
           if (error) {
             log.error(error.message)
-            return reply.internalServerError('An unexpected error occured')
+            return reply.internalServerError()
           }
 
           unsubscribe()
@@ -66,9 +65,6 @@ async function otpRoutes(server) {
           return reply.send(otp)
         }
 
-        const requestObj = db.collection('requests').doc(uniqueId)
-        requestObj.set({ createdAt: new Date() })
-
         const unsubscribe = requestObj.onSnapshot(
           (update) => {
             const approved = update.get('approved')
@@ -76,27 +72,21 @@ async function otpRoutes(server) {
               // update due to object creation
               return
             }
-            completeRequest(null, update.get('otp'), requestObj)
+            completeRequest(null, update.get('otp'))
           },
           (error) => {
             log.error(error.message)
-            return reply.internalServerError('An unexpected error occured')
+            return reply.internalServerError()
           }
         )
 
         push.send({
-          subscription: subscription.docs[0].data(),
+          subscription: subscription.data(),
           secretId,
           uniqueId
         })
 
-        const timeout = setTimeout(
-          completeRequest,
-          approvalLimit,
-          null,
-          null,
-          requestObj
-        )
+        const timeout = setTimeout(completeRequest, approvalLimit)
       })
     }
   })
@@ -117,7 +107,7 @@ async function otpRoutes(server) {
       reply.code(201).send()
     } catch (error) {
       request.log.error(error.message)
-      return reply.internalServerError('An unexpected error occured')
+      return reply.internalServerError()
     }
   })
 }

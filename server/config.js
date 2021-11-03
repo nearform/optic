@@ -29,13 +29,6 @@ const env = envSchema({
     .prop('REACT_APP_PROJECT_ID', S.string())
     .prop('REACT_APP_STORAGE_BUCKET', S.string())
     .prop('REACT_APP_MESSAGING_SENDER_ID', S.string())
-    .prop('AUTH_DOMAIN', S.string().default('https://www.googleapis.com'))
-    .prop(
-      'JWKS_PATH',
-      S.string().default(
-        '/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
-      )
-    )
     .prop(
       'LOG_LEVEL',
       S.string()
@@ -108,10 +101,6 @@ const config = {
     reactAppProjectId: env.REACT_APP_PROJECT_ID,
     reactAppStorageBucket: env.REACT_APP_STORAGE_BUCKET,
     reactAppMessagingSenderId: env.REACT_APP_MESSAGING_SENDER_ID
-  },
-  jwt: {
-    domain: env.AUTH_DOMAIN,
-    jwksPath: env.JWKS_PATH
   }
 }
 

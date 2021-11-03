@@ -36,7 +36,7 @@ async function tokenRoutes(server) {
         reply.send({ token })
       } catch (error) {
         request.log.error(error.message)
-        reply.internalServerError('An unexpected error occured')
+        reply.internalServerError()
       }
     }
   })
@@ -85,7 +85,7 @@ async function tokenRoutes(server) {
         reply.code(204).send()
       } catch (error) {
         request.log.error(error.message)
-        reply.internalServerError('An unexpected error occured')
+        reply.internalServerError()
       }
     }
   })
