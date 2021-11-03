@@ -25,19 +25,14 @@ async function tokenRoutes(server) {
 
       const token = uniqid()
 
-      try {
-        await db
-          .collection('tokens')
-          .doc(secretId)
-          .set({
-            token,
-            subscriptionId
-          })
-        reply.send({ token })
-      } catch (error) {
-        request.log.error(error.message)
-        reply.internalServerError()
-      }
+      await db
+        .collection('tokens')
+        .doc(secretId)
+        .set({
+          token,
+          subscriptionId
+        })
+      reply.send({ token })
     }
   })
 
@@ -51,42 +46,37 @@ async function tokenRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
-      try {
-        const secretRef = await db
-          .collection('tokens')
-          .doc(secretId)
-          .get()
+      const secretRef = await db
+        .collection('tokens')
+        .doc(secretId)
+        .get()
 
-        if (!secretRef.exists) {
-          return reply.notFound('Secret not found')
-        }
-
-        const subscriptionId = secretRef.get('subscriptionId')
-
-        const subscriptionRef = await db
-          .collection('subscriptions')
-          .where(
-            firebaseAdmin.firestore.FieldPath.documentId(),
-            '==',
-            subscriptionId
-          )
-          .where('userId', '==', request.user)
-          .get()
-
-        if (subscriptionRef.empty) {
-          return reply.forbidden('Not authorized')
-        }
-
-        await db
-          .collection('tokens')
-          .doc(secretId)
-          .delete()
-
-        reply.code(204).send()
-      } catch (error) {
-        request.log.error(error.message)
-        reply.internalServerError()
+      if (!secretRef.exists) {
+        return reply.notFound('Secret not found')
       }
+
+      const subscriptionId = secretRef.get('subscriptionId')
+
+      const subscriptionRef = await db
+        .collection('subscriptions')
+        .where(
+          firebaseAdmin.firestore.FieldPath.documentId(),
+          '==',
+          subscriptionId
+        )
+        .where('userId', '==', request.user)
+        .get()
+
+      if (subscriptionRef.empty) {
+        return reply.forbidden('Not authorized')
+      }
+
+      await db
+        .collection('tokens')
+        .doc(secretId)
+        .delete()
+
+      reply.code(204).send()
     }
   })
 }
