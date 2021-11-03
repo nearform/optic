@@ -52,7 +52,7 @@ async function tokenRoutes(server) {
         .get()
 
       if (!secretRef.exists) {
-        return reply.code(404).send('Secret not found')
+        return reply.notFound('Secret not found')
       }
 
       const subscriptionId = secretRef.get('subscriptionId')
@@ -68,7 +68,7 @@ async function tokenRoutes(server) {
         .get()
 
       if (subscriptionRef.empty) {
-        return reply.code(403).send('Not authorized')
+        return reply.forbidden('Not authorized')
       }
 
       await db

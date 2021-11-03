@@ -24,33 +24,33 @@ async function otpRoutes(server) {
 
       if (secret.empty) {
         log.error('Token not found')
-        return reply.code(404).send('Token not found')
+        return reply.notFound('Token not found')
       }
 
       const { userId, subscriptionId } = secret.docs[0].data()
       const secretId = secret.docs[0].id
 
-      const subscriptions = await db
+      const subscription = await db
         .collection('subscriptions')
-        .where(
-          firebaseAdmin.firestore.FieldPath.documentId(),
-          '==',
-          subscriptionId
-        )
+        .doc(subscriptionId)
         .get()
 
-      if (subscriptions.empty) {
+      if (!subscription.exists) {
         log.error(`No subscription found for user ${userId}`)
-        return reply.code(404).send(`No subscription found for user ${userId}`)
+        return reply.notFound(`No subscription found for user ${userId}`)
       }
 
       const uniqueId = uniqid()
 
       return new Promise(() => {
+        const requestObj = db.collection('requests').doc(uniqueId)
+        requestObj.set({ createdAt: new Date() })
+
         const completeRequest = (error, otp) => {
+          requestObj.delete()
           if (error) {
             log.error(error.message)
-            return reply.code(500).send(error.message)
+            return reply.internalServerError()
           }
 
           unsubscribe()
@@ -58,15 +58,12 @@ async function otpRoutes(server) {
 
           if (!otp) {
             log.error('Request was not approved')
-            return reply.code(403).send()
+            return reply.forbidden('Request was not approved')
           }
 
           log.info('Request approved, sending back OTP')
           return reply.send(otp)
         }
-
-        const requestObj = db.collection('requests').doc(uniqueId)
-        requestObj.set({ createdAt: new Date() })
 
         const unsubscribe = requestObj.onSnapshot(
           (update) => {
@@ -79,16 +76,14 @@ async function otpRoutes(server) {
           },
           (error) => {
             log.error(error.message)
-            return reply.code(500).send(error.message)
+            return reply.internalServerError()
           }
         )
 
-        // fire the notification to all available subscription
         push.send({
-          subscriptions: subscriptions.docs,
+          subscription: subscription.data(),
           secretId,
-          uniqueId,
-          requestObj
+          uniqueId
         })
 
         const timeout = setTimeout(completeRequest, approvalLimit)
@@ -105,14 +100,14 @@ async function otpRoutes(server) {
       const requestObj = db.collection('requests').doc(uniqueId)
       const req = await requestObj.get()
       if (!req || !req.exists) {
-        return reply.code(404).send()
+        return reply.notFound('Request does not exist')
       }
 
       await requestObj.update({ otp: otp || null, approved })
       reply.code(201).send()
     } catch (error) {
       request.log.error(error.message)
-      return reply.code(500).send()
+      return reply.internalServerError()
     }
   })
 }

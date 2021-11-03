@@ -12,19 +12,19 @@ async function authPlugin(server) {
     const authHeader = (request.headers || {}).authorization || ''
 
     if (!authHeader.startsWith('Bearer ')) {
-      return reply.code(401).send('Id token not found')
+      return reply.unauthorized('Id token not found')
     }
 
     const idToken = authHeader.substr(7)
 
-    if (!idToken) return reply.code(401).send('Id token not found')
+    if (!idToken) return reply.unauthorized('Id token not found')
 
     try {
       const token = await firebaseAdmin.auth().verifyIdToken(idToken)
       request.user = token.uid
     } catch (err) {
       request.log.error(err.message)
-      return reply.code(401).send('Error verifying Id token')
+      return reply.unauthorized('Error verifying Id token')
     }
   }
 

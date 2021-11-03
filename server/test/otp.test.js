@@ -10,7 +10,6 @@ test('/otp route', async (t) => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
-  const documentIdStub = sinon.stub()
 
   const mockedAuthPlugin = async function(server) {
     decorate(server, 'auth', authStub)
@@ -22,15 +21,11 @@ test('/otp route', async (t) => {
         collection: () => ({
           doc: docStub,
           where: () => ({
-            get: getStub,
-            where: () => ({
-              get: getStub
-            })
+            get: getStub
           })
         })
       })
     }
-    admin.firestore.FieldPath = { documentId: documentIdStub }
     decorate(server, 'firebaseAdmin', admin)
   }
 
@@ -50,9 +45,8 @@ test('/otp route', async (t) => {
 
   t.beforeEach(async () => {
     getStub.reset()
-    docStub.reset()
     sendStub.reset()
-    documentIdStub.reset()
+    docStub.reset()
   })
 
   t.teardown(server.close.bind(server))
@@ -68,10 +62,14 @@ test('/otp route', async (t) => {
       ]
     })
     docStub.returns({
+      get: () => ({
+        exists: true,
+        data: () => sinon.stub()
+      }),
       set: () => {},
-      onSnapshot: () => sinon.stub()
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
     })
-    documentIdStub.returns()
 
     const response = await server.inject({
       url: '/api/generate/55555',
@@ -79,8 +77,8 @@ test('/otp route', async (t) => {
     })
 
     t.equal(response.statusCode, 403)
-    t.equal(docStub.called, true)
-    t.equal(getStub.calledTwice, true)
+    t.equal(docStub.calledTwice, true)
+    t.equal(getStub.calledOnce, true)
     t.equal(sendStub.called, true)
   })
 
@@ -100,11 +98,13 @@ test('/otp route', async (t) => {
       method: 'GET'
     })
 
+    const data = await response.json()
+
     t.equal(response.statusCode, 404)
     t.equal(docStub.called, false)
     t.equal(getStub.calledOnce, true)
     t.equal(sendStub.called, false)
-    t.equal(response.body, 'Token not found')
+    t.equal(data.message, 'Token not found')
   })
   t.test('should return 404 if subscription not found', async (t) => {
     getStub.onCall(0).returns({
@@ -116,33 +116,29 @@ test('/otp route', async (t) => {
         }
       ]
     })
-    getStub.onCall(1).returns({
-      empty: true,
-      docs: [
-        {
-          id: 99,
-          data: () => ({ userId: '11111' })
-        }
-      ]
+    docStub.returns({
+      get: () => ({
+        exists: false,
+        data: () => sinon.stub()
+      })
     })
-    documentIdStub.returns()
 
     const response = await server.inject({
       url: '/api/generate/55555',
       method: 'GET'
     })
 
+    const data = await response.json()
+
     t.equal(response.statusCode, 404)
-    t.equal(docStub.called, false)
-    t.equal(getStub.calledTwice, true)
+    t.equal(getStub.calledOnce, true)
     t.equal(sendStub.called, false)
-    t.equal(response.body, 'No subscription found for user 11111')
+    t.equal(data.message, 'No subscription found for user 11111')
   })
 
   t.test('should respond and update otp', async (t) => {
     const updateStub = sinon.stub()
     updateStub.resolves()
-
     docStub.returns({
       get: () => ({ exists: true }),
       update: updateStub

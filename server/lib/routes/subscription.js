@@ -69,7 +69,7 @@ async function subscriptionRoutes(server) {
         })
       } catch (error) {
         request.log.error(`Failed to register. Error-${error.message}`)
-        return reply.code(500).send('Failed to register')
+        return reply.internalServerError()
       }
     }
   })
