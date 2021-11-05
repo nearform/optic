@@ -6,14 +6,9 @@ const otpRoutes = require('../lib/routes/otp')
 const { buildServer, decorate } = require('./test-util.js')
 
 test('/otp route', async (t) => {
-  const authStub = sinon.stub()
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
-
-  const mockedAuthPlugin = async function(server) {
-    decorate(server, 'auth', authStub)
-  }
 
   const mockedFirebasePlugin = async function(server) {
     const admin = {
@@ -37,7 +32,6 @@ test('/otp route', async (t) => {
   }
 
   const server = await buildServer([
-    { plugin: mockedAuthPlugin },
     { plugin: mockedFirebasePlugin },
     { plugin: mockedPushPlugin },
     { plugin: otpRoutes }
