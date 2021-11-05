@@ -2,7 +2,7 @@
 
 const uniqid = require('uniqid')
 
-const approvalLimit = 10
+const approvalLimit = 60e3
 
 async function otpRoutes(server) {
   server.route({
