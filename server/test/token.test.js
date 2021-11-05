@@ -56,12 +56,14 @@ test('token route', async (t) => {
     setStub.reset()
     deleteStub.reset()
     documentIdStub.reset()
+    getStub.reset()
   })
 
   t.teardown(server.close.bind(server))
 
   t.test('should set token for user', async (t) => {
     setStub.resolves()
+    getStub.resolves({ empty: false })
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -94,6 +96,21 @@ test('token route', async (t) => {
 
     t.equal(response.statusCode, 400)
   })
+
+  t.test(
+    'should return 403 if subscriptionId doesnt belong to user',
+    async (t) => {
+      getStub.resolves({ empty: true })
+      const response = await server.inject({
+        url: '/api/token',
+        method: 'PUT',
+        body: { secretId: 'mock-id', subscriptionId: 'mock-subscription' }
+      })
+
+      t.equal(response.statusCode, 403)
+      t.equal(getStub.calledOnce, true)
+    }
+  )
 
   t.test('should delete token', async (t) => {
     deleteStub.resolves()

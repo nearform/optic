@@ -23,6 +23,20 @@ async function tokenRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
+      const subscriptionRef = await db
+        .collection('subscriptions')
+        .where(
+          firebaseAdmin.firestore.FieldPath.documentId(),
+          '==',
+          subscriptionId
+        )
+        .where('userId', '==', request.user)
+        .get()
+
+      if (subscriptionRef.empty) {
+        return reply.forbidden()
+      }
+
       const token = uniqid()
 
       await db
