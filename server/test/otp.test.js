@@ -64,9 +64,7 @@ test('/otp route', async (t) => {
     docStub.returns({
       get: () => ({
         exists: true,
-        data: () => ({
-          userId: '11111'
-        })
+        data: () => sinon.stub()
       }),
       set: () => {},
       onSnapshot: () => sinon.stub(),
