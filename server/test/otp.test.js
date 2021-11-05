@@ -179,37 +179,4 @@ test('/otp route', async (t) => {
     t.equal(response.statusCode, 404)
     t.equal(docStub.called, true)
   })
-
-  t.test(
-    'should return 403 if subscription doesnt belong to user',
-    async (t) => {
-      getStub.onCall(0).returns({
-        empty: false,
-        docs: [
-          {
-            id: 99,
-            data: () => ({ subscriptionId: 'ExponentPush', userId: '11111' })
-          }
-        ]
-      })
-      docStub.returns({
-        get: () => ({
-          exists: true,
-          data: () => ({
-            userId: '55'
-          })
-        })
-      })
-
-      const response = await server.inject({
-        url: '/api/generate/55555',
-        method: 'GET'
-      })
-
-      t.equal(response.statusCode, 403)
-      t.equal(docStub.called, true)
-      t.equal(getStub.calledOnce, true)
-      t.equal(sendStub.called, false)
-    }
-  )
 })
