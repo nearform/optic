@@ -17,6 +17,8 @@ async function buildServer(plugins = []) {
     server
   )
 
+  server.decorateRequest('user', '11111')
+
   await server.ready()
 
   return server

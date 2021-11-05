@@ -2,7 +2,7 @@
 
 const uniqid = require('uniqid')
 
-const approvalLimit = 60e3
+const approvalLimit = 10
 
 async function otpRoutes(server) {
   server.route({
@@ -12,7 +12,8 @@ async function otpRoutes(server) {
       const { firebaseAdmin, push } = server
       const {
         params: { token },
-        log
+        log,
+        user
       } = request
 
       const db = firebaseAdmin.firestore()
@@ -27,7 +28,7 @@ async function otpRoutes(server) {
         return reply.notFound('Token not found')
       }
 
-      const { userId, subscriptionId } = secret.docs[0].data()
+      const { subscriptionId } = secret.docs[0].data()
       const secretId = secret.docs[0].id
 
       const subscription = await db
@@ -36,8 +37,14 @@ async function otpRoutes(server) {
         .get()
 
       if (!subscription.exists) {
-        log.error(`No subscription found for user ${userId}`)
-        return reply.notFound(`No subscription found for user ${userId}`)
+        log.error(`Subscription not found - ${subscriptionId}`)
+        return reply.notFound('Subscription not found')
+      }
+
+      const subscriptionData = subscription.data()
+
+      if (subscriptionData.userId !== user) {
+        return reply.forbidden()
       }
 
       const uniqueId = uniqid()
@@ -81,7 +88,7 @@ async function otpRoutes(server) {
         )
 
         push.send({
-          subscription: subscription.data(),
+          subscription: subscriptionData,
           secretId,
           uniqueId
         })
