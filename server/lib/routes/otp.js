@@ -12,8 +12,7 @@ async function otpRoutes(server) {
       const { firebaseAdmin, push } = server
       const {
         params: { token },
-        log,
-        user
+        log
       } = request
 
       const db = firebaseAdmin.firestore()
@@ -39,12 +38,6 @@ async function otpRoutes(server) {
       if (!subscription.exists) {
         log.error(`Subscription not found - ${subscriptionId}`)
         return reply.notFound('Subscription not found')
-      }
-
-      const subscriptionData = subscription.data()
-
-      if (subscriptionData.userId !== user) {
-        return reply.forbidden()
       }
 
       const uniqueId = uniqid()
@@ -88,7 +81,7 @@ async function otpRoutes(server) {
         )
 
         push.send({
-          subscription: subscriptionData,
+          subscription: subscription.data(),
           secretId,
           uniqueId
         })

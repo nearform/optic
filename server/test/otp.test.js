@@ -6,14 +6,9 @@ const otpRoutes = require('../lib/routes/otp')
 const { buildServer, decorate } = require('./test-util.js')
 
 test('/otp route', async (t) => {
-  const authStub = sinon.stub()
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
-
-  const mockedAuthPlugin = async function(server) {
-    decorate(server, 'auth', authStub)
-  }
 
   const mockedFirebasePlugin = async function(server) {
     const admin = {
@@ -37,7 +32,6 @@ test('/otp route', async (t) => {
   }
 
   const server = await buildServer([
-    { plugin: mockedAuthPlugin },
     { plugin: mockedFirebasePlugin },
     { plugin: mockedPushPlugin },
     { plugin: otpRoutes }
@@ -64,9 +58,7 @@ test('/otp route', async (t) => {
     docStub.returns({
       get: () => ({
         exists: true,
-        data: () => ({
-          userId: '11111'
-        })
+        data: () => sinon.stub()
       }),
       set: () => {},
       onSnapshot: () => sinon.stub(),
@@ -179,37 +171,4 @@ test('/otp route', async (t) => {
     t.equal(response.statusCode, 404)
     t.equal(docStub.called, true)
   })
-
-  t.test(
-    'should return 403 if subscription doesnt belong to user',
-    async (t) => {
-      getStub.onCall(0).returns({
-        empty: false,
-        docs: [
-          {
-            id: 99,
-            data: () => ({ subscriptionId: 'ExponentPush', userId: '11111' })
-          }
-        ]
-      })
-      docStub.returns({
-        get: () => ({
-          exists: true,
-          data: () => ({
-            userId: '55'
-          })
-        })
-      })
-
-      const response = await server.inject({
-        url: '/api/generate/55555',
-        method: 'GET'
-      })
-
-      t.equal(response.statusCode, 403)
-      t.equal(docStub.called, true)
-      t.equal(getStub.calledOnce, true)
-      t.equal(sendStub.called, false)
-    }
-  )
 })
