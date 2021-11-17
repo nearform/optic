@@ -18,20 +18,24 @@ test('token route', async (t) => {
   }
 
   const mockedFirebasePlugin = async function(server) {
+    const collection = () => ({
+      doc: () => ({
+        get: getStub,
+        set: setStub,
+        delete: deleteStub,
+        collection
+      }),
+      where: () => ({
+        where: () => ({
+          get: getStub
+        }),
+        delete: deleteStub
+      })
+    })
+
     const admin = {
       firestore: () => ({
-        collection: () => ({
-          doc: () => ({
-            get: getStub,
-            set: setStub,
-            delete: deleteStub
-          }),
-          where: () => ({
-            where: () => ({
-              get: getStub
-            })
-          })
-        })
+        collection
       })
     }
     admin.firestore.FieldPath = { documentId: documentIdStub }
@@ -73,7 +77,7 @@ test('token route', async (t) => {
     const data = response.json()
 
     t.equal(response.statusCode, 200)
-    t.equal(setStub.calledOnce, true)
+    t.equal(setStub.calledTwice, true)
     t.equal(data.hasOwnProperty('token'), true)
   })
 
@@ -127,6 +131,6 @@ test('token route', async (t) => {
     })
 
     t.equal(response.statusCode, 204)
-    t.equal(deleteStub.calledOnce, true)
+    t.equal(deleteStub.calledTwice, true)
   })
 })

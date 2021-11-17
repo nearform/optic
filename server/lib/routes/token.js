@@ -48,6 +48,7 @@ async function tokenRoutes(server) {
           .delete()
         await db
           .collection('secrets')
+          .doc(secretId)
           .collection('tokens')
           .doc(token)
           .delete()
