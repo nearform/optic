@@ -9,6 +9,7 @@ test('/otp route', async (t) => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
+  const clock = sinon.useFakeTimers()
 
   const mockedFirebasePlugin = async function(server) {
     const admin = {
@@ -43,19 +44,13 @@ test('/otp route', async (t) => {
     docStub.reset()
   })
 
+  t.afterEach(() => {
+    clock.restore()
+  })
+
   t.teardown(server.close.bind(server))
 
   t.test('should generate push notification', async (t) => {
-    getStub.returns({
-      empty: false,
-      docs: [
-        {
-          id: 99,
-          data: () => ({ subscriptionId: 'ExponentPush', userId: '11111' })
-        }
-      ]
-    })
-
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -66,7 +61,6 @@ test('/otp route', async (t) => {
         })
       })
     })
-
     // Subscriptions collection
     docStub.onSecondCall().returns({
       get: () => ({
@@ -74,7 +68,6 @@ test('/otp route', async (t) => {
         data: () => sinon.stub()
       })
     })
-
     // Requests collection
     docStub.onThirdCall().returns({
       set: () => {},
@@ -82,16 +75,19 @@ test('/otp route', async (t) => {
       delete: () => sinon.stub()
     })
 
-    const response = await server.inject({
-      url: '/api/generate/55555',
-      method: 'GET'
-    })
+    let response
 
-    console.log(docStub.called)
+    server
+      .inject({
+        url: '/api/generate/55555',
+        method: 'GET'
+      })
+      .then((resp) => (response = resp))
+
+    await clock.tickAsync(61e3)
 
     t.equal(response.statusCode, 403)
     t.equal(docStub.calledThrice, true)
-    t.equal(getStub.called, true)
     t.equal(sendStub.called, true)
   })
 
@@ -182,6 +178,7 @@ test('/otp route', async (t) => {
   })
 
   t.test('should return 404 if request does not exist', async (t) => {
+    // Requests collection
     docStub.returns({
       get: () => null
     })
