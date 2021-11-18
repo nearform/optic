@@ -46,30 +46,15 @@ async function tokenRoutes(server) {
           .collection('allTokens')
           .doc(existingToken)
           .delete()
-        await db
-          .collection('secrets')
-          .doc(secretId)
-          .collection('tokens')
-          .doc(token)
-          .delete()
       }
-
-      // Tokens are stored by secret in a sub collection
-      await db
-        .collection('secrets')
-        .doc(secretId)
-        .collection('tokens')
-        .doc(token)
-        .set({
-          subscriptionId
-        })
 
       // Store tokens as a top level object to allow easy access via `secretId`
       await db
         .collection('allTokens')
         .doc(token)
         .set({
-          secretId
+          secretId,
+          subscriptionId
         })
 
       reply.send({ token })
@@ -78,24 +63,24 @@ async function tokenRoutes(server) {
 
   server.route({
     method: 'DELETE',
-    url: '/api/token/:secretId',
+    url: '/api/token/:tokenId',
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { secretId } = request.params
+      const { tokenId } = request.params
 
       const db = firebaseAdmin.firestore()
 
-      const secretRef = await db
-        .collection('secrets')
-        .doc(secretId)
+      const tokenRef = await db
+        .collection('allTokens')
+        .doc(tokenId)
         .get()
 
-      if (!secretRef.exists) {
-        return reply.notFound('Secret not found')
+      if (tokenRef.empty) {
+        return reply.notFound('Token not found')
       }
 
-      const subscriptionId = secretRef.get('subscriptionId')
+      const subscriptionId = tokenRef.get('subscriptionId')
 
       const subscriptionRef = await db
         .collection('subscriptions')
@@ -112,13 +97,8 @@ async function tokenRoutes(server) {
       }
 
       await db
-        .collection('secrets')
-        .doc(secretId)
-        .delete()
-
-      await db
         .collection('allTokens')
-        .where('secretId', '==', secretId)
+        .doc(tokenId)
         .delete()
 
       reply.code(204).send()

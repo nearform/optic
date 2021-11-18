@@ -18,7 +18,8 @@
     "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
     "start": "node server/index.js",
     "test": "tap server/test/ --timeout=120 --no-coverage && react-app-rewired test --passWithNoTests",
-    "prepare": "npx husky install"
+    "prepare": "npx husky install",
+    "temp": "tap server/test/otp.test.js --timeout=120 --no-coverage"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
