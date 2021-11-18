@@ -48,7 +48,6 @@ async function tokenRoutes(server) {
           .delete()
       }
 
-      // Store tokens as a top level object to allow easy access via `secretId`
       await db
         .collection('allTokens')
         .doc(token)

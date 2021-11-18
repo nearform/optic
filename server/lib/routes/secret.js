@@ -1,5 +1,30 @@
 'use strict'
 
+async function deleteTokenIfAuthorized(
+  firebaseAdmin,
+  tokenId,
+  subscriptionId,
+  user
+) {
+  const db = firebaseAdmin.firestore()
+  const subscriptionRef = await db
+    .collection('subscriptions')
+    .where(firebaseAdmin.firestore.FieldPath.documentId(), '==', subscriptionId)
+    .where('userId', '==', user)
+    .get()
+
+  if (subscriptionRef.empty) {
+    return false
+  }
+
+  await db
+    .collection('allTokens')
+    .doc(tokenId)
+    .delete()
+
+  return true
+}
+
 async function secretRoutes(server) {
   server.route({
     method: 'DELETE',
@@ -11,38 +36,35 @@ async function secretRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
-      const tokensForSecretRef = await db
+      const tokensForSecret = await db
         .collection('allTokens')
         .where('secretId', '==', secretId)
         .get()
 
-      if (tokensForSecretRef.empty) {
+      if (tokensForSecret.empty) {
         return reply.notFound('Secret not found')
       }
 
-      // TODO will need to iterate over each token and remove where matches secret
-      // const subscriptionId = tokensForSecretRef.get('subscriptionId')
-      //
-      // const subscriptionRef = await db
-      //   .collection('subscriptions')
-      //   .where(
-      //     firebaseAdmin.firestore.FieldPath.documentId(),
-      //     '==',
-      //     subscriptionId
-      //   )
-      //   .where('userId', '==', request.user)
-      //   .get()
-      //
-      // if (subscriptionRef.empty) {
-      //   return reply.forbidden('Not authorized')
-      // }
-      //
-      // await db
-      //   .collection('allTokens')
-      //   .where('secretId', '==', secretId)
-      //   .delete()
+      let deletedError = false
 
-      reply.code(204).send()
+      for await (const didDelete of await tokensForSecret.docs.map((doc) =>
+        deleteTokenIfAuthorized(
+          firebaseAdmin,
+          doc.id,
+          doc.data().subscriptionId,
+          request.user
+        )
+      )) {
+        if (!didDelete) {
+          deletedError = true
+        }
+      }
+
+      if (deletedError) {
+        return reply.forbidden('Not authorized')
+      } else {
+        reply.code(204).send()
+      }
     }
   })
 }
