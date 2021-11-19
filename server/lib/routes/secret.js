@@ -18,7 +18,7 @@ async function deleteTokenIfAuthorized(
   }
 
   await db
-    .collection('allTokens')
+    .collection('tokens')
     .doc(tokenId)
     .delete()
 
@@ -37,7 +37,7 @@ async function secretRoutes(server) {
       const db = firebaseAdmin.firestore()
 
       const tokensForSecret = await db
-        .collection('allTokens')
+        .collection('tokens')
         .where('secretId', '==', secretId)
         .get()
 

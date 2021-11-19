@@ -18,12 +18,12 @@ async function otpRoutes(server) {
       const db = firebaseAdmin.firestore()
 
       const tokenData = await db
-        .collection('allTokens')
+        .collection('tokens')
         .doc(token)
         .get()
 
       if (!tokenData.exists) {
-        log.error('Token not found in allTokens collection')
+        log.error('Token not found in tokens collection')
         return reply.notFound('Token not found')
       }
 

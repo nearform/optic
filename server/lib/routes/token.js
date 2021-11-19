@@ -43,13 +43,13 @@ async function tokenRoutes(server) {
       // Remove the existing token if specified (refreshing token)
       if (existingToken) {
         await db
-          .collection('allTokens')
+          .collection('tokens')
           .doc(existingToken)
           .delete()
       }
 
       await db
-        .collection('allTokens')
+        .collection('tokens')
         .doc(token)
         .set({
           secretId,
@@ -71,7 +71,7 @@ async function tokenRoutes(server) {
       const db = firebaseAdmin.firestore()
 
       const tokenRef = await db
-        .collection('allTokens')
+        .collection('tokens')
         .doc(tokenId)
         .get()
 
@@ -96,7 +96,7 @@ async function tokenRoutes(server) {
       }
 
       await db
-        .collection('allTokens')
+        .collection('tokens')
         .doc(tokenId)
         .delete()
 
