@@ -1,20 +1,16 @@
 const { test } = require('tap')
 const sinon = require('sinon')
 
-const tokenRoutes = require('../lib/routes/token')
+const secretRoutes = require('../lib/routes/secret')
 
 const { buildServer, decorate } = require('./test-util.js')
 
 test('secret route', async (t) => {
-  const authStub = sinon.stub()
-  const sendStub = sinon.stub()
-  const setStub = sinon.stub()
   const deleteStub = sinon.stub()
   const getStub = sinon.stub()
-  const documentIdStub = sinon.stub()
 
   const mockedAuthPlugin = async function(server) {
-    decorate(server, 'auth', authStub)
+    decorate(server, 'auth', sinon.stub())
   }
 
   const mockedFirebasePlugin = async function(server) {
@@ -23,10 +19,10 @@ test('secret route', async (t) => {
         collection: () => ({
           doc: () => ({
             get: getStub,
-            set: setStub,
             delete: deleteStub
           }),
           where: () => ({
+            get: getStub,
             where: () => ({
               get: getStub
             })
@@ -34,13 +30,13 @@ test('secret route', async (t) => {
         })
       })
     }
-    admin.firestore.FieldPath = { documentId: documentIdStub }
+    admin.firestore.FieldPath = { documentId: sinon.stub() }
     decorate(server, 'firebaseAdmin', admin)
   }
 
   const mockedPushPlugin = async function(server) {
     const push = {
-      send: sendStub
+      send: sinon.stub()
     }
     decorate(server, 'push', push)
   }
@@ -49,13 +45,11 @@ test('secret route', async (t) => {
     { plugin: mockedAuthPlugin },
     { plugin: mockedFirebasePlugin },
     { plugin: mockedPushPlugin },
-    { plugin: tokenRoutes }
+    { plugin: secretRoutes }
   ])
 
   t.beforeEach(async () => {
-    setStub.reset()
     deleteStub.reset()
-    documentIdStub.reset()
     getStub.reset()
   })
 
@@ -63,19 +57,65 @@ test('secret route', async (t) => {
 
   t.test('should delete all tokens relating to a secretId', async (t) => {
     deleteStub.resolves()
-    getStub.onCall(0).resolves({
+    getStub.onFirstCall().resolves({
       exists: true,
-      get: () => '111'
+      docs: [
+        {
+          id: 'an-id',
+          data: () => ({
+            subscriptionId: 'a-subscription-id'
+          })
+        },
+        {
+          id: 'another-id',
+          data: () => ({
+            subscriptionId: 'another-subscription-id'
+          })
+        }
+      ]
     })
-    getStub.onCall(1).resolves({ empty: false })
-    documentIdStub.resolves('111')
+
+    getStub.onSecondCall().resolves({
+      empty: false
+    })
+
+    getStub.onThirdCall().resolves({
+      empty: false
+    })
 
     const response = await server.inject({
-      url: '/api/token/55555',
+      url: '/api/secret/55555',
       method: 'DELETE'
     })
 
     t.equal(response.statusCode, 204)
-    t.equal(deleteStub.calledOnce, true)
+    t.equal(deleteStub.calledTwice, true)
+  })
+
+  t.test('should not delete tokens without access', async (t) => {
+    deleteStub.resolves()
+    getStub.onFirstCall().resolves({
+      exists: true,
+      docs: [
+        {
+          id: 'an-id',
+          data: () => ({
+            subscriptionId: 'a-subscription-id'
+          })
+        }
+      ]
+    })
+
+    getStub.onSecondCall().resolves({
+      empty: true
+    })
+
+    const response = await server.inject({
+      url: '/api/secret/55555',
+      method: 'DELETE'
+    })
+
+    t.equal(response.statusCode, 403)
+    t.equal(deleteStub.notCalled, true)
   })
 })
