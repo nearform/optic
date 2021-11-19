@@ -14,19 +14,15 @@ async function deleteTokenIfAuthorized(
     .get()
 
   if (subscriptionRef.empty) {
-    return 403
+    return false
   }
 
-  try {
-    await db
-      .collection('tokens')
-      .doc(tokenId)
-      .delete()
-    return 204
-  } catch (e) {
-    console.error(e)
-    return 500
-  }
+  await db
+    .collection('tokens')
+    .doc(tokenId)
+    .delete()
+
+  return true
 }
 
 async function secretRoutes(server) {
@@ -49,27 +45,25 @@ async function secretRoutes(server) {
         return reply.notFound('Secret not found')
       }
 
-      let httpCode
+      let deletedError = false
 
-      for await (const returnedHttpCode of await tokensForSecret.docs.map(
-        (doc) =>
-          deleteTokenIfAuthorized(
-            firebaseAdmin,
-            doc.id,
-            doc.data().subscriptionId,
-            request.user
-          )
+      for await (const didDelete of await tokensForSecret.docs.map((doc) =>
+        deleteTokenIfAuthorized(
+          firebaseAdmin,
+          doc.id,
+          doc.data().subscriptionId,
+          request.user
+        )
       )) {
-        httpCode = returnedHttpCode
+        if (!didDelete) {
+          deletedError = true
+        }
       }
 
-      switch (httpCode) {
-        case 500:
-          return reply.internalServerError()
-        case 403:
-          return reply.forbidden('Not authorized')
-        default:
-          reply.code(204).send()
+      if (deletedError) {
+        return reply.forbidden('Not authorized')
+      } else {
+        reply.code(204).send()
       }
     }
   })
