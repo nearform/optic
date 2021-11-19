@@ -72,7 +72,7 @@ test('token route', async (t) => {
 
     const data = response.json()
 
-    // t.equal(response.statusCode, 200)
+    t.equal(response.statusCode, 200)
     t.equal(setStub.calledOnce, true)
     t.equal(data.hasOwnProperty('token'), true)
   })
