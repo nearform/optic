@@ -45,7 +45,7 @@ async function secretRoutes(server) {
         return reply.notFound('Secret not found')
       }
 
-      let deletedError = false
+      let deleteAuthenticationError = false
 
       for await (const didDelete of await tokensForSecret.docs.map((doc) =>
         deleteTokenIfAuthorized(
@@ -56,11 +56,11 @@ async function secretRoutes(server) {
         )
       )) {
         if (!didDelete) {
-          deletedError = true
+          deleteAuthenticationError = true
         }
       }
 
-      if (deletedError) {
+      if (deleteAuthenticationError) {
         return reply.forbidden('Not authorized')
       } else {
         reply.code(204).send()
