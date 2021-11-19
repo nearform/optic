@@ -82,7 +82,8 @@ async function otpRoutes(server) {
         push.send({
           subscription: subscription.data(),
           secretId,
-          uniqueId
+          uniqueId,
+          token
         })
 
         const timeout = setTimeout(completeRequest, approvalLimit)
