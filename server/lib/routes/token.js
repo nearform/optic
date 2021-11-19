@@ -6,6 +6,7 @@ const uniqid = require('uniqid')
 const bodySchema = S.object()
   .prop('subscriptionId', S.string().required())
   .prop('secretId', S.string().required())
+  .prop('existingToken', S.string())
 
 const schema = {
   body: bodySchema
@@ -19,7 +20,7 @@ async function tokenRoutes(server) {
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { subscriptionId, secretId } = request.body
+      const { subscriptionId, secretId, existingToken } = request.body
 
       const db = firebaseAdmin.firestore()
 
@@ -39,37 +40,46 @@ async function tokenRoutes(server) {
 
       const token = uniqid()
 
+      // Remove the existing token if specified (refreshing token)
+      if (existingToken) {
+        await db
+          .collection('tokens')
+          .doc(existingToken)
+          .delete()
+      }
+
       await db
         .collection('tokens')
-        .doc(secretId)
+        .doc(token)
         .set({
-          token,
+          secretId,
           subscriptionId
         })
+
       reply.send({ token })
     }
   })
 
   server.route({
     method: 'DELETE',
-    url: '/api/token/:secretId',
+    url: '/api/token/:tokenId',
     preHandler: server.auth([server.authenticate]),
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { secretId } = request.params
+      const { tokenId } = request.params
 
       const db = firebaseAdmin.firestore()
 
-      const secretRef = await db
+      const tokenRef = await db
         .collection('tokens')
-        .doc(secretId)
+        .doc(tokenId)
         .get()
 
-      if (!secretRef.exists) {
-        return reply.notFound('Secret not found')
+      if (tokenRef.empty) {
+        return reply.notFound('Token not found')
       }
 
-      const subscriptionId = secretRef.get('subscriptionId')
+      const subscriptionId = tokenRef.get('subscriptionId')
 
       const subscriptionRef = await db
         .collection('subscriptions')
@@ -87,7 +97,7 @@ async function tokenRoutes(server) {
 
       await db
         .collection('tokens')
-        .doc(secretId)
+        .doc(tokenId)
         .delete()
 
       reply.code(204).send()

@@ -24,17 +24,20 @@ async function sendWebPush(log, { subscription, secretId, uniqueId }) {
   }
 }
 
-async function sendExpoPush(log, expo, { subscription, secretId, uniqueId }) {
-  const { token } = subscription
-  if (!Expo.isExpoPushToken(token)) {
-    log.error(`Push token ${token} is not a valid Expo push token`)
+async function sendExpoPush(
+  log,
+  expo,
+  { subscription, secretId, uniqueId, token }
+) {
+  if (!Expo.isExpoPushToken(subscription.token)) {
+    log.error(`Push token ${subscription.token} is not a valid Expo push token`)
     return
   }
 
   try {
     await expo.sendPushNotificationsAsync([
       {
-        to: token,
+        to: subscription.token,
         sound: 'default',
         body: 'One Time Password requested',
         data: { uniqueId, token, secretId }
@@ -58,8 +61,8 @@ async function pushPlugin(server, options) {
   const expo = new Expo()
 
   const push = {
-    send: async ({ subscription, secretId, uniqueId }) => {
-      const params = { subscription, secretId, uniqueId }
+    send: async ({ subscription, secretId, uniqueId, token }) => {
+      const params = { subscription, secretId, uniqueId, token }
       subscription.type === 'expo'
         ? sendExpoPush(log, expo, params)
         : sendWebPush(log, params)

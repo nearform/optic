@@ -17,18 +17,17 @@ async function otpRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
-      const secret = await db
+      const tokenData = await db
         .collection('tokens')
-        .where('token', '==', token)
+        .doc(token)
         .get()
 
-      if (secret.empty) {
-        log.error('Token not found')
+      if (!tokenData.exists) {
+        log.error('Token not found in tokens collection')
         return reply.notFound('Token not found')
       }
 
-      const { subscriptionId } = secret.docs[0].data()
-      const secretId = secret.docs[0].id
+      const { secretId, subscriptionId } = tokenData.data()
 
       const subscription = await db
         .collection('subscriptions')
@@ -83,7 +82,8 @@ async function otpRoutes(server) {
         push.send({
           subscription: subscription.data(),
           secretId,
-          uniqueId
+          uniqueId,
+          token
         })
 
         const timeout = setTimeout(completeRequest, approvalLimit)
