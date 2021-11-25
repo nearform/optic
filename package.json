@@ -7,7 +7,6 @@
   },
   "scripts": {
     "dev": "run-p dev:*",
-    "generate:keys": "node server/bin/keys.js",
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
     "dev:server": "nodemon --exec \"node server/index.js\"",
     "lint": "eslint .",
@@ -37,15 +36,8 @@
     "morgan": "^1.9.0",
     "otplib": "^10.2.3",
     "pkg-dir": "^5.0.0",
-    "qr-scanner": "^1.0.0",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-firebaseui": "^3.1.2",
-    "react-qr-reader": "^2.1.2",
     "uniqid": "^5.0.3",
-    "url-otpauth": "^2.0.0",
-    "web-push": "^3.3.3",
-    "workbox-precaching": "^4.3.1"
+    "url-otpauth": "^2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",

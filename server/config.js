@@ -20,9 +20,6 @@ const env = envSchema({
     .prop('FIREBASE_PRIVATE_KEY', S.string())
     .prop('FIREBASE_PRIVATE_KEY_BASE64', S.string())
     .prop('FIREBASE_CLIENT_EMAIL', S.string())
-    .prop('VAPID_PUBLIC_KEY', S.string())
-    .prop('VAPID_PRIVATE_KEY', S.string())
-    .prop('VAPID_SUBJECT', S.string())
     .prop(
       'LOG_LEVEL',
       S.string()
@@ -34,10 +31,7 @@ const env = envSchema({
       'PORT',
       'FIREBASE_PROJECT_ID',
       'FIREBASE_CLIENT_EMAIL',
-      'FIREBASE_PRIVATE_KEY_BASE64',
-      'VAPID_PUBLIC_KEY',
-      'VAPID_PRIVATE_KEY',
-      'VAPID_SUBJECT'
+      'FIREBASE_PRIVATE_KEY_BASE64'
     ])
 })
 
@@ -76,11 +70,6 @@ const config = {
     firebaseClientEmail: env.FIREBASE_CLIENT_EMAIL,
     firebasePrivateKey: env.FIREBASE_PRIVATE_KEY,
     firebasePrivateKeyBase64: env.FIREBASE_PRIVATE_KEY_BASE64
-  },
-  vapid: {
-    vapidPublicKey: env.VAPID_PUBLIC_KEY,
-    vapidPrivateKey: env.VAPID_PRIVATE_KEY,
-    vapidSubject: env.VAPID_SUBJECT
   }
 }
 

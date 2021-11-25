@@ -3,18 +3,9 @@
 const S = require('fluent-json-schema')
 
 const subscriptionMap = new Map()
-subscriptionMap.set('web', 'endpoint')
 subscriptionMap.set('expo', 'token')
 
 const bodySchema = S.anyOf([
-  S.object()
-    .prop(
-      'type',
-      S.string()
-        .pattern('\\b(web)\\b')
-        .required()
-    )
-    .prop('endpoint', S.string().required()),
   S.object()
     .prop(
       'type',

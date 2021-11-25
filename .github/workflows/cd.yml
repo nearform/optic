@@ -22,8 +22,5 @@ jobs:
                     FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
                     FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }},
                     FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }},
-                    VAPID_SUBJECT=${{ secrets.VAPID_SUBJECT }},
-                    VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }},
-                    VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }}
           flags: --allow-unauthenticated --timeout=1800
           source: .

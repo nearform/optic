@@ -47,18 +47,6 @@ resource "google_cloud_run_service" "optic" {
           name  = "FIREBASE_PRIVATE_KEY_BASE64"
           value = "dummy"
         }
-        env {
-          name  = "VAPID_SUBJECT"
-          value = "dummy"
-        }
-        env {
-          name  = "VAPID_PRIVATE_KEY"
-          value = "dummy"
-        }
-        env {
-          name  = "VAPID_PUBLIC_KEY"
-          value = "dummy"
-        }
       }
     }
 
