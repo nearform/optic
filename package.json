@@ -6,23 +6,18 @@
     "node": "16"
   },
   "scripts": {
-    "build": "react-app-rewired build",
     "dev": "run-p dev:*",
-    "dev:client": "react-app-rewired start",
     "generate:keys": "node server/bin/keys.js",
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
     "dev:server": "nodemon --exec \"node server/index.js\"",
-    "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
+    "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
     "test": "tap server/test/ --no-coverage && react-app-rewired test --passWithNoTests",
     "prepare": "npx husky install"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
-    "@material-ui/icons": "^3.0.2",
     "classnames": "^2.2.6",
     "close-with-grace": "^1.1.0",
     "debug": "^2.6.9",
@@ -55,7 +50,6 @@
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
-    "before-build-webpack": "^0.2.8",
     "eslint": "^5.12.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-prettier-standard": "^4.0.1",
@@ -72,8 +66,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "prettier-config-standard": "^4.0.0",
-    "react-app-rewired": "^2.1.0",
-    "react-scripts": "^2.1.5",
     "sinon": "^11.1.2",
     "tap": "^15.0.10",
     "workbox-webpack-plugin": "^4.3.1"
@@ -85,7 +77,7 @@
     "not op_mini all"
   ],
   "lint-staged": {
-    "{server,src}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "{server}/**/*.{js,ts,json,md}": [
       "eslint --cache",
       "prettier"
     ]

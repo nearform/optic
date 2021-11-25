@@ -25,7 +25,7 @@ class WaitPlugin extends WebpackBeforeBuildPlugin {
 }
 
 const swOutputName = 'custom-service-worker.js'
-const workerSource = path.resolve(__dirname, 'src', 'workers', 'approval.js')
+const workerSource = path.resolve(__dirname, 'workers', 'approval.js')
 
 module.exports = {
   webpack: (config, env) => {

@@ -65,7 +65,7 @@ async function otpRoutes(server) {
         }
 
         const unsubscribe = requestObj.onSnapshot(
-          (update) => {
+          update => {
             const approved = update.get('approved')
             if (approved === undefined) {
               // update due to object creation
@@ -73,7 +73,7 @@ async function otpRoutes(server) {
             }
             completeRequest(null, update.get('otp'))
           },
-          (error) => {
+          error => {
             log.error(error.message)
             return reply.internalServerError()
           }

@@ -69,14 +69,14 @@ const config = {
     logger: {
       level: env.LOG_LEVEL,
       serializers: {
-        req: (request) => ({
+        req: request => ({
           method: request.raw.method,
           url: request.raw.url,
           hostname: request.hostname,
           params: request.params,
           query: request.query
         }),
-        res: (response) => ({
+        res: response => ({
           body: response.body,
           statusCode: response.statusCode
         })

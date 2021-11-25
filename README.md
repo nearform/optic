@@ -46,10 +46,6 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
 
 ## Issues
 1. The initial assumption was that we don't need database, but we need a place to store subscriptions
-1. Safari browser doesn't support push notifications
-1. Only Android browsers support push notifications
-1. Desktop browsers need a running process to receive notification
-1. Building a mobile app might solve all problems
 
 [firebase]: https://console.firebase.google.com
 [firebase-admin-settings]: https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app

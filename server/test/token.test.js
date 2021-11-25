@@ -5,7 +5,7 @@ const tokenRoutes = require('../lib/routes/token')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('token route', async (t) => {
+test('token route', async t => {
   const authStub = sinon.stub()
   const sendStub = sinon.stub()
   const setStub = sinon.stub()
@@ -61,7 +61,7 @@ test('token route', async (t) => {
 
   t.teardown(server.close.bind(server))
 
-  t.test('should set token for user', async (t) => {
+  t.test('should set token for user', async t => {
     setStub.resolves()
     getStub.resolves({ empty: false })
     const response = await server.inject({
@@ -77,7 +77,7 @@ test('token route', async (t) => {
     t.equal(data.hasOwnProperty('token'), true)
   })
 
-  t.test('should return 400 if secretId is not specified', async (t) => {
+  t.test('should return 400 if secretId is not specified', async t => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -87,7 +87,7 @@ test('token route', async (t) => {
     t.equal(response.statusCode, 400)
   })
 
-  t.test('should return 400 if subscriptionId is not specified', async (t) => {
+  t.test('should return 400 if subscriptionId is not specified', async t => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -99,7 +99,7 @@ test('token route', async (t) => {
 
   t.test(
     'should return 403 if subscriptionId doesnt belong to user',
-    async (t) => {
+    async t => {
       getStub.resolves({ empty: true })
       const response = await server.inject({
         url: '/api/token',
@@ -112,7 +112,7 @@ test('token route', async (t) => {
     }
   )
 
-  t.test('should delete token', async (t) => {
+  t.test('should delete token', async t => {
     deleteStub.resolves()
     getStub.onCall(0).resolves({
       exists: true,
