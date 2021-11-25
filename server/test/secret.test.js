@@ -5,7 +5,7 @@ const secretRoutes = require('../lib/routes/secret')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('secret route', async t => {
+test('secret route', async (t) => {
   const deleteStub = sinon.stub()
   const getStub = sinon.stub()
 
@@ -55,7 +55,7 @@ test('secret route', async t => {
 
   t.teardown(server.close.bind(server))
 
-  t.test('should delete all tokens relating to a secretId', async t => {
+  t.test('should delete all tokens relating to a secretId', async (t) => {
     deleteStub.resolves()
     getStub.onFirstCall().resolves({
       exists: true,
@@ -92,7 +92,7 @@ test('secret route', async t => {
     t.equal(deleteStub.calledTwice, true)
   })
 
-  t.test('should not delete tokens without access', async t => {
+  t.test('should not delete tokens without access', async (t) => {
     deleteStub.resolves()
     getStub.onFirstCall().resolves({
       exists: true,

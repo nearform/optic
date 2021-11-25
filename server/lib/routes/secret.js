@@ -47,7 +47,7 @@ async function secretRoutes(server) {
 
       let deleteAuthenticationError = false
 
-      for await (const didDelete of await tokensForSecret.docs.map(doc =>
+      for await (const didDelete of await tokensForSecret.docs.map((doc) =>
         deleteTokenIfAuthorized(
           firebaseAdmin,
           doc.id,

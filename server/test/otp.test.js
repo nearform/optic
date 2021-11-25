@@ -5,7 +5,7 @@ const otpRoutes = require('../lib/routes/otp')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('/otp route', async t => {
+test('/otp route', async (t) => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
@@ -50,7 +50,7 @@ test('/otp route', async t => {
 
   t.teardown(server.close.bind(server))
 
-  t.test('should generate push notification', async t => {
+  t.test('should generate push notification', async (t) => {
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -82,7 +82,7 @@ test('/otp route', async t => {
         url: '/api/generate/55555',
         method: 'GET'
       })
-      .then(resp => (response = resp))
+      .then((resp) => (response = resp))
 
     await clock.tickAsync(61e3)
 
@@ -91,7 +91,7 @@ test('/otp route', async t => {
     t.equal(sendStub.called, true)
   })
 
-  t.test('should return 404 if token not found', async t => {
+  t.test('should return 404 if token not found', async (t) => {
     getStub.returns({
       exists: false
     })
@@ -113,7 +113,7 @@ test('/otp route', async t => {
     t.equal(sendStub.called, false)
     t.equal(data.message, 'Token not found')
   })
-  t.test('should return 404 if subscription not found', async t => {
+  t.test('should return 404 if subscription not found', async (t) => {
     getStub.onFirstCall().returns({
       exists: true,
       data: () => ({
@@ -154,7 +154,7 @@ test('/otp route', async t => {
     t.equal(data.message, 'Subscription not found')
   })
 
-  t.test('should respond and update otp', async t => {
+  t.test('should respond and update otp', async (t) => {
     const updateStub = sinon.stub()
     updateStub.resolves()
     docStub.returns({
@@ -177,7 +177,7 @@ test('/otp route', async t => {
     t.equal(updateStub.called, true)
   })
 
-  t.test('should return 404 if request does not exist', async t => {
+  t.test('should return 404 if request does not exist', async (t) => {
     // Requests collection
     docStub.returns({
       get: () => null
