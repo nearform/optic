@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
-    "test": "tap server/test/ --no-coverage && react-app-rewired test --passWithNoTests",
+    "test": "tap server/test/ --no-coverage",
     "prepare": "npx husky install"
   },
   "dependencies": {
