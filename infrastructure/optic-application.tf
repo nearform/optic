@@ -59,30 +59,6 @@ resource "google_cloud_run_service" "optic" {
           name  = "VAPID_PUBLIC_KEY"
           value = "dummy"
         }
-        env {
-          name  = "REACT_APP_API_KEY"
-          value = "dummy"
-        }
-        env {
-          name  = "REACT_APP_AUTH_DOMAIN"
-          value = "dummy"
-        }
-        env {
-          name  = "REACT_APP_DATABASE_URL"
-          value = "dummy"
-        }
-        env {
-          name  = "REACT_APP_PROJECT_ID"
-          value = "dummy"
-        }
-        env {
-          name  = "REACT_APP_STORAGE_BUCKET"
-          value = "dummy"
-        }
-        env {
-          name  = "REACT_APP_MESSAGING_SENDER_ID"
-          value = "dummy"
-        }
       }
     }
 

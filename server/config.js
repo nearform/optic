@@ -23,12 +23,6 @@ const env = envSchema({
     .prop('VAPID_PUBLIC_KEY', S.string())
     .prop('VAPID_PRIVATE_KEY', S.string())
     .prop('VAPID_SUBJECT', S.string())
-    .prop('REACT_APP_API_KEY', S.string())
-    .prop('REACT_APP_AUTH_DOMAIN', S.string())
-    .prop('REACT_APP_DATABASE_URL', S.string())
-    .prop('REACT_APP_PROJECT_ID', S.string())
-    .prop('REACT_APP_STORAGE_BUCKET', S.string())
-    .prop('REACT_APP_MESSAGING_SENDER_ID', S.string())
     .prop(
       'LOG_LEVEL',
       S.string()
@@ -43,13 +37,7 @@ const env = envSchema({
       'FIREBASE_PRIVATE_KEY_BASE64',
       'VAPID_PUBLIC_KEY',
       'VAPID_PRIVATE_KEY',
-      'VAPID_SUBJECT',
-      'REACT_APP_API_KEY',
-      'REACT_APP_AUTH_DOMAIN',
-      'REACT_APP_DATABASE_URL',
-      'REACT_APP_PROJECT_ID',
-      'REACT_APP_STORAGE_BUCKET',
-      'REACT_APP_MESSAGING_SENDER_ID'
+      'VAPID_SUBJECT'
     ])
 })
 
@@ -93,14 +81,6 @@ const config = {
     vapidPublicKey: env.VAPID_PUBLIC_KEY,
     vapidPrivateKey: env.VAPID_PRIVATE_KEY,
     vapidSubject: env.VAPID_SUBJECT
-  },
-  react: {
-    reactAppApiKey: env.REACT_APP_API_KEY,
-    reactAppAuthDomain: env.REACT_APP_AUTH_DOMAIN,
-    reactAppDatabaseUrl: env.REACT_APP_DATABASE_URL,
-    reactAppProjectId: env.REACT_APP_PROJECT_ID,
-    reactAppStorageBucket: env.REACT_APP_STORAGE_BUCKET,
-    reactAppMessagingSenderId: env.REACT_APP_MESSAGING_SENDER_ID
   }
 }
 
