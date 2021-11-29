@@ -26,8 +26,6 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
    - `FIREBASE_CLIENT_EMAIL` is your Firebase client email generated along with the private key
    - `FIREBASE_PRIVATE_KEY_BASE64` is your Firebase private key, base64 encoded to avoid new lines
    - `FIREBASE_PROJECT_ID` is your Firebase project id
-   - `VAPID_SUBJECT` is a `mailto:` address
-   - Get all th `REACT_APP_*` values from the Firebase web application configuration snippet
    - Do not use quotes, if you intend to use the same file for dockerized deployment
 1. `npm run dev`
 
@@ -46,16 +44,11 @@ Optic is an app that helps you securely generate OTP tokens for 2FA protected np
 
 ## Issues
 1. The initial assumption was that we don't need database, but we need a place to store subscriptions
-1. Safari browser doesn't support push notifications
-1. Only Android browsers support push notifications
-1. Desktop browsers need a running process to receive notification
-1. Building a mobile app might solve all problems
 
 [firebase]: https://console.firebase.google.com
 [firebase-admin-settings]: https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app
 [firebase-signin]: https://console.firebase.google.com/u/0/project/_/authentication/providers
 [firebase-app-settings]: https://console.firebase.google.com/u/0/project/_/settings/general/
 [database]: https://console.firebase.google.com/u/0/project/_/database
-[VAPID]: https://tools.ietf.org/html/draft-ietf-webpush-vapid-01
 [npm-profile]: https://www.npmjs.com/settings/~/profile
 [npm-token]: https://www.npmjs.com/settings/~/tokens

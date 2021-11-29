@@ -1,13 +1,3 @@
-# Front-end build
-FROM node:16-alpine as build-stage
-
-WORKDIR /build-app
-COPY ./ /build-app/
-RUN npm ci
-
-ENV NODE_ENV production
-RUN npm run build
-
 # Application
 FROM node:16-alpine
 WORKDIR /usr/src/app

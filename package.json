@@ -6,23 +6,16 @@
     "node": "16"
   },
   "scripts": {
-    "build": "react-app-rewired build",
-    "dev": "run-p dev:*",
-    "dev:client": "react-app-rewired start",
-    "generate:keys": "node server/bin/keys.js",
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
-    "dev:server": "nodemon --exec \"node server/index.js\"",
-    "eject": "react-scripts eject",
+    "dev": "nodemon --exec \"node server/index.js\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier --write '**/*.js?(on)' '**/*.scss'",
+    "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
-    "test": "tap server/test/ --no-coverage && react-app-rewired test --passWithNoTests",
+    "test": "tap server/test/ --no-coverage",
     "prepare": "npx husky install"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
-    "@material-ui/icons": "^3.0.2",
     "classnames": "^2.2.6",
     "close-with-grace": "^1.1.0",
     "debug": "^2.6.9",
@@ -40,22 +33,13 @@
     "fluent-json-schema": "^3.0.1",
     "localforage": "^1.7.3",
     "morgan": "^1.9.0",
-    "otplib": "^10.2.3",
     "pkg-dir": "^5.0.0",
-    "qr-scanner": "^1.0.0",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-firebaseui": "^3.1.2",
-    "react-qr-reader": "^2.1.2",
     "uniqid": "^5.0.3",
-    "url-otpauth": "^2.0.0",
-    "web-push": "^3.3.3",
-    "workbox-precaching": "^4.3.1"
+    "url-otpauth": "^2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
-    "before-build-webpack": "^0.2.8",
     "eslint": "^5.12.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-prettier-standard": "^4.0.1",
@@ -67,25 +51,15 @@
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^7.0.0",
     "lint-staged": "^11.2.6",
-    "lodash": "^4.17.11",
     "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "prettier-config-standard": "^4.0.0",
-    "react-app-rewired": "^2.1.0",
-    "react-scripts": "^2.1.5",
     "sinon": "^11.1.2",
-    "tap": "^15.0.10",
-    "workbox-webpack-plugin": "^4.3.1"
+    "tap": "^15.0.10"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "lint-staged": {
-    "{server,src}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "{server}/**/*.{js,ts,json,md}": [
       "eslint --cache",
       "prettier"
     ]

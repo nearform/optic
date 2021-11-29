@@ -2,28 +2,14 @@
 
 const S = require('fluent-json-schema')
 
-const subscriptionMap = new Map()
-subscriptionMap.set('web', 'endpoint')
-subscriptionMap.set('expo', 'token')
-
-const bodySchema = S.anyOf([
-  S.object()
-    .prop(
-      'type',
-      S.string()
-        .pattern('\\b(web)\\b')
-        .required()
-    )
-    .prop('endpoint', S.string().required()),
-  S.object()
-    .prop(
-      'type',
-      S.string()
-        .pattern('\\b(expo)\\b')
-        .required()
-    )
-    .prop('token', S.string().required())
-])
+const bodySchema = S.object()
+  .prop(
+    'type',
+    S.string()
+      .pattern('\\b(expo)\\b')
+      .required()
+  )
+  .prop('token', S.string().required())
 
 const schema = {
   body: bodySchema
@@ -37,19 +23,13 @@ async function subscriptionRoutes(server) {
     schema,
     handler: async (request, reply) => {
       const { firebaseAdmin } = server
-      const { type } = request.body
-
       const db = firebaseAdmin.firestore()
 
       try {
-        const subscriptionIdentifierType = subscriptionMap.get(type)
-
-        const subscriptionIdentifier = request.body[subscriptionIdentifierType]
-
         const subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
-          .where(subscriptionIdentifierType, '==', subscriptionIdentifier)
+          .where('expo', '==', request.body['token'])
           .get()
 
         const subscription = subscriptionRef.empty

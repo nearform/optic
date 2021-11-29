@@ -59,72 +59,17 @@ test('subscription route', async (t) => {
 
   t.teardown(server.close.bind(server))
 
-  t.test('should update subscription if existing subscription', async (t) => {
-    getStub.returns({ docs: [{ id: 99 }] })
-    updateStub.returns({})
-
-    const response = await server.inject({
-      url: '/api/register',
-      method: 'POST',
-      body: {
-        type: 'web',
-        endpoint: 'mock-endpoint'
-      }
-    })
-
-    t.equal(response.statusCode, 201)
-    t.equal(getStub.calledOnce, true)
-    t.equal(updateStub.calledOnce, true)
-    t.equal(addStub.called, false)
-  })
-
-  t.test('should add subscription if not existing subscription', async (t) => {
-    addStub.resolves({ id: 99 })
-    getStub.returns({
-      empty: true
-    })
-
-    const response = await server.inject({
-      url: '/api/register',
-      method: 'POST',
-      body: {
-        type: 'web',
-        endpoint: 'mock-endpoint'
-      }
-    })
-
-    t.equal(response.statusCode, 201)
-    t.equal(getStub.calledOnce, true)
-    t.equal(addStub.calledOnce, true)
-    t.equal(updateStub.called, false)
-  })
-
   t.test('should return 400 if no endpoint specified', async (t) => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
       body: {
-        type: 'web'
+        type: 'expo'
       }
     })
 
     t.equal(response.statusCode, 400)
   })
-
-  t.test(
-    'should return 400 if type=web and no endpoint specified',
-    async (t) => {
-      const response = await server.inject({
-        url: '/api/register',
-        method: 'POST',
-        body: {
-          type: 'web'
-        }
-      })
-
-      t.equal(response.statusCode, 400)
-    }
-  )
 
   t.test('should return 400 if type=expo and no token specified', async (t) => {
     const response = await server.inject({

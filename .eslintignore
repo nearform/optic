@@ -1,3 +1,2 @@
 build/*
 node_modules/*
-public/qr-scanner-worker.min.js
