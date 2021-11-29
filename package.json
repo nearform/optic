@@ -33,7 +33,6 @@
     "fluent-json-schema": "^3.0.1",
     "localforage": "^1.7.3",
     "morgan": "^1.9.0",
-    "otplib": "^10.2.3",
     "pkg-dir": "^5.0.0",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0"
@@ -52,21 +51,13 @@
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^7.0.0",
     "lint-staged": "^11.2.6",
-    "lodash": "^4.17.11",
     "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "prettier-config-standard": "^4.0.0",
     "sinon": "^11.1.2",
-    "tap": "^15.0.10",
-    "workbox-webpack-plugin": "^4.3.1"
+    "tap": "^15.0.10"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "lint-staged": {
     "{server}/**/*.{js,ts,json,md}": [
       "eslint --cache",
