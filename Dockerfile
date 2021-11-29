@@ -4,8 +4,6 @@ WORKDIR /usr/src/app
 COPY --chown=node:node . /usr/src/app
 RUN npm ci --production
 
-COPY --from=build-stage /build-app/build/ /usr/src/app/build/
-
 USER node
 ENV NODE_ENV production
 ENV PORT 3001
