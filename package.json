@@ -6,9 +6,8 @@
     "node": "16"
   },
   "scripts": {
-    "dev": "run-p dev:*",
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
-    "dev:server": "nodemon --exec \"node server/index.js\"",
+    "dev": "nodemon --exec \"node server/index.js\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
