@@ -1,10 +1,10 @@
 'use strict'
 
-function redirectRoutes(server) {
+async function redirectRoutes(server) {
   server.route({
     method: 'GET',
     url: '/',
-    handler: (_, reply) => {
+    handler: async (_, reply) => {
       reply.redirect('https://expo.dev/@nearform/optic-expo')
     }
   })
