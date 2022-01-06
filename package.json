@@ -12,7 +12,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
-    "test": "tap server/test/ --no-coverage",
+    "test": "tap server/test/",
     "prepare": "npx husky install"
   },
   "dependencies": {

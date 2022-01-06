@@ -1,0 +1,8 @@
+ts: false
+jsx: false
+flow: false
+coverage: true
+branches: 63.88
+lines: 80.32
+functions: 83.33
+statements: 80.32
