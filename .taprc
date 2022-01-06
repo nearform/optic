@@ -1,6 +1,3 @@
-ts: false
-jsx: false
-flow: false
 coverage: true
 branches: 63.88
 lines: 80.32
