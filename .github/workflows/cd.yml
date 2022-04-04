@@ -22,9 +22,9 @@ jobs:
           region: ${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }}
           credentials: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          env_vars: >
-                    FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
-                    FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }},
-                    FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }},
+          env_vars: >-
+              FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
+              FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }},
+              FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
           flags: --allow-unauthenticated --timeout=1800
           source: .
