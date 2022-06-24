@@ -6,6 +6,8 @@
 
 Optic is an app that helps you securely generate OTP tokens for 2FA protected npm accounts. It allows auto-publish npm packages using CI.
 
+This repository contains the backend API for the application. Unless you're here on purpose, you're probably looking for the [GitHub action](https://github.com/nearform/optic-release-automation-action) or the [mobile application](https://github.com/nearform/optic-expo).
+
 ## Prerequisites
 1. [firebase]
    1. Create an account
