@@ -30,7 +30,7 @@
     "fastify-static": "^4.4.2",
     "firebase": "^8.4.3",
     "firebase-admin": "^9.7.0",
-    "fluent-json-schema": "^3.0.1",
+    "fluent-json-schema": "^3.1.0",
     "localforage": "^1.7.3",
     "morgan": "^1.9.0",
     "pkg-dir": "^5.0.0",
