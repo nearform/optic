@@ -1,7 +1,7 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const fastifyAuth = require('fastify-auth')
+const fastifyAuth = require('@fastify/auth')
 
 async function authPlugin(server) {
   server.register(fastifyAuth)

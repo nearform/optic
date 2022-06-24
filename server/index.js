@@ -32,4 +32,4 @@ server.addHook('onClose', async (instance, done) => {
   done()
 })
 
-server.listen(config.fastify.port, config.fastify.host)
+server.listen(config.fastify)

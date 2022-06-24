@@ -1,6 +1,6 @@
 const Fastify = require('fastify')
 const fp = require('fastify-plugin')
-const sensible = require('fastify-sensible')
+const sensible = require('@fastify/sensible')
 
 const wrapFp = (plugin) =>
   plugin[Symbol.for('skip-override')] ? plugin : fp(plugin)

@@ -2,11 +2,11 @@
 
 const path = require('path')
 
-const autoLoad = require('fastify-autoload')
+const autoLoad = require('@fastify/autoload')
 const fp = require('fastify-plugin')
-const fastifyStatic = require('fastify-static')
-const helmet = require('fastify-helmet')
-const sensible = require('fastify-sensible')
+const fastifyStatic = require('@fastify/static')
+const helmet = require('@fastify/helmet')
+const sensible = require('@fastify/sensible')
 
 async function plugin(server, config) {
   server.register(fastifyStatic, {
