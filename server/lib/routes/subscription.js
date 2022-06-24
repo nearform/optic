@@ -3,12 +3,7 @@
 const S = require('fluent-json-schema')
 
 const bodySchema = S.object()
-  .prop(
-    'type',
-    S.string()
-      .pattern('\\b(expo)\\b')
-      .required()
-  )
+  .prop('type', S.string().pattern('\\b(expo)\\b').required())
   .prop('token', S.string().required())
 
 const schema = {
@@ -29,7 +24,7 @@ async function subscriptionRoutes(server) {
         const subscriptionRef = await db
           .collection('subscriptions')
           .where('userId', '==', request.user)
-          .where('expo', '==', request.body['token'])
+          .where('expo', '==', request.body.token)
           .get()
 
         const subscription = subscriptionRef.empty

@@ -17,10 +17,7 @@ async function deleteTokenIfAuthorized(
     return false
   }
 
-  await db
-    .collection('tokens')
-    .doc(tokenId)
-    .delete()
+  await db.collection('tokens').doc(tokenId).delete()
 
   return true
 }

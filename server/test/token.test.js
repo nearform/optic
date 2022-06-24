@@ -13,11 +13,11 @@ test('token route', async (t) => {
   const getStub = sinon.stub()
   const documentIdStub = sinon.stub()
 
-  const mockedAuthPlugin = async function(server) {
+  const mockedAuthPlugin = async function (server) {
     decorate(server, 'auth', authStub)
   }
 
-  const mockedFirebasePlugin = async function(server) {
+  const mockedFirebasePlugin = async function (server) {
     const admin = {
       firestore: () => ({
         collection: () => ({
@@ -38,7 +38,7 @@ test('token route', async (t) => {
     decorate(server, 'firebaseAdmin', admin)
   }
 
-  const mockedPushPlugin = async function(server) {
+  const mockedPushPlugin = async function (server) {
     const push = {
       send: sendStub
     }
@@ -74,7 +74,7 @@ test('token route', async (t) => {
 
     t.equal(response.statusCode, 200)
     t.equal(setStub.calledOnce, true)
-    t.equal(data.hasOwnProperty('token'), true)
+    t.equal(Object.prototype.hasOwnProperty.call(data, 'token'), true)
   })
 
   t.test('should return 400 if secretId is not specified', async (t) => {

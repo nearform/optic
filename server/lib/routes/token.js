@@ -42,19 +42,13 @@ async function tokenRoutes(server) {
 
       // Remove the existing token if specified (refreshing token)
       if (existingToken) {
-        await db
-          .collection('tokens')
-          .doc(existingToken)
-          .delete()
+        await db.collection('tokens').doc(existingToken).delete()
       }
 
-      await db
-        .collection('tokens')
-        .doc(token)
-        .set({
-          secretId,
-          subscriptionId
-        })
+      await db.collection('tokens').doc(token).set({
+        secretId,
+        subscriptionId
+      })
 
       reply.send({ token })
     }
@@ -70,10 +64,7 @@ async function tokenRoutes(server) {
 
       const db = firebaseAdmin.firestore()
 
-      const tokenRef = await db
-        .collection('tokens')
-        .doc(tokenId)
-        .get()
+      const tokenRef = await db.collection('tokens').doc(tokenId).get()
 
       if (tokenRef.empty) {
         return reply.notFound('Token not found')
@@ -95,10 +86,7 @@ async function tokenRoutes(server) {
         return reply.forbidden('Not authorized')
       }
 
-      await db
-        .collection('tokens')
-        .doc(tokenId)
-        .delete()
+      await db.collection('tokens').doc(tokenId).delete()
 
       reply.code(204).send()
     }

@@ -11,7 +11,7 @@ test('/otp route', async (t) => {
   const docStub = sinon.stub()
   const clock = sinon.useFakeTimers()
 
-  const mockedFirebasePlugin = async function(server) {
+  const mockedFirebasePlugin = async function (server) {
     const admin = {
       firestore: () => ({
         collection: () => ({
@@ -25,7 +25,7 @@ test('/otp route', async (t) => {
     decorate(server, 'firebaseAdmin', admin)
   }
 
-  const mockedPushPlugin = async function(server) {
+  const mockedPushPlugin = async function (server) {
     const push = {
       send: sendStub
     }

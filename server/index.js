@@ -12,20 +12,20 @@ const server = Fastify(config.fastifyInit)
 
 server.register(startServer, config)
 
-const closeListeners = closeWithGrace({ delay: 500 }, async function({
-  signal,
-  err
-}) {
-  if (err) {
-    server.log.error(err, 'An unhandled error was caught, closing server')
-  }
-  await server.close()
-  server.log.info({ signal }, 'application closed')
+const closeListeners = closeWithGrace(
+  { delay: 500 },
+  async function ({ signal, err }) {
+    if (err) {
+      server.log.error(err, 'An unhandled error was caught, closing server')
+    }
+    await server.close()
+    server.log.info({ signal }, 'application closed')
 
-  if (err) {
-    process.exit(1)
+    if (err) {
+      process.exit(1)
+    }
   }
-})
+)
 
 server.addHook('onClose', async (instance, done) => {
   closeListeners.uninstall()

@@ -9,11 +9,11 @@ test('secret route', async (t) => {
   const deleteStub = sinon.stub()
   const getStub = sinon.stub()
 
-  const mockedAuthPlugin = async function(server) {
+  const mockedAuthPlugin = async function (server) {
     decorate(server, 'auth', sinon.stub())
   }
 
-  const mockedFirebasePlugin = async function(server) {
+  const mockedFirebasePlugin = async function (server) {
     const admin = {
       firestore: () => ({
         collection: () => ({
@@ -34,7 +34,7 @@ test('secret route', async (t) => {
     decorate(server, 'firebaseAdmin', admin)
   }
 
-  const mockedPushPlugin = async function(server) {
+  const mockedPushPlugin = async function (server) {
     const push = {
       send: sinon.stub()
     }
