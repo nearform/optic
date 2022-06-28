@@ -34,7 +34,7 @@
     "url-otpauth": "^2.0.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.2.1",
+    "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^13.2.0",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
