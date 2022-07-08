@@ -17,7 +17,6 @@ const env = envSchema({
     .prop('HOST', S.string().default('0.0.0.0'))
     .prop('PORT', S.string().default('3001'))
     .prop('FIREBASE_PROJECT_ID', S.string())
-    .prop('FIREBASE_PRIVATE_KEY', S.string())
     .prop('FIREBASE_PRIVATE_KEY_BASE64', S.string())
     .prop('FIREBASE_CLIENT_EMAIL', S.string())
     .prop(
@@ -68,7 +67,6 @@ const config = {
   firebase: {
     firebaseProjectId: env.FIREBASE_PROJECT_ID,
     firebaseClientEmail: env.FIREBASE_CLIENT_EMAIL,
-    firebasePrivateKey: env.FIREBASE_PRIVATE_KEY,
     firebasePrivateKeyBase64: env.FIREBASE_PRIVATE_KEY_BASE64
   }
 }

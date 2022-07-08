@@ -29,7 +29,7 @@
     "firebase": "^9.9.0",
     "firebase-admin": "^11.0.0",
     "fluent-json-schema": "^3.1.0",
-    "pkg-dir": "^6.0.1",
+    "pkg-dir": "^5.0.0",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0"
   },
