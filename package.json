@@ -19,7 +19,7 @@
     "@fastify/auth": "^3.0.2",
     "@fastify/autoload": "^5.2.0",
     "@fastify/helmet": "^9.1.0",
-    "@fastify/sensible": "^5.1.0",
+    "@fastify/sensible": "^5.1.1",
     "@fastify/static": "^6.5.0",
     "close-with-grace": "^1.1.0",
     "dotenv": "^16.0.1",
