@@ -1,5 +1,4 @@
 name: ci
-
 on:
   pull_request:
     branches:
@@ -7,7 +6,6 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,14 +17,11 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-
   automerge:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: write    
+      contents: write
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
