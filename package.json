@@ -23,7 +23,7 @@
     "@fastify/static": "^6.5.1",
     "close-with-grace": "^1.1.0",
     "dotenv": "^16.0.3",
-    "env-schema": "^5.1.1",
+    "env-schema": "^5.2.0",
     "expo-server-sdk": "^3.7.0",
     "fastify": "^4.10.2",
     "firebase": "^9.14.0",
