@@ -2,8 +2,9 @@ name: cd
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - v*
+
   workflow_dispatch:
 
 jobs:
