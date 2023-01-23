@@ -19,7 +19,9 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.gcp_provider_name }}
+          service_account: ${{ secrets.gcp_sa }}
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
         with:
