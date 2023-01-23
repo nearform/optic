@@ -14,6 +14,10 @@ variable "zone" {
   default = "europe-west1-b"
 }
 
-variable "private_key_secret_name" {
-  default = "optic-firebase-private-key"
+variable "secrets" {
+  default = {
+    "optic-firebase-project-id"   = "FIREBASE_PROJECT_ID"
+    "optic-firebase-client-email" = "FIREBASE_CLIENT_EMAIL"
+    "optic-firebase-private-key"  = "FIREBASE_PRIVATE_KEY_BASE64"
+  }
 }

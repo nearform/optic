@@ -11,11 +11,6 @@ resource "google_cloud_run_service_iam_member" "app_noauth" {
   member   = "allUsers"
 }
 
-# Retrieve the secrets
-data "google_secret_manager_secret_version" "optic_firebase_private_key_version" {
-  secret = var.private_key_secret_name
-}
-
 # Create the Cloud Run service
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service
 resource "google_cloud_run_service" "optic" {
@@ -31,6 +26,18 @@ resource "google_cloud_run_service" "optic" {
           name           = "http1"
           container_port = "8080"
         }
+        dynamic "env" {
+          for_each = var.secrets
+          content {
+            name = env.value
+            value_from {
+              secret_key_ref {
+                key  = "latest"
+                name = env.key
+              }
+            }
+          }
+        }
         env {
           name  = "NODE_ENV"
           value = "production"
@@ -40,23 +47,6 @@ resource "google_cloud_run_service" "optic" {
         #   name  = "PORT"
         #   value = "8080"
         # }
-        env {
-          name  = "FIREBASE_PROJECT_ID"
-          value = "dummy"
-        }
-        env {
-          name  = "FIREBASE_CLIENT_EMAIL"
-          value = "dummy"
-        }
-        env {
-          name = "FIREBASE_PRIVATE_KEY_BASE64"
-          value_from {
-            secret_key_ref {
-              key  = "latest"
-              name = google_secret_manager_secret_version.optic_firebase_private_key_version.name
-            }
-          }
-        }
       }
     }
 
