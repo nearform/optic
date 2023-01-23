@@ -28,15 +28,14 @@ jobs:
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-          # delete the secrets
-          gcloud secrets delete optic-firebase-client-email
-          gcloud secrets delete optic-firebase-project-id
-          gcloud secrets delete optic-firebase-private-key
+          for secret in optic-firebase-client-email optic-firebase-project-id optic-firebase-private-key
+          do
+            # delete the secret
+            gcloud secrets delete $secret
 
-          # create the secrets if they don't exist
-          gcloud secrets create --locations=${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }} --replication-policy=user-managed optic-firebase-client-email
-          gcloud secrets create --locations=${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }} --replication-policy=user-managed optic-firebase-project-id
-          gcloud secrets create --locations=${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }} --replication-policy=user-managed optic-firebase-private-key
+            # re-create the secret
+            gcloud secrets create --locations=${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }} --replication-policy=user-managed $secret
+          done
 
           # update the secrets
           echo "${{ secrets.FIREBASE_CLIENT_EMAIL }}" | gcloud secrets versions add optic-firebase-client-email --data-file=-
