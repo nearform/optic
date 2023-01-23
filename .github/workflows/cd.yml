@@ -24,6 +24,9 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_PROVIDER_NAME }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v1
+
       - id: update-secrets
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
