@@ -13,3 +13,7 @@ variable "region" {
 variable "zone" {
   default = "europe-west1-b"
 }
+
+variable "private_key_secret_name" {
+  default = "optic-firebase-private-key"
+}
