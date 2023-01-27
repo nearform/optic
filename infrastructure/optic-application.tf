@@ -11,6 +11,19 @@ resource "google_cloud_run_service_iam_member" "app_noauth" {
   member   = "allUsers"
 }
 
+resource "google_secret_manager_secret" "optic_secrets" {
+  for_each  = var.secrets
+  secret_id = each.key
+
+  replication {
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
+  }
+}
+
 # Create the Cloud Run service
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service
 resource "google_cloud_run_service" "optic" {

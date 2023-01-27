@@ -31,19 +31,17 @@ jobs:
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-          for secret in optic-firebase-client-email optic-firebase-project-id optic-firebase-private-key
-          do
-            # delete the secret
-            gcloud secrets delete --quiet $secret || true
+          if [ "${{ secrets.FIREBASE_CLIENT_EMAIL }}" != "$(gcloud secrets versions access latest --secret optic-firebase-client-email)" ]; then
+            echo "${{ secrets.FIREBASE_CLIENT_EMAIL }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-client-email --data-file=-
+          fi
 
-            # re-create the secret
-            gcloud secrets create --locations=${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }} --replication-policy=user-managed $secret
-          done
+          if [ "${{ secrets.FIREBASE_PROJECT_ID }}" != "$(gcloud secrets versions access latest --secret optic-firebase-project-id)" ]; then
+            echo "${{ secrets.FIREBASE_PROJECT_ID }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-project-id --data-file=-
+          fi
 
-          # update the secrets
-          echo "${{ secrets.FIREBASE_CLIENT_EMAIL }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-client-email --data-file=-
-          echo "${{ secrets.FIREBASE_PROJECT_ID }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-project-id --data-file=-
-          echo "${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-private-key --data-file=-
+          if [ "${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }}" != "$(gcloud secrets versions access latest --secret optic-firebase-private-key)" ]; then
+            echo "${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }}" | tr -d '\n' | gcloud secrets versions add optic-firebase-private-key --data-file=-
+          fi
 
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
