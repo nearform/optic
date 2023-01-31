@@ -1,0 +1,79 @@
+name: deploy-step
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      gcp_provider_name:
+        required: true
+      gcp_sa_email:
+        required: true
+      gcp_project_id:
+        required: true
+      gcp_cloudrun_service_name:
+        required: true
+      gcp_cloudrun_service_region:
+        required: true
+      firebase_client_email:
+        required: true
+      firebase_client_email_gcp_secret_name:
+        required: true
+      firebase_project_id:
+        required: true
+      firebase_project_id_gcp_secret_name:
+        required: true
+      firebase_private_key_base64:
+        required: true
+      firebase_private_key_base64_gcp_secret_name:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+      environment: ${{ inputs.environment }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.gcp_provider_name }}
+          service_account: ${{ secrets.gcp_sa_email }}
+
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v1
+
+      - id: update-secrets
+        run: |
+          gcloud config set project ${{ secrets.gcp_project_id }}
+
+          if [ "${{ secrets.firebase_client_email }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_client_email_gcp_secret_name }})" ]; then
+            echo "${{ secrets.firebase_client_email }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_client_email_gcp_secret_name }} --data-file=-
+          fi
+
+          if [ "${{ secrets.firebase_project_id }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_project_id_gcp_secret_name }})" ]; then
+            echo "${{ secrets.firebase_project_id }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_project_id_gcp_secret_name }} --data-file=-
+          fi
+
+          if [ "${{ secrets.firebase_private_key_base64 }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_private_key_base64_gcp_secret_name }})" ]; then
+            echo "${{ secrets.firebase_private_key_base64 }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_private_key_base64_gcp_secret_name }} --data-file=-
+          fi
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: ${{ secrets.gcp_cloudrun_service_name }}
+          region: ${{ secrets.gcp_cloudrun_service_region }}
+          project_id: ${{ secrets.gcp_project_id }}
+          secrets: >-
+            FIREBASE_CLIENT_EMAIL=${{ secrets.firebase_client_email_gcp_secret_name }}:latest,
+            FIREBASE_PROJECT_ID=${{ secrets.firebase_project_id_gcp_secret_name }}:latest,
+            FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest
+          flags: --allow-unauthenticated --timeout=1800
+          source: .
