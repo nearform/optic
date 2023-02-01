@@ -48,11 +48,11 @@ jobs:
 
       - name: 'Set up Cloud SDK'
         uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.gcp_project_id }}
 
       - id: update-secrets
         run: |
-          gcloud config set project ${{ secrets.gcp_project_id }}
-
           if [ "${{ secrets.firebase_client_email }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_client_email_gcp_secret_name }})" ]; then
             echo "${{ secrets.firebase_client_email }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_client_email_gcp_secret_name }} --data-file=-
           fi
