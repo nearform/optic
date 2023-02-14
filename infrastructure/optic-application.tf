@@ -7,8 +7,21 @@ resource "google_service_account" "optic" {
 resource "google_cloud_run_service_iam_member" "app_noauth" {
   location = google_cloud_run_service.optic.location
   service  = google_cloud_run_service.optic.name
-  role = "roles/run.invoker"
-  member = "allUsers"
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+resource "google_secret_manager_secret" "optic_secrets" {
+  for_each  = var.secrets
+  secret_id = each.key
+
+  replication {
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
+  }
 }
 
 # Create the Cloud Run service
@@ -23,8 +36,20 @@ resource "google_cloud_run_service" "optic" {
       containers {
         image = "gcr.io/cloudrun/hello"
         ports {
-          name = "http1"
+          name           = "http1"
           container_port = "8080"
+        }
+        dynamic "env" {
+          for_each = var.secrets
+          content {
+            name = env.value
+            value_from {
+              secret_key_ref {
+                key  = "latest"
+                name = env.key
+              }
+            }
+          }
         }
         env {
           name  = "NODE_ENV"
@@ -35,18 +60,6 @@ resource "google_cloud_run_service" "optic" {
         #   name  = "PORT"
         #   value = "8080"
         # }
-        env {
-          name  = "FIREBASE_PROJECT_ID"
-          value = "dummy"
-        }
-        env {
-          name  = "FIREBASE_CLIENT_EMAIL"
-          value = "dummy"
-        }
-        env {
-          name  = "FIREBASE_PRIVATE_KEY_BASE64"
-          value = "dummy"
-        }
       }
     }
 
