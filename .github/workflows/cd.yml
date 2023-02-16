@@ -1,13 +1,19 @@
 name: cd-dev
 
+permissions:
+  id-token: read
+
 on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - main
 
 jobs:
   call-deploy-dev:
-    uses: ./.github/workflows/deploy-step.yml
+    uses: ./.github/workflows/deploy-job.yml
     with: 
       environment: dev
     secrets:
