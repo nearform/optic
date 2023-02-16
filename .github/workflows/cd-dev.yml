@@ -3,8 +3,10 @@ name: cd-dev
 on:
   push:
     branches:
-      - master
-
+      - master  
+  pull_request: ## TODO:Remove after validating
+      branches:
+      - master  
 jobs:
   call-deploy-dev:
     uses: ./.github/workflows/deploy-job.yml
