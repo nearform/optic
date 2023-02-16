@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-deploy-prod:
-    uses: ./.github/workflows/deploy-step.yml
+    uses: ./.github/workflows/deploy-job.yml
     with: 
       environment: production
     secrets:
