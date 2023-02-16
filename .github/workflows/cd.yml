@@ -1,15 +1,13 @@
 name: cd-dev
 
 permissions:
-  id-token: read-only
+  id-token: write
 
 on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispach:
 
 jobs:
   call-deploy-dev:
