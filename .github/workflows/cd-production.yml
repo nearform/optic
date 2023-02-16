@@ -1,8 +1,5 @@
 name: cd-prod
 
-permissions:
-  id-token: write
-
 on:
   release:
     types:
