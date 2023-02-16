@@ -66,15 +66,15 @@ jobs:
             echo "${{ secrets.firebase_private_key_base64 }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_private_key_base64_gcp_secret_name }} --data-file=-
           fi
 
-      # - id: deploy
-      #   uses: google-github-actions/deploy-cloudrun@v1
-      #   with:
-      #     service: ${{ secrets.gcp_cloudrun_service_name }}
-      #     region: ${{ secrets.gcp_cloudrun_service_region }}
-      #     project_id: ${{ secrets.gcp_project_id }}
-      #     secrets: >-
-      #       FIREBASE_CLIENT_EMAIL=${{ secrets.firebase_client_email_gcp_secret_name }}:latest,
-      #       FIREBASE_PROJECT_ID=${{ secrets.firebase_project_id_gcp_secret_name }}:latest,
-      #       FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest
-      #     flags: --allow-unauthenticated --timeout=1800
-      #     source: .
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: ${{ secrets.gcp_cloudrun_service_name }}
+          region: ${{ secrets.gcp_cloudrun_service_region }}
+          project_id: ${{ secrets.gcp_project_id }}
+          secrets: >-
+            FIREBASE_CLIENT_EMAIL=${{ secrets.firebase_client_email_gcp_secret_name }}:latest,
+            FIREBASE_PROJECT_ID=${{ secrets.firebase_project_id_gcp_secret_name }}:latest,
+            FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest
+          flags: --allow-unauthenticated --timeout=1800
+          source: .
