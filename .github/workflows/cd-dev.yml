@@ -13,8 +13,8 @@ jobs:
     with: 
       environment: dev
     secrets:
-      gcp_provider_name: ${{ secrets.TEST_FIX_GCP_PROVIDER_NAME }}
-      gcp_sa_email: ${{ secrets.TEST_FIX_GCP_SA_EMAIL }}
+      gcp_provider_name: ${{ secrets.GCP_PROVIDER_NAME }}
+      gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
       gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
       gcp_cloudrun_service_name: ${{ secrets.GCP_CLOUDRUN_SERVICE_NAME_DEV }}
       gcp_cloudrun_service_region: ${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }}
