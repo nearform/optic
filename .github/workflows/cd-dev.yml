@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - master  
-  pull_request: ## TODO:Remove after validating
-      branches:
-      - master  
+  workflow_dispatch:
 jobs:
   call-deploy-dev:
     uses: ./.github/workflows/deploy-job.yml
