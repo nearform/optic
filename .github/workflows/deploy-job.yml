@@ -45,7 +45,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v1
         with:
-          token_format: 'access_token'
+          # token_format: 'access_token'
           workload_identity_provider: ${{ secrets.gcp_provider_name }}
           service_account: ${{ secrets.gcp_sa_email }}
 
