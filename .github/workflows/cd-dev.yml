@@ -18,7 +18,7 @@ jobs:
       gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
       gcp_cloudrun_service_name: ${{ secrets.GCP_CLOUDRUN_SERVICE_NAME_DEV }}
       gcp_cloudrun_service_region: ${{ secrets.GCP_CLOUDRUN_SERVICE_REGION }}
-      firebase_client_email: ${{ secrets.FIREBASE_CLIENT_NAME }}
+      firebase_client_email: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
       firebase_client_email_gcp_secret_name: optic-firebase-client-email-dev
       firebase_project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
       firebase_project_id_gcp_secret_name: optic-firebase-project-id-dev
