@@ -30,7 +30,8 @@ on:
       firebase_private_key_base64_gcp_secret_name:
         required: true
 
-jobs:  
+jobs:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
