@@ -3,7 +3,8 @@ name: cd-dev
 on:
   push:
     branches:
-      - master  
+      - master
+      - actions-token-injection
   workflow_dispatch:
 jobs:
   call-deploy-dev:
