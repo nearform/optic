@@ -19,11 +19,7 @@ on:
         required: true
       firebase_client_email:
         required: true
-      firebase_client_email_gcp_secret_name:
-        required: true
       firebase_project_id:
-        required: true
-      firebase_project_id_gcp_secret_name:
         required: true
       firebase_private_key_base64:
         required: true
