@@ -57,14 +57,6 @@ jobs:
 
       - id: update-secrets
         run: |
-          if [ "${{ secrets.firebase_client_email }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_client_email_gcp_secret_name }})" ]; then
-            echo "${{ secrets.firebase_client_email }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_client_email_gcp_secret_name }} --data-file=-
-          fi
-
-          if [ "${{ secrets.firebase_project_id }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_project_id_gcp_secret_name }})" ]; then
-            echo "${{ secrets.firebase_project_id }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_project_id_gcp_secret_name }} --data-file=-
-          fi
-
           if [ "${{ secrets.firebase_private_key_base64 }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_private_key_base64_gcp_secret_name }})" ]; then
             echo "${{ secrets.firebase_private_key_base64 }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_private_key_base64_gcp_secret_name }} --data-file=-
           fi
