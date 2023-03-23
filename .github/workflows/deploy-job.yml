@@ -74,9 +74,5 @@ jobs:
           service: ${{ secrets.gcp_cloudrun_service_name }}
           region: ${{ secrets.gcp_cloudrun_service_region }}
           project_id: ${{ secrets.gcp_project_id }}
-          env_vars: >-
-            FIREBASE_CLIENT_EMAIL=${{ secrets.firebase_client_email }},
-            FIREBASE_PROJECT_ID=${{ secrets.firebase_project_id }},
-            FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64 }}
           flags: --allow-unauthenticated --timeout=1800
           source: .

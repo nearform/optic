@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - actions-token-injection
   workflow_dispatch:
 jobs:
   call-deploy-dev:
