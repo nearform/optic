@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+
 jobs:
   call-deploy-dev:
     uses: ./.github/workflows/deploy-job.yml
-    with: 
+    with:
       environment: dev
     secrets:
       gcp_provider_name: ${{ secrets.GCP_PROVIDER_NAME }}
