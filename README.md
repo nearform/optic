@@ -20,7 +20,7 @@ This repository contains the backend API for the application. Unless you're here
    1. Enable `Two Factor Authentication` in your [profile][npm-profile]
    1. Create a new [token][npm-token] and save it in you CI as `NPM_TOKEN` env variable
 1. GitHub Actions Secrets
-   1. Make sure that all the secrets described in the actions (such as `.github/workflows/deploy-step.yml`) have been created and have updated values.
+   1. Make sure that all the secrets described in the actions (such as `.github/workflows/deploy-job.yml`) have been created and have updated values.
 1. GCP
    1. Make sure that the Service Account that will run the Cloud Run service has the "Secret Manager Access" role attached to it so the service can query the secrets
 
