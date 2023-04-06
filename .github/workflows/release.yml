@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: nearform-actions/optic-release-automation@v4
+      - uses: nearform-actions/optic-release-automation-action@v4
         with:
           semver: ${{ github.event.inputs.semver }}
           commit-message: 'chore: release {version}'
