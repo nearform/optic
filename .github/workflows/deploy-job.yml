@@ -52,10 +52,11 @@ jobs:
           project_id: ${{ secrets.gcp_project_id }}
 
       - id: update-secrets
-        run: |
-          if [ "${{ secrets.firebase_private_key_base64 }}" != "$(gcloud secrets versions access latest --secret ${{ secrets.firebase_private_key_base64_gcp_secret_name }})" ]; then
-            echo "${{ secrets.firebase_private_key_base64 }}" | tr -d '\n' | gcloud secrets versions add ${{ secrets.firebase_private_key_base64_gcp_secret_name }} --data-file=-
-          fi
+        uses: nearform-actions/github-action-gcp-secrets@v1
+        with:
+          secrets: |-
+            ${{ secrets.firebase_private_key_base64_gcp_secret_name }}:"${{ secrets.firebase_private_key_base64 }}"
+
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
         with:
