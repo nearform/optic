@@ -48,7 +48,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.1",
     "nodemon": "^2.0.22",
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "prettier-config-standard": "^5.0.0",
     "sinon": "^15.0.4",
     "tap": "^16.3.4"
