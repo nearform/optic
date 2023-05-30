@@ -50,7 +50,7 @@ test('/otp route', async (t) => {
 
   t.teardown(server.close.bind(server))
 
-  t.test('should generate push notification', async (t) => {
+  t.test('should generate push notification on GET request', async (t) => {
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -81,6 +81,51 @@ test('/otp route', async (t) => {
       .inject({
         url: '/api/generate/55555',
         method: 'GET'
+      })
+      .then((resp) => (response = resp))
+
+    await clock.tickAsync(61e3)
+
+    t.equal(response.statusCode, 403)
+    t.equal(docStub.calledThrice, true)
+    t.equal(sendStub.called, true)
+  })
+
+  t.test('should generate push notification on POST request', async (t) => {
+    // All tokens collection
+    docStub.onFirstCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => ({
+          secretId: 'secretId',
+          subscriptionId: 'subscriptionId'
+        })
+      })
+    })
+    // Subscriptions collection
+    docStub.onSecondCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => sinon.stub()
+      })
+    })
+    // Requests collection
+    docStub.onThirdCall().returns({
+      set: () => {},
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
+    })
+
+    let response
+
+    server
+      .inject({
+        url: '/api/generate/55555',
+        method: 'POST',
+        body: {
+          version: 'v2',
+          packageName: '@optic/optic-expo'
+        }
       })
       .then((resp) => (response = resp))
 
