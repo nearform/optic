@@ -72,6 +72,7 @@ const generateOtpHandler = (server) => async (request, reply) => {
         return reply.internalServerError()
       }
     )
+    const packageInfo = body.packageInfo
 
     push.send({
       subscription: subscription.data(),
@@ -79,8 +80,8 @@ const generateOtpHandler = (server) => async (request, reply) => {
       uniqueId,
       token,
       packageInfo: {
-        ...(body.version && { version: body.version }),
-        ...(body.name && { name: body.name })
+        ...(packageInfo.version && { version: packageInfo.version }),
+        ...(packageInfo.name && { name: packageInfo.name })
       }
     })
 
