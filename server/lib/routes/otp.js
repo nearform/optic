@@ -9,7 +9,7 @@ const generateOtpHandler = (server) => async (request, reply) => {
   const {
     params: { token },
     log,
-    body = {}
+    body = { packageInfo: {} }
   } = request
 
   const db = firebaseAdmin.firestore()
@@ -72,18 +72,27 @@ const generateOtpHandler = (server) => async (request, reply) => {
         return reply.internalServerError()
       }
     )
-    const packageInfo = body.packageInfo
 
-    push.send({
+    const { name, version } = body.packageInfo
+
+    const notification = {
       subscription: subscription.data(),
       secretId,
       uniqueId,
       token,
-      packageInfo: {
-        ...(packageInfo.version && { version: packageInfo.version }),
-        ...(packageInfo.name && { name: packageInfo.name })
+    }
+
+    const hasPackageInfo = !!name || !!version
+
+    if (hasPackageInfo) {
+      notification.packageInfo = {
+          ...(version && { version }),
+          ...(name && { name })
+        }
       }
-    })
+
+
+    push.send(notification)
 
     const timeout = setTimeout(completeRequest, approvalLimit)
   })
