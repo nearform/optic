@@ -79,18 +79,17 @@ const generateOtpHandler = (server) => async (request, reply) => {
       subscription: subscription.data(),
       secretId,
       uniqueId,
-      token,
+      token
     }
 
     const hasPackageInfo = !!name || !!version
 
     if (hasPackageInfo) {
       notification.packageInfo = {
-          ...(version && { version }),
-          ...(name && { name })
-        }
+        ...(version && { version }),
+        ...(name && { name })
       }
-
+    }
 
     push.send(notification)
 
