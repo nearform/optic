@@ -9,7 +9,6 @@ test('/otp route', async (t) => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
-  const clock = sinon.useFakeTimers()
 
   const mockedFirebasePlugin = async function (server) {
     const admin = {
@@ -44,13 +43,10 @@ test('/otp route', async (t) => {
     docStub.reset()
   })
 
-  t.afterEach(() => {
-    clock.restore()
-  })
-
   t.teardown(server.close.bind(server))
 
   t.test('should generate push notification on GET request', async (t) => {
+    const clock = sinon.useFakeTimers()
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -89,9 +85,11 @@ test('/otp route', async (t) => {
     t.equal(response.statusCode, 403)
     t.equal(docStub.calledThrice, true)
     t.equal(sendStub.called, true)
+    clock.restore()
   })
 
   t.test('should generate push notification on POST request', async (t) => {
+    const clock = sinon.useFakeTimers()
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -123,8 +121,10 @@ test('/otp route', async (t) => {
         url: '/api/generate/55555',
         method: 'POST',
         body: {
-          version: 'v2',
-          packageName: '@optic/optic-expo'
+          packageInfo: {
+            version: 'v2',
+            packageName: '@optic/optic-expo'
+          }
         }
       })
       .then((resp) => (response = resp))
@@ -134,6 +134,7 @@ test('/otp route', async (t) => {
     t.equal(response.statusCode, 403)
     t.equal(docStub.calledThrice, true)
     t.equal(sendStub.called, true)
+    clock.restore()
   })
 
   t.test('should return 404 if token not found', async (t) => {
