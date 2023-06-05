@@ -5,6 +5,27 @@ const uniqid = require('uniqid')
 const approvalLimit = 60e3
 
 async function otpRoutes(server) {
+  const getSchemaForMetod = (method) =>
+    method === 'POST'
+      ? {
+          body: {
+            type: ['object', 'null'],
+            properties: {
+              packageInfo: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  version: { type: 'string' }
+                },
+                required: ['name', 'version'],
+                additionalProperties: false
+              }
+            },
+            additionalProperties: false
+          }
+        }
+      : {}
+
   /**
    * @deprecated GET /api/generate/:token
    *
@@ -13,101 +34,97 @@ async function otpRoutes(server) {
    * as package name and version being deployed.
    * The GET request is here just to maintain backwards compatibility
    */
-  server.route({
-    method: ['GET', 'POST'],
-    url: '/api/generate/:token',
-    handler: async (request, reply) => {
-      const { firebaseAdmin, push } = server
-      const {
-        params: { token },
-        log,
-        body = { packageInfo: {} }
-      } = request
+  ;['GET', 'POST'].map((method) => {
+    server.route({
+      method,
+      url: '/api/generate/:token',
+      schema: getSchemaForMetod(method),
+      handler: async (request, reply) => {
+        const { firebaseAdmin, push } = server
+        const {
+          params: { token },
+          log,
+          body = { packageInfo: {} }
+        } = request
 
-      const db = firebaseAdmin.firestore()
+        const db = firebaseAdmin.firestore()
 
-      const tokenData = await db.collection('tokens').doc(token).get()
+        const tokenData = await db.collection('tokens').doc(token).get()
 
-      if (!tokenData.exists) {
-        log.error('Token not found in tokens collection')
-        return reply.notFound('Token not found')
-      }
-
-      const { secretId, subscriptionId } = tokenData.data()
-
-      const subscription = await db
-        .collection('subscriptions')
-        .doc(subscriptionId)
-        .get()
-
-      if (!subscription.exists) {
-        log.error(`Subscription not found - ${subscriptionId}`)
-        return reply.notFound('Subscription not found')
-      }
-
-      const uniqueId = uniqid()
-
-      return new Promise(() => {
-        const requestObj = db.collection('requests').doc(uniqueId)
-        requestObj.set({ createdAt: new Date() })
-
-        const completeRequest = (error, otp) => {
-          requestObj.delete()
-          if (error) {
-            log.error(error.message)
-            return reply.internalServerError()
-          }
-
-          unsubscribe()
-          clearTimeout(timeout)
-
-          if (!otp) {
-            log.error('Request was not approved')
-            return reply.forbidden('Request was not approved')
-          }
-
-          log.info('Request approved, sending back OTP')
-          return reply.send(otp)
+        if (!tokenData.exists) {
+          log.error('Token not found in tokens collection')
+          return reply.notFound('Token not found')
         }
 
-        const unsubscribe = requestObj.onSnapshot(
-          (update) => {
-            const approved = update.get('approved')
-            if (approved === undefined) {
-              // update due to object creation
-              return
+        const { secretId, subscriptionId } = tokenData.data()
+
+        const subscription = await db
+          .collection('subscriptions')
+          .doc(subscriptionId)
+          .get()
+
+        if (!subscription.exists) {
+          log.error(`Subscription not found - ${subscriptionId}`)
+          return reply.notFound('Subscription not found')
+        }
+
+        const uniqueId = uniqid()
+
+        return new Promise(() => {
+          const requestObj = db.collection('requests').doc(uniqueId)
+          requestObj.set({ createdAt: new Date() })
+
+          const completeRequest = (error, otp) => {
+            requestObj.delete()
+            if (error) {
+              log.error(error.message)
+              return reply.internalServerError()
             }
-            completeRequest(null, update.get('otp'))
-          },
-          (error) => {
-            log.error(error.message)
-            return reply.internalServerError()
+
+            unsubscribe()
+            clearTimeout(timeout)
+
+            if (!otp) {
+              log.error('Request was not approved')
+              return reply.forbidden('Request was not approved')
+            }
+
+            log.info('Request approved, sending back OTP')
+            return reply.send(otp)
           }
-        )
 
-        const { name, version } = body.packageInfo
+          const unsubscribe = requestObj.onSnapshot(
+            (update) => {
+              const approved = update.get('approved')
+              if (approved === undefined) {
+                // update due to object creation
+                return
+              }
+              completeRequest(null, update.get('otp'))
+            },
+            (error) => {
+              log.error(error.message)
+              return reply.internalServerError()
+            }
+          )
 
-        const notification = {
-          subscription: subscription.data(),
-          secretId,
-          uniqueId,
-          token
-        }
-
-        const hasPackageInfo = !!name || !!version
-
-        if (hasPackageInfo) {
-          notification.packageInfo = {
-            ...(version && { version }),
-            ...(name && { name })
+          const notification = {
+            subscription: subscription.data(),
+            secretId,
+            uniqueId,
+            token
           }
-        }
 
-        push.send(notification)
+          if (!!body.packageInfo) {
+            notification.packageInfo = { ...body.packageInfo }
+          }
 
-        const timeout = setTimeout(completeRequest, approvalLimit)
-      })
-    }
+          push.send(notification)
+
+          const timeout = setTimeout(completeRequest, approvalLimit)
+        })
+      }
+    })
   })
 
   server.post('/api/respond', async (request, reply) => {
