@@ -88,146 +88,155 @@ test('/otp route', async (t) => {
     clock.restore()
   })
 
-  t.test('should generate push notification on POST request with valid body', async (t) => {
-    const clock = sinon.useFakeTimers()
-    // All tokens collection
-    docStub.onFirstCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => ({
-          secretId: 'secretId',
-          subscriptionId: 'subscriptionId'
+  t.test(
+    'should generate push notification on POST request with valid body',
+    async (t) => {
+      const clock = sinon.useFakeTimers()
+      // All tokens collection
+      docStub.onFirstCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => ({
+            secretId: 'secretId',
+            subscriptionId: 'subscriptionId'
+          })
         })
       })
-    })
-    // Subscriptions collection
-    docStub.onSecondCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => sinon.stub()
+      // Subscriptions collection
+      docStub.onSecondCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => sinon.stub()
+        })
       })
-    })
-    // Requests collection
-    docStub.onThirdCall().returns({
-      set: () => {},
-      onSnapshot: () => sinon.stub(),
-      delete: () => sinon.stub()
-    })
+      // Requests collection
+      docStub.onThirdCall().returns({
+        set: () => {},
+        onSnapshot: () => sinon.stub(),
+        delete: () => sinon.stub()
+      })
 
-    let response
+      let response
 
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST',
-        body: {
-          packageInfo: {
-            version: 'v2',
-            name: '@optic/optic-expo'
+      server
+        .inject({
+          url: '/api/generate/55555',
+          method: 'POST',
+          body: {
+            packageInfo: {
+              version: 'v2',
+              name: '@optic/optic-expo'
+            }
           }
-        }
-      })
-      .then((resp) => (response = resp))
+        })
+        .then((resp) => (response = resp))
 
-    await clock.tickAsync(61e3)
+      await clock.tickAsync(61e3)
 
-    t.equal(response.statusCode, 403)
-    t.equal(docStub.calledThrice, true)
-    t.equal(sendStub.called, true)
-    clock.restore()
-  })
+      t.equal(response.statusCode, 403)
+      t.equal(docStub.calledThrice, true)
+      t.equal(sendStub.called, true)
+      clock.restore()
+    }
+  )
 
-  t.test('should generate push notification on POST request without body', async (t) => {
-    const clock = sinon.useFakeTimers()
-    // All tokens collection
-    docStub.onFirstCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => ({
-          secretId: 'secretId',
-          subscriptionId: 'subscriptionId'
+  t.test(
+    'should generate push notification on POST request without body',
+    async (t) => {
+      const clock = sinon.useFakeTimers()
+      // All tokens collection
+      docStub.onFirstCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => ({
+            secretId: 'secretId',
+            subscriptionId: 'subscriptionId'
+          })
         })
       })
-    })
-    // Subscriptions collection
-    docStub.onSecondCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => sinon.stub()
-      })
-    })
-    // Requests collection
-    docStub.onThirdCall().returns({
-      set: () => {},
-      onSnapshot: () => sinon.stub(),
-      delete: () => sinon.stub()
-    })
-
-    let response
-
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST',
-      })
-      .then((resp) => (response = resp))
-
-    await clock.tickAsync(61e3)
-
-    t.equal(response.statusCode, 403)
-    t.equal(docStub.calledThrice, true)
-    t.equal(sendStub.called, true)
-    clock.restore()
-  })
-
-  t.test('should return invalid on POST request if packageInfo is invalid', async (t) => {
-    const clock = sinon.useFakeTimers()
-    // All tokens collection
-    docStub.onFirstCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => ({
-          secretId: 'secretId',
-          subscriptionId: 'subscriptionId'
+      // Subscriptions collection
+      docStub.onSecondCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => sinon.stub()
         })
       })
-    })
-    // Subscriptions collection
-    docStub.onSecondCall().returns({
-      get: () => ({
-        exists: true,
-        data: () => sinon.stub()
+      // Requests collection
+      docStub.onThirdCall().returns({
+        set: () => {},
+        onSnapshot: () => sinon.stub(),
+        delete: () => sinon.stub()
       })
-    })
-    // Requests collection
-    docStub.onThirdCall().returns({
-      set: () => {},
-      onSnapshot: () => sinon.stub(),
-      delete: () => sinon.stub()
-    })
 
-    let response
+      let response
 
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST',
-        body: {
-          packageInfo: {
-            packageVersion: 'v2',
-            packageName: '@optic/optic-expo'
+      server
+        .inject({
+          url: '/api/generate/55555',
+          method: 'POST'
+        })
+        .then((resp) => (response = resp))
+
+      await clock.tickAsync(61e3)
+
+      t.equal(response.statusCode, 403)
+      t.equal(docStub.calledThrice, true)
+      t.equal(sendStub.called, true)
+      clock.restore()
+    }
+  )
+
+  t.test(
+    'should return invalid on POST request if packageInfo is invalid',
+    async (t) => {
+      const clock = sinon.useFakeTimers()
+      // All tokens collection
+      docStub.onFirstCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => ({
+            secretId: 'secretId',
+            subscriptionId: 'subscriptionId'
+          })
+        })
+      })
+      // Subscriptions collection
+      docStub.onSecondCall().returns({
+        get: () => ({
+          exists: true,
+          data: () => sinon.stub()
+        })
+      })
+      // Requests collection
+      docStub.onThirdCall().returns({
+        set: () => {},
+        onSnapshot: () => sinon.stub(),
+        delete: () => sinon.stub()
+      })
+
+      let response
+
+      server
+        .inject({
+          url: '/api/generate/55555',
+          method: 'POST',
+          body: {
+            packageInfo: {
+              packageVersion: 'v2',
+              packageName: '@optic/optic-expo'
+            }
           }
-        }
-      })
-      .then((resp) => (response = resp))
+        })
+        .then((resp) => (response = resp))
 
-    await clock.tickAsync(61e3)
+      await clock.tickAsync(61e3)
 
-    t.equal(response.statusCode, 400)
-    t.equal(docStub.called, false)
-    t.equal(sendStub.called, false)
-    clock.restore()
-  })
+      t.equal(response.statusCode, 400)
+      t.equal(docStub.called, false)
+      t.equal(sendStub.called, false)
+      clock.restore()
+    }
+  )
 
   t.test('should return 404 if token not found', async (t) => {
     getStub.returns({
