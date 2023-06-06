@@ -46,7 +46,7 @@ test('/otp route', async (t) => {
   })
 
   t.afterEach(async () => {
-    clock.restore();
+    clock.restore()
   })
 
   t.teardown(server.close.bind(server))
@@ -91,7 +91,6 @@ test('/otp route', async (t) => {
     t.equal(docStub.calledThrice, true)
     t.equal(sendStub.called, true)
   })
-
 
   t.test(
     'should generate push notification on POST request with valid body',
@@ -302,7 +301,7 @@ test('/otp route', async (t) => {
   })
 
   t.test('should respond and update otp', async (t) => {
-    clock.restore();
+    clock.restore()
     const updateStub = sinon.stub()
     updateStub.resolves()
     docStub.returns({
@@ -326,7 +325,7 @@ test('/otp route', async (t) => {
   })
 
   t.test('should return 404 if request does not exist', async (t) => {
-    clock.restore();
+    clock.restore()
     // Requests collection
     docStub.returns({
       get: () => null
