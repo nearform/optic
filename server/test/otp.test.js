@@ -37,16 +37,21 @@ test('/otp route', async (t) => {
     { plugin: otpRoutes }
   ])
 
+  let clock
   t.beforeEach(async () => {
     getStub.reset()
     sendStub.reset()
     docStub.reset()
+    clock = sinon.useFakeTimers()
+  })
+
+  t.afterEach(async () => {
+    clock.restore();
   })
 
   t.teardown(server.close.bind(server))
 
   t.test('should generate push notification on GET request', async (t) => {
-    const clock = sinon.useFakeTimers()
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -85,13 +90,12 @@ test('/otp route', async (t) => {
     t.equal(response.statusCode, 403)
     t.equal(docStub.calledThrice, true)
     t.equal(sendStub.called, true)
-    clock.restore()
   })
+
 
   t.test(
     'should generate push notification on POST request with valid body',
     async (t) => {
-      const clock = sinon.useFakeTimers()
       // All tokens collection
       docStub.onFirstCall().returns({
         get: () => ({
@@ -136,14 +140,12 @@ test('/otp route', async (t) => {
       t.equal(response.statusCode, 403)
       t.equal(docStub.calledThrice, true)
       t.equal(sendStub.called, true)
-      clock.restore()
     }
   )
 
   t.test(
     'should generate push notification on POST request without body',
     async (t) => {
-      const clock = sinon.useFakeTimers()
       // All tokens collection
       docStub.onFirstCall().returns({
         get: () => ({
@@ -182,14 +184,12 @@ test('/otp route', async (t) => {
       t.equal(response.statusCode, 403)
       t.equal(docStub.calledThrice, true)
       t.equal(sendStub.called, true)
-      clock.restore()
     }
   )
 
   t.test(
     'should return invalid on POST request if packageInfo is invalid',
     async (t) => {
-      const clock = sinon.useFakeTimers()
       // All tokens collection
       docStub.onFirstCall().returns({
         get: () => ({
@@ -234,7 +234,6 @@ test('/otp route', async (t) => {
       t.equal(response.statusCode, 400)
       t.equal(docStub.called, false)
       t.equal(sendStub.called, false)
-      clock.restore()
     }
   )
 
@@ -260,6 +259,7 @@ test('/otp route', async (t) => {
     t.equal(sendStub.called, false)
     t.equal(data.message, 'Token not found')
   })
+
   t.test('should return 404 if subscription not found', async (t) => {
     getStub.onFirstCall().returns({
       exists: true,
@@ -302,6 +302,7 @@ test('/otp route', async (t) => {
   })
 
   t.test('should respond and update otp', async (t) => {
+    clock.restore();
     const updateStub = sinon.stub()
     updateStub.resolves()
     docStub.returns({
@@ -325,6 +326,7 @@ test('/otp route', async (t) => {
   })
 
   t.test('should return 404 if request does not exist', async (t) => {
+    clock.restore();
     // Requests collection
     docStub.returns({
       get: () => null
