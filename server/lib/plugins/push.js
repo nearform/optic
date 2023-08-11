@@ -18,6 +18,7 @@ async function sendExpoPush(
       {
         to: subscription.token,
         sound: 'default',
+        priority: 'high',
         body: 'One Time Password requested',
         data: { uniqueId, token, secretId, packageInfo }
       }
