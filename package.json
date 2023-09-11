@@ -28,7 +28,7 @@
     "fastify": "^4.22.2",
     "firebase": "^10.3.1",
     "firebase-admin": "^11.10.1",
-    "fluent-json-schema": "^4.1.1",
+    "fluent-json-schema": "^4.1.2",
     "pkg-dir": "^5.0.0",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0"
