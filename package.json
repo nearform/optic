@@ -50,7 +50,7 @@
     "nodemon": "^3.0.1",
     "prettier": "^2.8.8",
     "prettier-config-standard": "^7.0.0",
-    "sinon": "^16.0.0",
+    "sinon": "^16.1.0",
     "tap": "^16.3.8"
   },
   "lint-staged": {
