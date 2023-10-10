@@ -1,6 +1,6 @@
 {
   "name": "optic",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "private": true,
   "engines": {
     "node": "16"
@@ -12,7 +12,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
-    "test": "tap server/test/",
+    "test": "tap server/test/*.test.js && c8 report --check-coverage --temp-directory .tap/coverage --statements 78 --branches 63.88 --functions 75 --lines 78",
     "prepare": "npx husky install"
   },
   "dependencies": {
@@ -36,7 +36,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
-    "eslint": "^8.50.0",
+    "c8": "^8.0.1",
+    "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-prettier-standard": "^4.0.1",
     "eslint-config-standard": "^17.1.0",
@@ -50,8 +51,8 @@
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "prettier-config-standard": "^7.0.0",
-    "sinon": "^16.0.0",
-    "tap": "^16.3.8"
+    "sinon": "^16.1.0",
+    "tap": "^18.4.5"
   },
   "lint-staged": {
     "server/**/*.{js,ts,json,md}": [

@@ -1,4 +1,6 @@
-branches: 63.88
-lines: 78
-functions: 75
-statements: 78
+# vim: set filetype=yaml :
+plugin:
+  - "!@tapjs/typescript"
+allow-incomplete-coverage: true
+coverage-report:
+  - none

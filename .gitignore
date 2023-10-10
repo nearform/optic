@@ -27,5 +27,5 @@ npm-shrinkwrap.json
 
 .vscode
 .eslintcache
-.nyc_output
+.tap
 .idea/
