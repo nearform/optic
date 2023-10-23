@@ -52,7 +52,7 @@
     "prettier": "^3.0.3",
     "prettier-config-standard": "^7.0.0",
     "sinon": "^16.1.0",
-    "tap": "^18.4.5"
+    "tap": "^18.5.2"
   },
   "lint-staged": {
     "server/**/*.{js,ts,json,md}": [
