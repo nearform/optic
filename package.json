@@ -16,7 +16,7 @@
     "prepare": "npx husky install"
   },
   "dependencies": {
-    "@fastify/auth": "^4.3.0",
+    "@fastify/auth": "^4.4.0",
     "@fastify/autoload": "^5.8.0",
     "@fastify/helmet": "^11.1.1",
     "@fastify/sensible": "^5.5.0",
