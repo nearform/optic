@@ -22,7 +22,7 @@
     "@fastify/sensible": "^5.5.0",
     "@fastify/static": "^7.0.0",
     "close-with-grace": "^1.2.0",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.2",
     "env-schema": "^5.2.1",
     "expo-server-sdk": "^3.7.0",
     "fastify": "^4.26.0",
