@@ -13,7 +13,7 @@
     "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node server/index.js",
     "test": "tap server/test/*.test.js && c8 report --check-coverage --temp-directory .tap/coverage --statements 78 --branches 63.88 --functions 75 --lines 78",
-    "prepare": "npx husky install"
+    "prepare": "npx husky"
   },
   "dependencies": {
     "@fastify/auth": "^4.6.1",
