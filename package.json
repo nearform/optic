@@ -25,7 +25,7 @@
     "dotenv": "^16.4.5",
     "env-schema": "^6.0.0",
     "expo-server-sdk": "^3.10.0",
-    "fastify": "^4.28.0",
+    "fastify": "^4.28.1",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.2.0",
     "fluent-json-schema": "^4.2.1",
