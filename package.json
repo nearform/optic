@@ -27,7 +27,7 @@
     "expo-server-sdk": "^3.11.0",
     "fastify": "^4.28.1",
     "firebase": "^11.0.1",
-    "firebase-admin": "^12.6.0",
+    "firebase-admin": "^12.7.0",
     "fluent-json-schema": "^5.0.0",
     "pkg-dir": "^5.0.0",
     "uniqid": "^5.0.3",
