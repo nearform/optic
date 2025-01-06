@@ -13,3 +13,5 @@ This repository contains the backend API for the application. Unless you're here
 The Optic documentation is available [on the website](https://optic.nearform.com/)
 
 To get started, visit the [Getting Started](https://optic.nearform.com/getting-started) page for a brief overview.
+
+[![banner](https://raw.githubusercontent.com/nearform/.github/refs/heads/master/assets/os-banner-green.svg)](https://www.nearform.com/contact/?utm_source=open-source&utm_medium=banner&utm_campaign=os-project-pages)
