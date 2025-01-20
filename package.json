@@ -21,7 +21,7 @@
     "@fastify/helmet": "^13.0.1",
     "@fastify/sensible": "^5.6.0",
     "@fastify/static": "^8.0.4",
-    "close-with-grace": "^2.1.0",
+    "close-with-grace": "^2.2.0",
     "dotenv": "^16.4.7",
     "env-schema": "^6.0.0",
     "expo-server-sdk": "^3.13.0",
