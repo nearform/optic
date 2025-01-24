@@ -19,6 +19,7 @@ const {
   processDetector,
   hostDetector
 } = require('@opentelemetry/resources')
+
 const pkg = require('../package.json')
 
 require('dotenv').config()
