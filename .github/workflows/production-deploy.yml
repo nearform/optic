@@ -24,3 +24,6 @@ jobs:
       firebase_project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
       firebase_private_key_base64: ${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }}
       firebase_private_key_base64_gcp_secret_name: optic-firebase-private-key
+      grafana_oltp_endpoint: ${{ secrets.GRAFANA_OLTP_ENDPOINT }}
+      grafana_instance_id: ${{ secrets.GRAFANA_INSTANCE_ID }}
+      grafana_api_key: ${{ secrets.GRAFANA_API_KEY }}
