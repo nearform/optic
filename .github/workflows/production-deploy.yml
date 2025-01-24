@@ -4,12 +4,16 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
 
 jobs:
   call-deploy-prod:
     uses: ./.github/workflows/deploy-job.yml
     with:
       environment: production
+    permissions:
+      id-token: write
+      contents: read
     secrets:
       gcp_provider_name: ${{ secrets.GCP_PROVIDER_NAME }}
       gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
