@@ -4,9 +4,9 @@ const { join: pathJoin } = require('path')
 
 const envSchema = require('env-schema')
 const S = require('fluent-json-schema')
-const pkgDir = require('pkg-dir')
+const { packageDirectorySync } = require('pkg-dir')
 
-const pkgRoot = pkgDir.sync()
+const pkgRoot = packageDirectorySync()
 const pluginsPath = pathJoin(pkgRoot, 'server/lib', 'plugins')
 const routesPath = pathJoin(pkgRoot, 'server/lib', 'routes')
 
