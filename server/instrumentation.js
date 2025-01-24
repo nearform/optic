@@ -22,6 +22,15 @@ const {
 
 require('dotenv').config()
 
+if (
+  !process.env.GRAFANA_OTLP_ENDPOINT ||
+  !process.env.GRAFANA_INSTANCE_ID ||
+  !process.env.GRAFANA_API_KEY
+) {
+  console.error('Grafana instrumentation not fully configured, skipping.')
+  process.exit(0)
+}
+
 const base64Key = Buffer.from(
   `${process.env.GRAFANA_INSTANCE_ID}:${process.env.GRAFANA_API_KEY}`
 ).toString('base64')
