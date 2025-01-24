@@ -19,6 +19,7 @@ const {
   processDetector,
   hostDetector
 } = require('@opentelemetry/resources')
+const pkg = require('../package.json')
 
 require('dotenv').config()
 
@@ -38,7 +39,7 @@ const base64Key = Buffer.from(
 const sdk = new NodeSDK({
   resource: new Resource({
     [ATTR_SERVICE_NAME]: 'optic',
-    [ATTR_SERVICE_VERSION]: '1.0'
+    [ATTR_SERVICE_VERSION]: pkg.version
   }),
   resourceDetectors: [envDetector, processDetector, hostDetector],
   traceExporter: new OTLPTraceExporter({
