@@ -24,18 +24,20 @@ const pkg = require('../package.json')
 
 require('dotenv').config()
 
-if (
-  !process.env.GRAFANA_OTLP_ENDPOINT ||
-  !process.env.GRAFANA_INSTANCE_ID ||
-  !process.env.GRAFANA_API_KEY
-) {
-  console.error('Grafana instrumentation not fully configured, skipping.')
+const endpoint = process.env.GRAFANA_OTLP_ENDPOINT
+const instanceId = process.env.GRAFANA_INSTANCE_ID
+const apiKey = process.env.GRAFANA_API_KEY
+
+if (!endpoint || !instanceId || !apiKey) {
+  console.warn('Grafana instrumentation not fully configured, skipping.')
   process.exit(0)
 }
 
-const base64Key = Buffer.from(
-  `${process.env.GRAFANA_INSTANCE_ID}:${process.env.GRAFANA_API_KEY}`
-).toString('base64')
+console.log(
+  `Starting Grafana instrumentation on '${endpoint}', instance '${instanceId}'...`
+)
+
+const base64Key = Buffer.from(`${instanceId}:${apiKey}`).toString('base64')
 
 const sdk = new NodeSDK({
   resource: new Resource({
@@ -44,14 +46,14 @@ const sdk = new NodeSDK({
   }),
   resourceDetectors: [envDetector, processDetector, hostDetector],
   traceExporter: new OTLPTraceExporter({
-    url: `${process.env.GRAFANA_OTLP_ENDPOINT}/v1/traces`,
+    url: `${endpoint}/v1/traces`,
     headers: {
       Authorization: `Basic ${base64Key}`
     }
   }),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
-      url: `${process.env.GRAFANA_OTLP_ENDPOINT}/v1/metrics`,
+      url: `${endpoint}/v1/metrics`,
       headers: {
         Authorization: `Basic ${base64Key}`
       }
@@ -61,3 +63,7 @@ const sdk = new NodeSDK({
 })
 
 sdk.start()
+
+console.log(
+  `Grafana instrumentation started successfully on '${endpoint}', instance '${instanceId}'.`
+)

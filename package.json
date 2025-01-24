@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
-    "start": "node server/index.js",
+    "start": "node --require ./server/instrumentation.js ./server/index.js",
     "test": "node --test",
     "husky:install": "npx husky",
     "husky:uninstall": "git config --unset core.hooksPath"
