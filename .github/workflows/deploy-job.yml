@@ -64,18 +64,18 @@ jobs:
             ${{ secrets.firebase_private_key_base64_gcp_secret_name }}:"${{ secrets.firebase_private_key_base64 }}"
 
       - id: deploy
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ secrets.gcp_cloudrun_service_name }}
           region: ${{ secrets.gcp_cloudrun_service_region }}
           project_id: ${{ secrets.gcp_project_id }}
-          env_vars: >-
+          env_vars: |-
             FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
             FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
             GRAFANA_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint || '' }},
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id || '' }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key || ''}}
-          secrets: >-
+          secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
           flags: --allow-unauthenticated --timeout=1800
           source: .
