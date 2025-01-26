@@ -25,6 +25,7 @@ jobs:
       firebase_private_key_base64: ${{ secrets.FIREBASE_PRIVATE_KEY_BASE64 }}
       firebase_private_key_base64_gcp_secret_name: optic-firebase-private-key-dev
       grafana_environment: development
+      grafana_diagnostics_enabled: true
       grafana_otlp_endpoint: ${{ secrets.HUB_GRAFANA_OTLP_ENDPOINT }}
       grafana_instance_id: ${{ secrets.HUB_GRAFANA_INSTANCE_ID }}
       grafana_api_key: ${{ secrets.HUB_GRAFANA_API_KEY }}
