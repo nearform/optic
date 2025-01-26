@@ -26,8 +26,8 @@ const pkg = require('../package.json')
 require('dotenv').config()
 
 const instrumentationEnabled =
-  process.env.GRAFANA_INSTRUMENTATION_ENABLED !== false // default to true
-const diagnosticsEnabled = process.env.GRAFANA_DIAGNOSTICS_ENABLED === true // default to false
+  process.env.GRAFANA_INSTRUMENTATION_ENABLED !== 'false' // default to true
+const diagnosticsEnabled = process.env.GRAFANA_DIAGNOSTICS_ENABLED === 'true' // default to false
 const endpoint = process.env.GRAFANA_OTLP_ENDPOINT
 const instanceId = process.env.GRAFANA_INSTANCE_ID
 const apiKey = process.env.GRAFANA_API_KEY
