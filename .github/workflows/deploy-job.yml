@@ -81,7 +81,6 @@ jobs:
             GRAFANA_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
-            GRAFANA_
           secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
           flags: --allow-unauthenticated --timeout=1800
