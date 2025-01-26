@@ -31,7 +31,7 @@ const diagnosticsEnabled = process.env.GRAFANA_DIAGNOSTICS_ENABLED === 'true' //
 const endpoint = process.env.GRAFANA_OTLP_ENDPOINT
 const instanceId = process.env.GRAFANA_INSTANCE_ID
 const apiKey = process.env.GRAFANA_API_KEY
-const environment = process.env.NODE_ENV ?? 'development'
+const environment = process.env.GRAFANA_ENVIRONMENT ?? 'development'
 
 if (!instrumentationEnabled) {
   console.warn('Grafana instrumentation disabled, skipping.')
