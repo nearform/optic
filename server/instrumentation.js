@@ -39,8 +39,9 @@ if (!instrumentationEnabled) {
 }
 
 if (!endpoint || !instanceId || !apiKey) {
-  console.warn('Grafana instrumentation not fully configured, skipping.')
-  process.exit(0)
+  throw new Error(
+    'Grafana instrumentation requires endpoint, instance id and api key.'
+  )
 }
 
 console.log(
