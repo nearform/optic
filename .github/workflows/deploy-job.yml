@@ -25,6 +25,8 @@ on:
         required: true
       firebase_private_key_base64_gcp_secret_name:
         required: true
+      grafana_environment:
+        required: true
       grafana_otlp_endpoint:
         required: true
       grafana_instance_id:
@@ -72,6 +74,7 @@ jobs:
           env_vars: |-
             FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
             FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+            GRAFANA_ENVIRONMENT=${{ secrets.grafana_environment }},
             GRAFANA_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
