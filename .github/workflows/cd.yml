@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/deploy-job.yml
     with:
       environment: dev
-      grafana_diagnostics_enabled: true
+      grafana_diagnostics_enabled: 'true'
     permissions:
       id-token: write
       contents: read
