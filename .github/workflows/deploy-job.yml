@@ -76,7 +76,7 @@ jobs:
             FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }},
             FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
             GRAFANA_ENVIRONMENT=${{ inputs.environment }},
-            GRAFANA_DIAGNOSTICS_ENABLED=${{ secrets.grafana_diagnostics_enabled || false }},
+            GRAFANA_DIAGNOSTICS_ENABLED=${{ secrets.grafana_diagnostics_enabled || 'false' }},
             GRAFANA_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
