@@ -19,14 +19,24 @@ const {
   processDetector,
   hostDetector
 } = require('@opentelemetry/resources')
+const { diag, DiagLogLevel, DiagConsoleLogger } = require('@opentelemetry/api')
 
 const pkg = require('../package.json')
 
 require('dotenv').config()
 
+const instrumentationEnabled =
+  process.env.GRAFANA_INSTRUMENTATION_ENABLED !== 'false' // default to true
+const diagnosticsEnabled = process.env.GRAFANA_DIAGNOSTICS_ENABLED === 'true' // default to false
 const endpoint = process.env.GRAFANA_OTLP_ENDPOINT
 const instanceId = process.env.GRAFANA_INSTANCE_ID
 const apiKey = process.env.GRAFANA_API_KEY
+const environment = process.env.NODE_ENV ?? 'development'
+
+if (!instrumentationEnabled) {
+  console.warn('Grafana instrumentation disabled, skipping.')
+  process.exit(0)
+}
 
 if (!endpoint || !instanceId || !apiKey) {
   console.warn('Grafana instrumentation not fully configured, skipping.')
@@ -42,7 +52,8 @@ const base64Key = Buffer.from(`${instanceId}:${apiKey}`).toString('base64')
 const sdk = new NodeSDK({
   resource: new Resource({
     [ATTR_SERVICE_NAME]: 'optic',
-    [ATTR_SERVICE_VERSION]: pkg.version
+    [ATTR_SERVICE_VERSION]: pkg.version,
+    'deployment.environment': environment
   }),
   resourceDetectors: [envDetector, processDetector, hostDetector],
   traceExporter: new OTLPTraceExporter({
@@ -63,6 +74,10 @@ const sdk = new NodeSDK({
 })
 
 sdk.start()
+
+if (diagnosticsEnabled) {
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.VERBOSE)
+}
 
 console.log(
   `Grafana instrumentation started successfully on '${endpoint}', instance '${instanceId}'.`
