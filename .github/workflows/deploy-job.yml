@@ -34,6 +34,8 @@ on:
         required: true
       grafana_api_key:
         required: true
+      grafana_headers:
+        required: true
 
 jobs:
   deploy:
@@ -81,7 +83,7 @@ jobs:
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
             OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
-            OTEL_EXPORTER_OTLP_HEADERS=Authorization Basic=${{ secrets.GRAFANA_HEADERS }}
+            OTEL_EXPORTER_OTLP_HEADERS=Authorization Basic=${{ secrets.grafana_headers }}
 
           secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
