@@ -57,7 +57,8 @@ const sdk = new NodeSDK({
   resource: new Resource({
     [ATTR_SERVICE_NAME]: 'optic',
     [ATTR_SERVICE_VERSION]: pkg.version,
-    'deployment.environment': environment
+    'deployment.environment': environment,
+    'service.namespace': 'optic'
   }),
   resourceDetectors: [envDetector, processDetector, hostDetector],
   traceExporter: new OTLPTraceExporter({
