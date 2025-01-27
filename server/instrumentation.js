@@ -23,7 +23,9 @@ const { diag, DiagLogLevel, DiagConsoleLogger } = require('@opentelemetry/api')
 
 const pkg = require('../package.json')
 
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const instrumentationEnabled =
   process.env.GRAFANA_INSTRUMENTATION_ENABLED !== 'false' // default to true
@@ -32,6 +34,11 @@ const endpoint = process.env.GRAFANA_OTLP_ENDPOINT
 const instanceId = process.env.GRAFANA_INSTANCE_ID
 const apiKey = process.env.GRAFANA_API_KEY
 const environment = process.env.GRAFANA_ENVIRONMENT ?? 'development'
+const base64Key = Buffer.from(`${instanceId}:${apiKey}`).toString('base64')
+const authorizationHeader = `Basic ${base64Key}`
+
+process.env.OTEL_EXPORTER_OTLP_ENDPOINT = endpoint
+process.env.OTEL_EXPORTER_OTLP_HEADERS = authorizationHeader
 
 if (!instrumentationEnabled) {
   console.warn('Grafana instrumentation disabled, skipping.')
@@ -48,8 +55,6 @@ console.log(
   `Starting Grafana instrumentation on '${endpoint}', instance '${instanceId}'...`
 )
 
-const base64Key = Buffer.from(`${instanceId}:${apiKey}`).toString('base64')
-
 const sdk = new NodeSDK({
   resource: new Resource({
     [ATTR_SERVICE_NAME]: 'optic',
@@ -60,26 +65,26 @@ const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({
     url: `${endpoint}/v1/traces`,
     headers: {
-      Authorization: `Basic ${base64Key}`
+      Authorization: authorizationHeader
     }
   }),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
       url: `${endpoint}/v1/metrics`,
       headers: {
-        Authorization: `Basic ${base64Key}`
+        Authorization: authorizationHeader
       }
     })
   }),
   instrumentations: [getNodeAutoInstrumentations()]
 })
 
-sdk.start()
-
 if (diagnosticsEnabled) {
   console.log('Grafana OTLP diagnostics enabled.')
   diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.VERBOSE)
 }
+
+sdk.start()
 
 console.log(
   `Grafana instrumentation started successfully on '${endpoint}', instance '${instanceId}'.`
