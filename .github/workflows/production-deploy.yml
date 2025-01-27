@@ -28,3 +28,4 @@ jobs:
       grafana_otlp_endpoint: ${{ secrets.HUB_GRAFANA_OTLP_ENDPOINT }}
       grafana_instance_id: ${{ secrets.HUB_GRAFANA_INSTANCE_ID }}
       grafana_api_key: ${{ secrets.HUB_GRAFANA_API_KEY }}
+      grafana_headers: ${{ secrets.HUB_GRAFANA_HEADERS }}
