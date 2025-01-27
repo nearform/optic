@@ -69,7 +69,9 @@ jobs:
       - name: Encode Grafana Auth Header
         id: encode-auth
         run: |
-          echo "OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic $(echo -n '${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}' | base64)" >> $GITHUB_ENV
+          echo -n 'Authorization=Basic ' > otel_headers
+          echo -n '${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}' | base64 >> otel_headers
+          echo "otel_headers=$(cat otel_headers)" >> $GITHUB_ENV
         shell: bash
 
       - id: deploy
@@ -87,7 +89,7 @@ jobs:
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
             OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
-            OTEL_EXPORTER_OTLP_HEADERS=$OTEL_EXPORTER_OTLP_HEADERS
+            OTEL_EXPORTER_OTLP_HEADERS=$otel_headers
 
           secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
