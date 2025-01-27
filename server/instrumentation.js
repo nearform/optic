@@ -76,10 +76,11 @@ const sdk = new NodeSDK({
         Authorization: authorizationHeader
       }
     })
-  }),
-  instrumentations: registerInstrumentations({
-    instrumentations: getNodeAutoInstrumentations()
   })
+})
+
+registerInstrumentations({
+  instrumentations: getNodeAutoInstrumentations()
 })
 
 if (diagnosticsEnabled) {
