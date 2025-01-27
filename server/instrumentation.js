@@ -38,9 +38,6 @@ const environment = process.env.GRAFANA_ENVIRONMENT ?? 'development'
 const base64Key = Buffer.from(`${instanceId}:${apiKey}`).toString('base64')
 const authorizationHeader = `Basic ${base64Key}`
 
-process.env.OTEL_EXPORTER_OTLP_ENDPOINT = endpoint
-process.env.OTEL_EXPORTER_OTLP_HEADERS = authorizationHeader
-
 if (!instrumentationEnabled) {
   console.warn('Grafana instrumentation disabled, skipping.')
   process.exit(0)
