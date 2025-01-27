@@ -68,7 +68,7 @@ jobs:
 
       - id: encode-auth
         run: |
-          echo "OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic $(echo -n '${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}' | base64)" >> $GITHUB_ENV
+          echo "OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic $(echo -n "${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}" | base64)" >> $GITHUB_ENV
         shell: bash
 
       - id: deploy
