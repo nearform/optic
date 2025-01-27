@@ -66,16 +66,6 @@ jobs:
           secrets: |-
             ${{ secrets.firebase_private_key_base64_gcp_secret_name }}:"${{ secrets.firebase_private_key_base64 }}"
 
-      - id: encode-auth
-        run: |
-          cleaned_instance_id=$(echo "${{ secrets.grafana_instance_id }}" | tr -d '\n' | tr -d '\r')
-          cleaned_api_key=$(echo "${{ secrets.grafana_api_key }}" | tr -d '\n' | tr -d '\r')
-
-          encoded_header=$(echo -n "$cleaned_instance_id:$cleaned_api_key" | base64)
-
-          echo "OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic $encoded_header" >> $GITHUB_ENV
-        shell: bash
-
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
@@ -91,7 +81,7 @@ jobs:
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
             OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
-            OTEL_EXPORTER_OTLP_HEADERS=$OTEL_EXPORTER_OTLP_HEADERS
+            OTEL_EXPORTER_OTLP_HEADERS=Authorization Basic=${{ secrets.GRAFANA_HEADERS }}
 
           secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
