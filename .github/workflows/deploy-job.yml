@@ -68,7 +68,11 @@ jobs:
 
       - id: encode-auth
         run: |
-          encoded_header=$(echo -n "${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}" | base64)
+          cleaned_instance_id=$(echo "${{ secrets.grafana_instance_id }}" | tr -d '\n' | tr -d '\r')
+          cleaned_api_key=$(echo "${{ secrets.grafana_api_key }}" | tr -d '\n' | tr -d '\r')
+
+          encoded_header=$(echo -n "$cleaned_instance_id:$cleaned_api_key" | base64)
+
           echo "OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic $encoded_header" >> $GITHUB_ENV
         shell: bash
 
