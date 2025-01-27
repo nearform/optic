@@ -20,6 +20,7 @@ const {
   hostDetector
 } = require('@opentelemetry/resources')
 const { diag, DiagLogLevel, DiagConsoleLogger } = require('@opentelemetry/api')
+const { registerInstrumentations } = require('@opentelemetry/instrumentation')
 
 const pkg = require('../package.json')
 
@@ -76,7 +77,9 @@ const sdk = new NodeSDK({
       }
     })
   }),
-  instrumentations: [getNodeAutoInstrumentations()]
+  instrumentations: registerInstrumentations({
+    instrumentations: getNodeAutoInstrumentations()
+  })
 })
 
 if (diagnosticsEnabled) {
