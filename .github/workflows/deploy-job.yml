@@ -66,6 +66,11 @@ jobs:
           secrets: |-
             ${{ secrets.firebase_private_key_base64_gcp_secret_name }}:"${{ secrets.firebase_private_key_base64 }}"
 
+      - name: Encode Grafana Auth Header
+        id: encode-auth
+        run: echo "Authorization=Basic $(echo -n '${{ secrets.grafana_instance_id }}:${{ secrets.grafana_api_key }}' | base64)" > headers.env
+        shell: bash
+
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
@@ -80,6 +85,9 @@ jobs:
             GRAFANA_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
             GRAFANA_INSTANCE_ID=${{ secrets.grafana_instance_id }},
             GRAFANA_API_KEY=${{ secrets.grafana_api_key }}
+            OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.grafana_otlp_endpoint }},
+            OTEL_EXPORTER_OTLP_HEADERS=$(cat headers.env)
+
           secrets: |-
             FIREBASE_PRIVATE_KEY_BASE64=${{ secrets.firebase_private_key_base64_gcp_secret_name }}:latest,
           flags: --allow-unauthenticated --timeout=1800
