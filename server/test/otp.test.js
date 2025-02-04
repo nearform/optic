@@ -1,11 +1,13 @@
-const { test } = require('tap')
+const assert = require('node:assert/strict')
+const { test, after, describe, beforeEach, afterEach } = require('node:test')
+
 const sinon = require('sinon')
 
 const otpRoutes = require('../lib/routes/otp')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('/otp route', async (t) => {
+describe('/otp route', async () => {
   const sendStub = sinon.stub()
   const getStub = sinon.stub()
   const docStub = sinon.stub()
@@ -38,20 +40,20 @@ test('/otp route', async (t) => {
   ])
 
   let clock
-  t.beforeEach(async () => {
+  beforeEach(async () => {
     getStub.reset()
     sendStub.reset()
     docStub.reset()
     clock = sinon.useFakeTimers()
   })
 
-  t.afterEach(async () => {
+  afterEach(() => {
     clock.restore()
   })
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test('should generate push notification on GET request', async (t) => {
+  test('should generate push notification on GET request', async () => {
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -87,156 +89,147 @@ test('/otp route', async (t) => {
 
     await clock.tickAsync(61e3)
 
-    t.equal(response.statusCode, 403)
-    t.equal(docStub.calledThrice, true)
-    t.equal(sendStub.called, true)
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(docStub.calledThrice, true)
+    assert.deepStrictEqual(sendStub.called, true)
   })
 
-  t.test(
-    'should generate push notification on POST request with valid body',
-    async (t) => {
-      // All tokens collection
-      docStub.onFirstCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => ({
-            secretId: 'secretId',
-            subscriptionId: 'subscriptionId'
-          })
+  test('should generate push notification on POST request with valid body', async (t) => {
+    // All tokens collection
+    docStub.onFirstCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => ({
+          secretId: 'secretId',
+          subscriptionId: 'subscriptionId'
         })
       })
-      // Subscriptions collection
-      docStub.onSecondCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => sinon.stub()
-        })
+    })
+    // Subscriptions collection
+    docStub.onSecondCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => sinon.stub()
       })
-      // Requests collection
-      docStub.onThirdCall().returns({
-        set: () => {},
-        onSnapshot: () => sinon.stub(),
-        delete: () => sinon.stub()
-      })
+    })
+    // Requests collection
+    docStub.onThirdCall().returns({
+      set: () => {},
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
+    })
 
-      let response
+    let response
 
-      server
-        .inject({
-          url: '/api/generate/55555',
-          method: 'POST',
-          body: {
-            packageInfo: {
-              version: 'v2',
-              name: '@optic/optic-expo'
-            }
+    server
+      .inject({
+        url: '/api/generate/55555',
+        method: 'POST',
+        body: {
+          packageInfo: {
+            version: 'v2',
+            name: '@optic/optic-expo'
           }
-        })
-        .then((resp) => (response = resp))
+        }
+      })
+      .then((resp) => (response = resp))
 
-      await clock.tickAsync(61e3)
+    await clock.tickAsync(61e3)
 
-      t.equal(response.statusCode, 403)
-      t.equal(docStub.calledThrice, true)
-      t.equal(sendStub.called, true)
-    }
-  )
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(docStub.calledThrice, true)
+    assert.deepStrictEqual(sendStub.called, true)
+  })
 
-  t.test(
-    'should generate push notification on POST request without body',
-    async (t) => {
-      // All tokens collection
-      docStub.onFirstCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => ({
-            secretId: 'secretId',
-            subscriptionId: 'subscriptionId'
-          })
+  test('should generate push notification on POST request without body', async () => {
+    // All tokens collection
+    docStub.onFirstCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => ({
+          secretId: 'secretId',
+          subscriptionId: 'subscriptionId'
         })
       })
-      // Subscriptions collection
-      docStub.onSecondCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => sinon.stub()
+    })
+    // Subscriptions collection
+    docStub.onSecondCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => sinon.stub()
+      })
+    })
+    // Requests collection
+    docStub.onThirdCall().returns({
+      set: () => {},
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
+    })
+
+    let response
+
+    server
+      .inject({
+        url: '/api/generate/55555',
+        method: 'POST'
+      })
+      .then((resp) => (response = resp))
+
+    await clock.tickAsync(61e3)
+
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(docStub.calledThrice, true)
+    assert.deepStrictEqual(sendStub.called, true)
+  })
+
+  test('should return invalid on POST request if packageInfo is invalid', async () => {
+    // All tokens collection
+    docStub.onFirstCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => ({
+          secretId: 'secretId',
+          subscriptionId: 'subscriptionId'
         })
       })
-      // Requests collection
-      docStub.onThirdCall().returns({
-        set: () => {},
-        onSnapshot: () => sinon.stub(),
-        delete: () => sinon.stub()
+    })
+    // Subscriptions collection
+    docStub.onSecondCall().returns({
+      get: () => ({
+        exists: true,
+        data: () => sinon.stub()
       })
+    })
+    // Requests collection
+    docStub.onThirdCall().returns({
+      set: () => {},
+      onSnapshot: () => sinon.stub(),
+      delete: () => sinon.stub()
+    })
 
-      let response
+    let response
 
-      server
-        .inject({
-          url: '/api/generate/55555',
-          method: 'POST'
-        })
-        .then((resp) => (response = resp))
-
-      await clock.tickAsync(61e3)
-
-      t.equal(response.statusCode, 403)
-      t.equal(docStub.calledThrice, true)
-      t.equal(sendStub.called, true)
-    }
-  )
-
-  t.test(
-    'should return invalid on POST request if packageInfo is invalid',
-    async (t) => {
-      // All tokens collection
-      docStub.onFirstCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => ({
-            secretId: 'secretId',
-            subscriptionId: 'subscriptionId'
-          })
-        })
-      })
-      // Subscriptions collection
-      docStub.onSecondCall().returns({
-        get: () => ({
-          exists: true,
-          data: () => sinon.stub()
-        })
-      })
-      // Requests collection
-      docStub.onThirdCall().returns({
-        set: () => {},
-        onSnapshot: () => sinon.stub(),
-        delete: () => sinon.stub()
-      })
-
-      let response
-
-      server
-        .inject({
-          url: '/api/generate/55555',
-          method: 'POST',
-          body: {
-            packageInfo: {
-              packageVersion: 'v2',
-              packageName: '@optic/optic-expo'
-            }
+    server
+      .inject({
+        url: '/api/generate/55555',
+        method: 'POST',
+        body: {
+          packageInfo: {
+            packageVersion: 'v2',
+            packageName: '@optic/optic-expo'
           }
-        })
-        .then((resp) => (response = resp))
+        }
+      })
+      .then((resp) => (response = resp))
 
-      await clock.tickAsync(61e3)
+    await clock.tickAsync(61e3)
 
-      t.equal(response.statusCode, 400)
-      t.equal(docStub.called, false)
-      t.equal(sendStub.called, false)
-    }
-  )
+    assert.deepStrictEqual(response.statusCode, 400)
+    assert.deepStrictEqual(docStub.called, false)
+    assert.deepStrictEqual(sendStub.called, false)
+  })
 
-  t.test('should return 404 if token not found', async (t) => {
+  test('should return 404 if token not found', async (t) => {
     getStub.returns({
       exists: false
     })
@@ -252,14 +245,14 @@ test('/otp route', async (t) => {
 
     const data = await response.json()
 
-    t.equal(response.statusCode, 404)
-    t.equal(docStub.calledOnce, true)
-    t.equal(getStub.calledOnce, true)
-    t.equal(sendStub.called, false)
-    t.equal(data.message, 'Token not found')
+    assert.deepStrictEqual(response.statusCode, 404)
+    assert.deepStrictEqual(docStub.calledOnce, true)
+    assert.deepStrictEqual(getStub.calledOnce, true)
+    assert.deepStrictEqual(sendStub.called, false)
+    assert.deepStrictEqual(data.message, 'Token not found')
   })
 
-  t.test('should return 404 if subscription not found', async (t) => {
+  test('should return 404 if subscription not found', async () => {
     getStub.onFirstCall().returns({
       exists: true,
       data: () => ({
@@ -294,13 +287,13 @@ test('/otp route', async (t) => {
 
     const data = await response.json()
 
-    t.equal(response.statusCode, 404)
-    t.equal(getStub.calledOnce, true)
-    t.equal(sendStub.called, false)
-    t.equal(data.message, 'Subscription not found')
+    assert.deepStrictEqual(response.statusCode, 404)
+    assert.deepStrictEqual(getStub.calledOnce, true)
+    assert.deepStrictEqual(sendStub.called, false)
+    assert.deepStrictEqual(data.message, 'Subscription not found')
   })
 
-  t.test('should respond and update otp', async (t) => {
+  test('should respond and update otp', async () => {
     clock.restore()
     const updateStub = sinon.stub()
     updateStub.resolves()
@@ -319,12 +312,12 @@ test('/otp route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 201)
-    t.equal(docStub.called, true)
-    t.equal(updateStub.called, true)
+    assert.deepStrictEqual(response.statusCode, 201)
+    assert.deepStrictEqual(docStub.called, true)
+    assert.deepStrictEqual(updateStub.called, true)
   })
 
-  t.test('should return 404 if request does not exist', async (t) => {
+  test('should return 404 if request does not exist', async () => {
     clock.restore()
     // Requests collection
     docStub.returns({
@@ -341,7 +334,7 @@ test('/otp route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 404)
-    t.equal(docStub.called, true)
+    assert.deepStrictEqual(response.statusCode, 404)
+    assert.deepStrictEqual(docStub.called, true)
   })
 })

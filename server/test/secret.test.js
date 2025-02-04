@@ -1,11 +1,13 @@
-const { test } = require('tap')
+const { test, after, describe, beforeEach } = require('node:test')
+const assert = require('node:assert/strict')
+
 const sinon = require('sinon')
 
 const secretRoutes = require('../lib/routes/secret')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('secret route', async (t) => {
+describe('secret route', async (t) => {
   const deleteStub = sinon.stub()
   const getStub = sinon.stub()
 
@@ -48,14 +50,14 @@ test('secret route', async (t) => {
     { plugin: secretRoutes }
   ])
 
-  t.beforeEach(async () => {
+  beforeEach(async () => {
     deleteStub.reset()
     getStub.reset()
   })
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test('should delete all tokens relating to a secretId', async (t) => {
+  test('should delete all tokens relating to a secretId', async () => {
     deleteStub.resolves()
     getStub.onFirstCall().resolves({
       exists: true,
@@ -88,11 +90,11 @@ test('secret route', async (t) => {
       method: 'DELETE'
     })
 
-    t.equal(response.statusCode, 204)
-    t.equal(deleteStub.calledTwice, true)
+    assert.deepStrictEqual(response.statusCode, 204)
+    assert.deepStrictEqual(deleteStub.calledTwice, true)
   })
 
-  t.test('should not delete tokens without access', async (t) => {
+  test('should not delete tokens without access', async (t) => {
     deleteStub.resolves()
     getStub.onFirstCall().resolves({
       exists: true,
@@ -115,7 +117,7 @@ test('secret route', async (t) => {
       method: 'DELETE'
     })
 
-    t.equal(response.statusCode, 403)
-    t.equal(deleteStub.notCalled, true)
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(deleteStub.notCalled, true)
   })
 })

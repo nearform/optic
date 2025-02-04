@@ -1,11 +1,13 @@
-const { test } = require('tap')
+const assert = require('node:assert/strict')
+const { test, after, describe, beforeEach } = require('node:test')
+
 const sinon = require('sinon')
 
 const tokenRoutes = require('../lib/routes/token')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('token route', async (t) => {
+describe('token route', async () => {
   const authStub = sinon.stub()
   const sendStub = sinon.stub()
   const setStub = sinon.stub()
@@ -52,16 +54,16 @@ test('token route', async (t) => {
     { plugin: tokenRoutes }
   ])
 
-  t.beforeEach(async () => {
+  beforeEach(async () => {
     setStub.reset()
     deleteStub.reset()
     documentIdStub.reset()
     getStub.reset()
   })
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test('should set token for user', async (t) => {
+  test('should set token for user', async () => {
     setStub.resolves()
     getStub.resolves({ empty: false })
     const response = await server.inject({
@@ -72,47 +74,47 @@ test('token route', async (t) => {
 
     const data = response.json()
 
-    t.equal(response.statusCode, 200)
-    t.equal(setStub.calledOnce, true)
-    t.equal(Object.prototype.hasOwnProperty.call(data, 'token'), true)
+    assert.deepStrictEqual(response.statusCode, 200)
+    assert.deepStrictEqual(setStub.calledOnce, true)
+    assert.deepStrictEqual(
+      Object.prototype.hasOwnProperty.call(data, 'token'),
+      true
+    )
   })
 
-  t.test('should return 400 if secretId is not specified', async (t) => {
+  test('should return 400 if secretId is not specified', async (t) => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
       body: { subscriptionId: 'mock-id' }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  t.test('should return 400 if subscriptionId is not specified', async (t) => {
+  test('should return 400 if subscriptionId is not specified', async (t) => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
       body: { secretId: 'mock-id' }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  t.test(
-    'should return 403 if subscriptionId doesnt belong to user',
-    async (t) => {
-      getStub.resolves({ empty: true })
-      const response = await server.inject({
-        url: '/api/token',
-        method: 'PUT',
-        body: { secretId: 'mock-id', subscriptionId: 'mock-subscription' }
-      })
+  test('should return 403 if subscriptionId doesnt belong to user', async () => {
+    getStub.resolves({ empty: true })
+    const response = await server.inject({
+      url: '/api/token',
+      method: 'PUT',
+      body: { secretId: 'mock-id', subscriptionId: 'mock-subscription' }
+    })
 
-      t.equal(response.statusCode, 403)
-      t.equal(getStub.calledOnce, true)
-    }
-  )
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(getStub.calledOnce, true)
+  })
 
-  t.test('should delete token', async (t) => {
+  test('should delete token', async (t) => {
     deleteStub.resolves()
     getStub.onCall(0).resolves({
       exists: true,
@@ -126,7 +128,7 @@ test('token route', async (t) => {
       method: 'DELETE'
     })
 
-    t.equal(response.statusCode, 204)
-    t.equal(deleteStub.calledOnce, true)
+    assert.deepStrictEqual(response.statusCode, 204)
+    assert.deepStrictEqual(deleteStub.calledOnce, true)
   })
 })
