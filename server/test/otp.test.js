@@ -94,7 +94,7 @@ describe('/otp route', async () => {
     assert.deepStrictEqual(sendStub.called, true)
   })
 
-  test('should generate push notification on POST request with valid body', async (t) => {
+  test('should generate push notification on POST request with valid body', async () => {
     // All tokens collection
     docStub.onFirstCall().returns({
       get: () => ({
@@ -229,7 +229,7 @@ describe('/otp route', async () => {
     assert.deepStrictEqual(sendStub.called, false)
   })
 
-  test('should return 404 if token not found', async (t) => {
+  test('should return 404 if token not found', async () => {
     getStub.returns({
       exists: false
     })

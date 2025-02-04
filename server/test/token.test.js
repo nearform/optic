@@ -82,7 +82,7 @@ describe('token route', async () => {
     )
   })
 
-  test('should return 400 if secretId is not specified', async (t) => {
+  test('should return 400 if secretId is not specified', async () => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -92,7 +92,7 @@ describe('token route', async () => {
     assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  test('should return 400 if subscriptionId is not specified', async (t) => {
+  test('should return 400 if subscriptionId is not specified', async () => {
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -114,7 +114,7 @@ describe('token route', async () => {
     assert.deepStrictEqual(getStub.calledOnce, true)
   })
 
-  test('should delete token', async (t) => {
+  test('should delete token', async () => {
     deleteStub.resolves()
     getStub.onCall(0).resolves({
       exists: true,

@@ -97,7 +97,7 @@ describe('subscription route', async () => {
     assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  test('should return 400 if type is neither "web" nor "expo"', async (t) => {
+  test('should return 400 if type is neither "web" nor "expo"', async () => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',

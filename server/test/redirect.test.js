@@ -5,7 +5,7 @@ const redirectRoutes = require('../lib/routes/redirect')
 
 const { buildServer } = require('./test-util.js')
 
-describe('redirect route', async (t) => {
+describe('redirect route', async () => {
   const server = await buildServer([{ plugin: redirectRoutes }])
 
   after(() => server.close())
