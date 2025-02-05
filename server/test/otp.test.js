@@ -1,14 +1,5 @@
 const assert = require('node:assert/strict')
-const {
-  test,
-  after,
-  describe,
-  beforeEach,
-  afterEach,
-  mock
-} = require('node:test')
-
-const sinon = require('sinon')
+const { test, after, describe, beforeEach, mock } = require('node:test')
 
 const otpRoutes = require('../lib/routes/otp')
 
@@ -40,22 +31,20 @@ describe('/otp route', async () => {
     decorate(server, 'push', push)
   }
 
-  const server = await buildServer([
-    { plugin: mockedFirebasePlugin },
-    { plugin: mockedPushPlugin },
-    { plugin: otpRoutes }
-  ])
+  const buildMockedServer = function (options) {
+    return buildServer([
+      { plugin: mockedFirebasePlugin },
+      { plugin: mockedPushPlugin },
+      { plugin: otpRoutes, options }
+    ])
+  }
 
-  let clock
+  const server = await buildMockedServer({ otpApprovalTimeout: 0 })
+
   beforeEach(async () => {
     getStub.mock.resetCalls()
     sendStub.mock.resetCalls()
     docStub.mock.resetCalls()
-    clock = sinon.useFakeTimers()
-  })
-
-  afterEach(() => {
-    clock.restore()
   })
 
   after(() => server.close())
@@ -94,16 +83,10 @@ describe('/otp route', async () => {
       2
     )
 
-    let response
-
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'GET'
-      })
-      .then((resp) => (response = resp))
-
-    await clock.tickAsync(61e3)
+    const response = await server.inject({
+      url: '/api/generate/55555',
+      method: 'GET'
+    })
 
     assert.deepStrictEqual(response.statusCode, 403)
     assert.deepStrictEqual(docStub.mock.callCount(), 3)
@@ -144,22 +127,16 @@ describe('/otp route', async () => {
       2
     )
 
-    let response
-
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST',
-        body: {
-          packageInfo: {
-            version: 'v2',
-            name: '@optic/optic-expo'
-          }
+    const response = await server.inject({
+      url: '/api/generate/55555',
+      method: 'POST',
+      body: {
+        packageInfo: {
+          version: 'v2',
+          name: '@optic/optic-expo'
         }
-      })
-      .then((resp) => (response = resp))
-
-    await clock.tickAsync(61e3)
+      }
+    })
 
     assert.deepStrictEqual(response.statusCode, 403)
     assert.deepStrictEqual(docStub.mock.callCount(), 3)
@@ -200,16 +177,10 @@ describe('/otp route', async () => {
       2
     )
 
-    let response
-
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST'
-      })
-      .then((resp) => (response = resp))
-
-    await clock.tickAsync(61e3)
+    const response = await server.inject({
+      url: '/api/generate/55555',
+      method: 'POST'
+    })
 
     assert.deepStrictEqual(response.statusCode, 403)
     assert.deepStrictEqual(docStub.mock.callCount(), 3)
@@ -250,22 +221,16 @@ describe('/otp route', async () => {
       2
     )
 
-    let response
-
-    server
-      .inject({
-        url: '/api/generate/55555',
-        method: 'POST',
-        body: {
-          packageInfo: {
-            packageVersion: 'v2',
-            packageName: '@optic/optic-expo'
-          }
+    const response = await server.inject({
+      url: '/api/generate/55555',
+      method: 'POST',
+      body: {
+        packageInfo: {
+          packageVersion: 'v2',
+          packageName: '@optic/optic-expo'
         }
-      })
-      .then((resp) => (response = resp))
-
-    await clock.tickAsync(61e3)
+      }
+    })
 
     assert.deepStrictEqual(response.statusCode, 400)
     assert.deepStrictEqual(docStub.mock.callCount(), 0)
@@ -349,7 +314,6 @@ describe('/otp route', async () => {
   })
 
   test('should respond and update otp', async () => {
-    clock.restore()
     const updateStub = mock.fn()
     // updateStub.resolves()
     docStub.mock.mockImplementationOnce(() => ({
@@ -373,7 +337,6 @@ describe('/otp route', async () => {
   })
 
   test('should return 404 if request does not exist', async () => {
-    clock.restore()
     // Requests collection
     docStub.mock.mockImplementationOnce(() => ({
       get: () => null
