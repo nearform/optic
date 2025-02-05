@@ -1,19 +1,17 @@
 const assert = require('node:assert/strict')
-const { test, after, describe, beforeEach } = require('node:test')
-
-const sinon = require('sinon')
+const { test, after, describe, beforeEach, mock } = require('node:test')
 
 const subscriptionRoutes = require('../lib/routes/subscription')
 
 const { buildServer, decorate } = require('./test-util.js')
 
 describe('subscription route', async () => {
-  const authStub = sinon.stub()
-  const sendStub = sinon.stub()
-  const getStub = sinon.stub()
-  const docStub = sinon.stub()
-  const updateStub = sinon.stub()
-  const addStub = sinon.stub()
+  const authStub = mock.fn()
+  const sendStub = mock.fn()
+  const getStub = mock.fn()
+  const docStub = mock.fn()
+  const updateStub = mock.fn()
+  const addStub = mock.fn()
 
   const mockedAuthPlugin = async function (server) {
     decorate(server, 'auth', authStub)
@@ -53,10 +51,10 @@ describe('subscription route', async () => {
   ])
 
   beforeEach(async () => {
-    getStub.reset()
-    docStub.reset()
-    updateStub.reset()
-    addStub.reset()
+    getStub.mock.resetCalls()
+    docStub.mock.resetCalls()
+    updateStub.mock.resetCalls()
+    addStub.mock.resetCalls()
   })
 
   after(() => server.close())

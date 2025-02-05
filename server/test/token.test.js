@@ -1,19 +1,17 @@
 const assert = require('node:assert/strict')
-const { test, after, describe, beforeEach } = require('node:test')
-
-const sinon = require('sinon')
+const { test, after, describe, beforeEach, mock } = require('node:test')
 
 const tokenRoutes = require('../lib/routes/token')
 
 const { buildServer, decorate } = require('./test-util.js')
 
 describe('token route', async () => {
-  const authStub = sinon.stub()
-  const sendStub = sinon.stub()
-  const setStub = sinon.stub()
-  const deleteStub = sinon.stub()
-  const getStub = sinon.stub()
-  const documentIdStub = sinon.stub()
+  const authStub = mock.fn()
+  const sendStub = mock.fn()
+  const setStub = mock.fn()
+  const deleteStub = mock.fn()
+  const getStub = mock.fn()
+  const documentIdStub = mock.fn()
 
   const mockedAuthPlugin = async function (server) {
     decorate(server, 'auth', authStub)
@@ -55,17 +53,17 @@ describe('token route', async () => {
   ])
 
   beforeEach(async () => {
-    setStub.reset()
-    deleteStub.reset()
-    documentIdStub.reset()
-    getStub.reset()
+    setStub.mock.resetCalls()
+    deleteStub.mock.resetCalls()
+    documentIdStub.mock.resetCalls()
+    getStub.mock.resetCalls()
   })
 
   after(() => server.close())
 
   test('should set token for user', async () => {
-    setStub.resolves()
-    getStub.resolves({ empty: false })
+    setStub.mock.mockImplementationOnce(() => {})
+    getStub.mock.mockImplementationOnce(() => ({ empty: false }))
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -75,7 +73,7 @@ describe('token route', async () => {
     const data = response.json()
 
     assert.deepStrictEqual(response.statusCode, 200)
-    assert.deepStrictEqual(setStub.calledOnce, true)
+    assert.deepStrictEqual(setStub.mock.callCount(), 1)
     assert.deepStrictEqual(
       Object.prototype.hasOwnProperty.call(data, 'token'),
       true
@@ -103,7 +101,7 @@ describe('token route', async () => {
   })
 
   test('should return 403 if subscriptionId doesnt belong to user', async () => {
-    getStub.resolves({ empty: true })
+    getStub.mock.mockImplementationOnce(() => ({ empty: true }))
     const response = await server.inject({
       url: '/api/token',
       method: 'PUT',
@@ -111,17 +109,20 @@ describe('token route', async () => {
     })
 
     assert.deepStrictEqual(response.statusCode, 403)
-    assert.deepStrictEqual(getStub.calledOnce, true)
+    assert.deepStrictEqual(getStub.mock.callCount(), 1)
   })
 
   test('should delete token', async () => {
-    deleteStub.resolves()
-    getStub.onCall(0).resolves({
-      exists: true,
-      get: () => '111'
-    })
-    getStub.onCall(1).resolves({ empty: false })
-    documentIdStub.resolves('111')
+    deleteStub.mock.mockImplementationOnce(() => {})
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        exists: true,
+        get: () => '111'
+      }),
+      0
+    )
+    getStub.mock.mockImplementationOnce(() => ({ empty: false }), 1)
+    documentIdStub.mock.mockImplementationOnce(() => '111')
 
     const response = await server.inject({
       url: '/api/token/55555',
@@ -129,6 +130,6 @@ describe('token route', async () => {
     })
 
     assert.deepStrictEqual(response.statusCode, 204)
-    assert.deepStrictEqual(deleteStub.calledOnce, true)
+    assert.deepStrictEqual(deleteStub.mock.callCount(), 1)
   })
 })
