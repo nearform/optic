@@ -1,16 +1,16 @@
-const { test } = require('tap')
-const sinon = require('sinon')
+const { test, after, describe, beforeEach, mock } = require('node:test')
+const assert = require('node:assert/strict')
 
 const secretRoutes = require('../lib/routes/secret')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('secret route', async (t) => {
-  const deleteStub = sinon.stub()
-  const getStub = sinon.stub()
+describe('secret route', async () => {
+  const deleteStub = mock.fn()
+  const getStub = mock.fn()
 
   const mockedAuthPlugin = async function (server) {
-    decorate(server, 'auth', sinon.stub())
+    decorate(server, 'auth', mock.fn())
   }
 
   const mockedFirebasePlugin = async function (server) {
@@ -30,13 +30,13 @@ test('secret route', async (t) => {
         })
       })
     }
-    admin.firestore.FieldPath = { documentId: sinon.stub() }
+    admin.firestore.FieldPath = { documentId: mock.fn() }
     decorate(server, 'firebaseAdmin', admin)
   }
 
   const mockedPushPlugin = async function (server) {
     const push = {
-      send: sinon.stub()
+      send: mock.fn()
     }
     decorate(server, 'push', push)
   }
@@ -48,74 +48,89 @@ test('secret route', async (t) => {
     { plugin: secretRoutes }
   ])
 
-  t.beforeEach(async () => {
-    deleteStub.reset()
-    getStub.reset()
+  beforeEach(async () => {
+    deleteStub.mock.resetCalls()
+    getStub.mock.resetCalls()
   })
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test('should delete all tokens relating to a secretId', async (t) => {
-    deleteStub.resolves()
-    getStub.onFirstCall().resolves({
-      exists: true,
-      docs: [
-        {
-          id: 'an-id',
-          data: () => ({
-            subscriptionId: 'a-subscription-id'
-          })
-        },
-        {
-          id: 'another-id',
-          data: () => ({
-            subscriptionId: 'another-subscription-id'
-          })
-        }
-      ]
-    })
+  test('should delete all tokens relating to a secretId', async () => {
+    deleteStub.mock.mockImplementationOnce(() => {})
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        exists: true,
+        docs: [
+          {
+            id: 'an-id',
+            data: () => ({
+              subscriptionId: 'a-subscription-id'
+            })
+          },
+          {
+            id: 'another-id',
+            data: () => ({
+              subscriptionId: 'another-subscription-id'
+            })
+          }
+        ]
+      }),
+      0
+    )
 
-    getStub.onSecondCall().resolves({
-      empty: false
-    })
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        empty: false
+      }),
+      1
+    )
 
-    getStub.onThirdCall().resolves({
-      empty: false
-    })
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        empty: false
+      }),
+      2
+    )
 
     const response = await server.inject({
       url: '/api/secret/55555',
       method: 'DELETE'
     })
 
-    t.equal(response.statusCode, 204)
-    t.equal(deleteStub.calledTwice, true)
+    assert.deepStrictEqual(response.statusCode, 204)
+    assert.deepStrictEqual(deleteStub.mock.callCount(), 2)
   })
 
-  t.test('should not delete tokens without access', async (t) => {
-    deleteStub.resolves()
-    getStub.onFirstCall().resolves({
-      exists: true,
-      docs: [
-        {
-          id: 'an-id',
-          data: () => ({
-            subscriptionId: 'a-subscription-id'
-          })
-        }
-      ]
-    })
+  test('should not delete tokens without access', async (t) => {
+    deleteStub.mock.mockImplementationOnce(() => {})
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        exists: true,
+        docs: [
+          {
+            id: 'an-id',
+            data: () => ({
+              subscriptionId: 'a-subscription-id'
+            })
+          }
+        ]
+      }),
+      0
+    )
 
-    getStub.onSecondCall().resolves({
-      empty: true
-    })
+    getStub.mock.mockImplementationOnce(
+      () => ({
+        empty: true
+      }),
+      1
+    )
 
     const response = await server.inject({
       url: '/api/secret/55555',
       method: 'DELETE'
     })
 
-    t.equal(response.statusCode, 403)
-    t.equal(deleteStub.notCalled, true)
+    assert.deepStrictEqual(response.statusCode, 403)
+    assert.deepStrictEqual(deleteStub.mock.callCount(), 0)
   })
 })

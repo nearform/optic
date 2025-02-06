@@ -1,4 +1,4 @@
-const { test } = require('tap')
+const { test, describe } = require('node:test')
 
 process.env = {
   ...process.env,
@@ -9,8 +9,8 @@ process.env = {
   FIREBASE_PRIVATE_KEY_BASE64: 'whatever'
 }
 
-test('config', async (t) => {
-  t.test('can load', async () => {
+describe('config', () => {
+  test('can load', () => {
     require('../config')
   })
 })

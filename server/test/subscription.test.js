@@ -1,17 +1,17 @@
-const { test } = require('tap')
-const sinon = require('sinon')
+const assert = require('node:assert/strict')
+const { test, after, describe, beforeEach, mock } = require('node:test')
 
 const subscriptionRoutes = require('../lib/routes/subscription')
 
 const { buildServer, decorate } = require('./test-util.js')
 
-test('subscription route', async (t) => {
-  const authStub = sinon.stub()
-  const sendStub = sinon.stub()
-  const getStub = sinon.stub()
-  const docStub = sinon.stub()
-  const updateStub = sinon.stub()
-  const addStub = sinon.stub()
+describe('subscription route', async () => {
+  const authStub = mock.fn()
+  const sendStub = mock.fn()
+  const getStub = mock.fn()
+  const docStub = mock.fn()
+  const updateStub = mock.fn()
+  const addStub = mock.fn()
 
   const mockedAuthPlugin = async function (server) {
     decorate(server, 'auth', authStub)
@@ -50,16 +50,16 @@ test('subscription route', async (t) => {
     { plugin: subscriptionRoutes }
   ])
 
-  t.beforeEach(async () => {
-    getStub.reset()
-    docStub.reset()
-    updateStub.reset()
-    addStub.reset()
+  beforeEach(async () => {
+    getStub.mock.resetCalls()
+    docStub.mock.resetCalls()
+    updateStub.mock.resetCalls()
+    addStub.mock.resetCalls()
   })
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test('should return 400 if no endpoint specified', async (t) => {
+  test('should return 400 if no endpoint specified', async () => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
@@ -68,10 +68,10 @@ test('subscription route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  t.test('should return 400 if type=expo and no token specified', async (t) => {
+  test('should return 400 if type=expo and no token specified', async () => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
@@ -80,10 +80,10 @@ test('subscription route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  t.test('should return 400 if type is not specified', async (t) => {
+  test('should return 400 if type is not specified', async () => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
@@ -92,10 +92,10 @@ test('subscription route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 
-  t.test('should return 400 if type is neither "web" nor "expo"', async (t) => {
+  test('should return 400 if type is neither "web" nor "expo"', async () => {
     const response = await server.inject({
       url: '/api/register',
       method: 'POST',
@@ -104,6 +104,6 @@ test('subscription route', async (t) => {
       }
     })
 
-    t.equal(response.statusCode, 400)
+    assert.deepStrictEqual(response.statusCode, 400)
   })
 })

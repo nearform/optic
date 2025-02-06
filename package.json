@@ -9,7 +9,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write '**/*.js?(on)'",
     "start": "node --require ./server/instrumentation.js ./server/index.js",
-    "test": "node --test",
+    "test": "node --test server/**/*.test.js",
     "husky:install": "npx husky",
     "husky:uninstall": "git config --unset core.hooksPath"
   },
@@ -55,9 +55,7 @@
     "lint-staged": "^15.4.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
-    "prettier-config-standard": "^7.0.0",
-    "sinon": "^18.0.0",
-    "tap": "^21.0.1"
+    "prettier-config-standard": "^7.0.0"
   },
   "lint-staged": {
     "server/**/*.{js,ts,json,md}": [

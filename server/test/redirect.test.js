@@ -1,27 +1,25 @@
-const { test } = require('tap')
+const assert = require('node:assert/strict')
+const { test, after, describe } = require('node:test')
 
 const redirectRoutes = require('../lib/routes/redirect')
 
 const { buildServer } = require('./test-util.js')
 
-test('redirect route', async (t) => {
+describe('redirect route', async () => {
   const server = await buildServer([{ plugin: redirectRoutes }])
 
-  t.teardown(server.close.bind(server))
+  after(() => server.close())
 
-  t.test(
-    'it should redirect the user to expo mobile app page when accessing root',
-    async (t) => {
-      const response = await server.inject({
-        url: '/',
-        method: 'GET'
-      })
+  test('it should redirect the user to expo mobile app page when accessing root', async () => {
+    const response = await server.inject({
+      url: '/',
+      method: 'GET'
+    })
 
-      t.equal(
-        response.headers.location,
-        'https://expo.dev/@nearform/optic-expo'
-      )
-      t.equal(response.statusCode, 302)
-    }
-  )
+    assert.deepStrictEqual(
+      response.headers.location,
+      'https://expo.dev/@nearform/optic-expo'
+    )
+    assert.deepStrictEqual(response.statusCode, 302)
+  })
 })

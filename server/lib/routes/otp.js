@@ -2,9 +2,10 @@
 
 const uniqid = require('uniqid')
 
-const approvalLimit = 60e3
+const defaultApprovalLimit = 60e3
 
-async function otpRoutes(server) {
+async function otpRoutes(server, options = {}) {
+  const otpApprovalTimeout = options.otpApprovalTimeout ?? defaultApprovalLimit
   const generateTokenHandler = async (request, reply) => {
     const { firebaseAdmin, push } = server
     const {
@@ -87,7 +88,7 @@ async function otpRoutes(server) {
 
       push.send(notification)
 
-      const timeout = setTimeout(completeRequest, approvalLimit)
+      const timeout = setTimeout(completeRequest, otpApprovalTimeout)
     })
   }
 
