@@ -25,7 +25,7 @@
     "@opentelemetry/exporter-trace-otlp-proto": "^0.205.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
     "@opentelemetry/sdk-node": "^0.205.0",
-    "@opentelemetry/sdk-trace-node": "^2.0.1",
+    "@opentelemetry/sdk-trace-node": "^2.1.0",
     "close-with-grace": "^2.2.0",
     "dotenv": "^17.2.2",
     "env-schema": "^6.0.0",
