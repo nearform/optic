@@ -31,7 +31,7 @@
     "env-schema": "^6.0.0",
     "expo-server-sdk": "^4.0.0",
     "fastify": "^5.6.1",
-    "firebase": "^12.3.0",
+    "firebase": "^12.4.0",
     "firebase-admin": "^13.5.0",
     "fluent-json-schema": "^6.0.0",
     "pkg-dir": "^5.0.0",
