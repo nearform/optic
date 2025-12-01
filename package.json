@@ -14,7 +14,7 @@
     "husky:uninstall": "git config --unset core.hooksPath"
   },
   "dependencies": {
-    "@fastify/auth": "^5.0.3",
+    "@fastify/auth": "^5.0.4",
     "@fastify/autoload": "^6.3.1",
     "@fastify/helmet": "^13.0.2",
     "@fastify/sensible": "^6.0.3",
