@@ -29,7 +29,7 @@
     "close-with-grace": "^2.4.0",
     "dotenv": "^17.2.3",
     "env-schema": "^7.0.0",
-    "expo-server-sdk": "^4.0.0",
+    "expo-server-sdk": "^5.0.0",
     "fastify": "^5.7.3",
     "firebase": "^12.8.0",
     "firebase-admin": "^13.6.0",
