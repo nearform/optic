@@ -26,7 +26,7 @@
     "@opentelemetry/sdk-metrics": "^2.5.0",
     "@opentelemetry/sdk-node": "^0.212.0",
     "@opentelemetry/sdk-trace-node": "^2.5.1",
-    "close-with-grace": "^2.4.0",
+    "close-with-grace": "^2.5.0",
     "dotenv": "^17.2.4",
     "env-schema": "^7.0.0",
     "expo-server-sdk": "^5.0.0",
