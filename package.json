@@ -42,7 +42,7 @@
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
     "c8": "^11.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-prettier-standard": "^4.0.1",
     "eslint-config-standard": "^17.1.0",
