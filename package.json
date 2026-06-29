@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
-    "@commitlint/config-conventional": "^21.0.2",
+    "@commitlint/config-conventional": "^21.1.0",
     "c8": "^11.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
