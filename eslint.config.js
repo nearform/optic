@@ -29,7 +29,18 @@ module.exports = [
           ignoreRestSiblings: true,
           vars: 'all'
         }
-      ]
+      ],
+      // Correctness rules previously provided by eslint-config-standard,
+      // not covered by @eslint/js recommended. Prettier still owns style.
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'no-throw-literal': 'error',
+      'no-use-before-define': ['error', { functions: false, classes: false, variables: true }],
+      'no-unused-expressions': 'error',
+      'no-return-assign': ['error', 'except-parens'],
+      'no-self-compare': 'error',
+      'no-unmodified-loop-condition': 'error'
     }
   },
   {
