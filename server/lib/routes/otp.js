@@ -41,6 +41,12 @@ async function otpRoutes(server, options = {}) {
       const requestObj = db.collection('requests').doc(uniqueId)
       requestObj.set({ createdAt: new Date() })
 
+      // completeRequest closes over the snapshot unsubscribe and the timeout
+      // handle, which are in turn wired to completeRequest. A const container
+      // whose fields are filled in below breaks that cycle without a
+      // use-before-define (the binding is never reassigned; only its fields).
+      const handles = {}
+
       const completeRequest = (error, otp) => {
         requestObj.delete()
         if (error) {
@@ -48,8 +54,8 @@ async function otpRoutes(server, options = {}) {
           return reply.internalServerError()
         }
 
-        unsubscribe()
-        clearTimeout(timeout)
+        handles.unsubscribe()
+        clearTimeout(handles.timeout)
 
         if (!otp) {
           log.error('Request was not approved')
@@ -60,7 +66,7 @@ async function otpRoutes(server, options = {}) {
         return reply.send(otp)
       }
 
-      const unsubscribe = requestObj.onSnapshot(
+      handles.unsubscribe = requestObj.onSnapshot(
         (update) => {
           const approved = update.get('approved')
           if (approved === undefined) {
@@ -88,7 +94,7 @@ async function otpRoutes(server, options = {}) {
 
       push.send(notification)
 
-      const timeout = setTimeout(completeRequest, otpApprovalTimeout)
+      handles.timeout = setTimeout(completeRequest, otpApprovalTimeout)
     })
   }
 
