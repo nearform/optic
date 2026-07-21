@@ -36,7 +36,10 @@ module.exports = [
       'no-var': 'error',
       'prefer-const': 'error',
       'no-throw-literal': 'error',
-      'no-use-before-define': ['error', { functions: false, classes: false, variables: true }],
+      'no-use-before-define': [
+        'error',
+        { functions: false, classes: false, variables: true }
+      ],
       'no-unused-expressions': 'error',
       'no-return-assign': ['error', 'except-parens'],
       'no-self-compare': 'error',
