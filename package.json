@@ -16,7 +16,7 @@
   "dependencies": {
     "@fastify/auth": "^5.0.4",
     "@fastify/autoload": "^6.5.0",
-    "@fastify/helmet": "^13.1.0",
+    "@fastify/helmet": "^13.1.1",
     "@fastify/sensible": "^6.0.5",
     "@fastify/static": "^10.1.3",
     "@opentelemetry/api": "^1.9.1",
