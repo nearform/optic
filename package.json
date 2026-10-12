@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@fastify/auth": "^5.1.2",
-    "@fastify/autoload": "^6.5.0",
+    "@fastify/autoload": "^6.5.1",
     "@fastify/helmet": "^13.1.2",
     "@fastify/sensible": "^6.0.6",
     "@fastify/static": "^10.1.6",
