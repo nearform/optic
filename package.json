@@ -17,7 +17,7 @@
     "@fastify/auth": "^5.1.2",
     "@fastify/autoload": "^6.5.1",
     "@fastify/helmet": "^13.1.2",
-    "@fastify/sensible": "^6.0.6",
+    "@fastify/sensible": "^6.0.7",
     "@fastify/static": "^10.1.6",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.81.0",
