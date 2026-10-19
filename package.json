@@ -33,7 +33,7 @@
     "fastify": "^5.12.5",
     "firebase": "^13.0.0",
     "firebase-admin": "^14.5.0",
-    "fluent-json-schema": "^6.0.1",
+    "fluent-json-schema": "^6.0.2",
     "pkg-dir": "^5.0.0",
     "uniqid": "^5.0.3",
     "url-otpauth": "^2.0.0"
