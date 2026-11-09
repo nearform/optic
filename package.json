@@ -30,7 +30,7 @@
     "dotenv": "^18.0.9",
     "env-schema": "^8.0.1",
     "expo-server-sdk": "^8.0.0",
-    "fastify": "^5.12.7",
+    "fastify": "^5.12.8",
     "firebase": "^13.0.0",
     "firebase-admin": "^14.5.0",
     "fluent-json-schema": "^6.0.2",
