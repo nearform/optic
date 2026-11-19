@@ -67,14 +67,16 @@ const sdk = new NodeSDK({
       Authorization: authorizationHeader
     }
   }),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter({
-      url: `${endpoint}/v1/metrics`,
-      headers: {
-        Authorization: authorizationHeader
-      }
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        url: `${endpoint}/v1/metrics`,
+        headers: {
+          Authorization: authorizationHeader
+        }
+      })
     })
-  })
+  ]
 })
 
 registerInstrumentations({
