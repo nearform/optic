@@ -2,6 +2,9 @@
   "name": "optic",
   "version": "3.2.2",
   "private": true,
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "create:env": "node -r fs -e \"fs.copyFileSync('.env.sample', '.env', fs.constants.COPYFILE_EXCL)\"",
     "dev": "nodemon --exec \"node --require ./server/instrumentation.js ./server/index.js\"",
