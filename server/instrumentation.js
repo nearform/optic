@@ -14,7 +14,7 @@ const {
   ATTR_SERVICE_VERSION
 } = require('@opentelemetry/semantic-conventions')
 const {
-  Resource,
+  resourceFromAttributes,
   envDetector,
   processDetector,
   hostDetector
@@ -54,7 +54,7 @@ console.log(
 )
 
 const sdk = new NodeSDK({
-  resource: new Resource({
+  resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: 'optic',
     [ATTR_SERVICE_VERSION]: pkg.version,
     'deployment.environment': environment,
@@ -67,14 +67,16 @@ const sdk = new NodeSDK({
       Authorization: authorizationHeader
     }
   }),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter({
-      url: `${endpoint}/v1/metrics`,
-      headers: {
-        Authorization: authorizationHeader
-      }
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        url: `${endpoint}/v1/metrics`,
+        headers: {
+          Authorization: authorizationHeader
+        }
+      })
     })
-  })
+  ]
 })
 
 registerInstrumentations({
