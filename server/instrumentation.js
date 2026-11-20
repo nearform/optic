@@ -14,7 +14,7 @@ const {
   ATTR_SERVICE_VERSION
 } = require('@opentelemetry/semantic-conventions')
 const {
-  Resource,
+  resourceFromAttributes,
   envDetector,
   processDetector,
   hostDetector
@@ -54,7 +54,7 @@ console.log(
 )
 
 const sdk = new NodeSDK({
-  resource: new Resource({
+  resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: 'optic',
     [ATTR_SERVICE_VERSION]: pkg.version,
     'deployment.environment': environment,
