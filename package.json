@@ -30,7 +30,7 @@
     "@opentelemetry/sdk-node": "^0.301.2",
     "close-with-grace": "^2.5.0",
     "dotenv": "^18.0.10",
-    "env-schema": "^8.0.1",
+    "env-schema": "^8.0.2",
     "expo-server-sdk": "^8.0.0",
     "fastify": "^5.12.8",
     "firebase": "^13.4.0",
